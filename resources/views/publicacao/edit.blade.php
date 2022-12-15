@@ -51,12 +51,12 @@
                                 @enderror
                             </div>
                         </div>
-
                         <div class="row mb-3">
                             <label for="imagem" class="col-md-4 col-form-label text-md-end">{{ __('Imagem') }}</label>
-
                             <div class="col-md-6">
-                                <img src="/storage/{{$publicacao->imagem}}"  class="img-thumbnail">
+                                @if ($publicacao->imagem)
+                                    <img src="/storage/{{$publicacao->imagem}}"  class="img-thumbnail">
+                                @endif
                                 <input id="imagem" type="file" class="form-control-file" name="imagem">
                             </div>
                         </div>

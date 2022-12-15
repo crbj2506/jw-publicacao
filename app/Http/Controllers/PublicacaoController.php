@@ -21,7 +21,7 @@ class PublicacaoController extends Controller
     {
         //
         //$publicacoes = $this->publicacao->all();
-        $publicacoes = $this->publicacao->paginate(2);
+        $publicacoes = $this->publicacao->paginate(10);
         return view('publicacao.index',['publicacoes' => $publicacoes]);
     }
 
@@ -47,13 +47,21 @@ class PublicacaoController extends Controller
         //
         $request->validate($this->publicacao->rules($id = null),$this->publicacao->feedback());
         $imagem = $request->file('imagem');
-        $imagem_urn = $imagem->store('imagens', 'public');
-        $publicacao = $this->publicacao->create([
-            'nome' => $request->nome,
-            'imagem' => $imagem_urn,
-            'codigo' => $request->codigo,
-            'item' => $request->item
-        ]);
+        if($imagem){
+            $imagem_urn = $imagem->store('imagens', 'public');
+            $publicacao = $this->publicacao->create([
+                'nome' => $request->nome,
+                'imagem' => $imagem_urn,
+                'codigo' => $request->codigo,
+                'item' => $request->item
+            ]);
+        }else{
+            $publicacao = $this->publicacao->create([
+                'nome' => $request->nome,
+                'codigo' => $request->codigo,
+                'item' => $request->item
+            ]);
+        }
         return redirect()->route('publicacao.show', ['publicacao' => $publicacao->id]);
     }
 

@@ -49,14 +49,15 @@
                         </div>
 
 
-                        <div class="row mb-3">
-                            <label for="imagem" class="col-md-4 col-form-label text-md-end">{{ __('Imagem') }}</label>
-
-                            <div class="col-md-6">
-                                <img src="/storage/{{$publicacao->imagem}}"  class="img-thumbnail">
-                                <input id="imagem" type="text" class="form-control" name="imagem" value="{{ $publicacao->imagem }}" disabled>
+                        @if($publicacao->imagem)
+                            <div class="row mb-3">
+                                <label for="imagem" class="col-md-4 col-form-label text-md-end">{{ __('Imagem') }}</label>
+                                <div class="col-md-6">
+                                        <img src="/storage/{{$publicacao->imagem}}"  class="img-thumbnail">
+                                        <input id="imagem" type="text" class="form-control" name="imagem" value="{{ $publicacao->imagem }}" disabled>
+                                </div>
                             </div>
-                        </div>
+                        @endif
                     </form>
                 </div>              
                 <div class="card-footer">
