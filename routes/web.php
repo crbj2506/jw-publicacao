@@ -26,3 +26,10 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])
 
 Route::resource('publicacao', 'App\Http\Controllers\PublicacaoController')
     ->middleware('verified');
+
+Route::resource('permissao', 'App\Http\Controllers\PermissaoController')
+    ->middleware('verified');
+
+Route::resource('user', 'App\Http\Controllers\UserController')
+    ->middleware('verified');
+
