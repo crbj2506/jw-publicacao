@@ -20,16 +20,16 @@ Route::get('/', function () {
 
 Auth::routes(['verify' => true, 'register' => false]);
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])
+Route::middleware('verified', 'permissao:Publicador,Servo,Administrador')
     ->name('home')
-    ->middleware('verified');
+    ->get('/home', [App\Http\Controllers\HomeController::class, 'index']);
 
-Route::resource('publicacao', 'App\Http\Controllers\PublicacaoController')
-    ->middleware('verified');
+Route::middleware('verified', 'permissao:,Servo,Administrador')
+    ->resource('publicacao', 'App\Http\Controllers\PublicacaoController');
 
-Route::resource('permissao', 'App\Http\Controllers\PermissaoController')
-    ->middleware('verified');
+Route::middleware('verified', 'permissao:,,Administrador')
+    ->resource('permissao', 'App\Http\Controllers\PermissaoController');
 
-Route::resource('user', 'App\Http\Controllers\UserController')
-    ->middleware('verified');
+Route::middleware('verified', 'permissao:,,Administrador')
+    ->resource('user', 'App\Http\Controllers\UserController');
 
