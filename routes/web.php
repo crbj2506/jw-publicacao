@@ -25,6 +25,9 @@ Route::middleware('verified', 'permissao:Publicador,Servo,Administrador')
     ->get('/home', [App\Http\Controllers\HomeController::class, 'index']);
 
 Route::middleware('verified', 'permissao:,Servo,Administrador')
+    ->resource('congregacao', 'App\Http\Controllers\CongregacaoController');
+
+Route::middleware('verified', 'permissao:,Servo,Administrador')
     ->resource('publicacao', 'App\Http\Controllers\PublicacaoController');
 
 Route::middleware('verified', 'permissao:,,Administrador')
