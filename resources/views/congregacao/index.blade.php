@@ -25,7 +25,7 @@
                                     <td>{{$c['nome']}}</td>
                                     <td><a href="{{ route('congregacao.show',['congregacao' => $c['id']])}}" class="btn btn-sm btn-primary" class="btn btn-sm btn-warning">Ver</a></td>
                                     <td><a href="{{ route('congregacao.edit',['congregacao' => $c['id']])}}" class="btn btn-sm btn-warning">Editar</a></td>
-                                    <td><a href="{{ route('inventario.create',['congregacao' => $c['id']])}}" class="btn btn-sm btn-primary">Adicionar Publicação</a></td>
+                                    <td><a href="{{ route('inventario.show',['congregacao' => $c['id']])}}" class="btn btn-sm btn-primary">Ver Inventário</a></td>
                                 </tr>
                             @endforeach
                         </tbody>
