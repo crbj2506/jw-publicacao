@@ -36,3 +36,18 @@ Route::middleware('verified', 'permissao:,,Administrador')
 Route::middleware('verified', 'permissao:,,Administrador')
     ->resource('user', 'App\Http\Controllers\UserController');
 
+Route::middleware('verified', 'permissao:,Servo,Administrador')
+    ->name('inventario.store')
+    ->post('inventario/{congregacao}', [App\Http\Controllers\InventarioController::class, 'store']);
+
+Route::middleware('verified', 'permissao:,Servo,Administrador')
+    ->name('inventario.show')
+    ->get('inventario/{congregacao}', [App\Http\Controllers\InventarioController::class, 'show']);
+
+Route::middleware('verified', 'permissao:,Servo,Administrador')
+    ->name('inventario.edit')
+    ->get('inventario/{congregacao}/edit', [App\Http\Controllers\InventarioController::class, 'edit']);
+
+Route::middleware('verified', 'permissao:,Servo,Administrador')
+    ->name('inventario.update')
+    ->put('inventario/{congregacao}/edit', [App\Http\Controllers\InventarioController::class, 'update']);

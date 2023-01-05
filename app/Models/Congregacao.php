@@ -23,5 +23,10 @@ class Congregacao extends Model
             'nome.min' => 'O campo :attribute deve ter no mínimo 3 caracteres'
         ];
     }
+    // Várias Congregações podem ter várias Publicações (tabela auxiliar)
+    public function publicacoes(){
+        //Publicações pertencem a muitas Conngregações (tabela auxiliar)
+        return $this->belongsToMany('App\Models\Publicacao', 'inventarios')->withPivot('quantidade');
+    }
 
 }
