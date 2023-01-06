@@ -8,7 +8,7 @@
                 <div class="card-header">
                     <div class="container">
                         <div class="row">
-                            <div class="col-auto me-auto fs-5 fw-bold">
+                            <div class="col-auto me-auto fs-5">
                                 {{ __('Visualizando Permissão') }}
                             </div>
                             <div class="col-auto">
@@ -21,12 +21,12 @@
                 <div class="card-body">
 
                     <div class="input-group mb-3">
-                        <span class="input-group-text fw-bold">{{ __('Permissão') }}</span>
+                        <span class="input-group-text">{{ __('Permissão') }}</span>
                         <input id="permissao" type="text" class="form-control" name="permissao" value="{{ $permissao->permissao }}" disabled>
                     </div>
                 </div>
                 <div class="card-footer">
-                    <a href="{{ route('permissao.edit',['permissao' => $permissao->id])}}" class="btn btn-sm btn-primary">Editar</a>
+                    <a href="{{ route('permissao.edit',['permissao' => $permissao->id])}}" class="btn btn-sm btn-outline-primary">Editar</a>
                 </div>
             </div>
         </div>

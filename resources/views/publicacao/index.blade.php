@@ -29,11 +29,11 @@
                             <td>{{$p['codigo']}}</td>
                             <td> 
                                 @if ($p['imagem'])
-                                    <button type="button" class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#modal{{$p['id']}}">Imagem</button>
+                                    <button type="button" class="btn btn-sm btn-outline-info" data-bs-toggle="modal" data-bs-target="#modal{{$p['id']}}">Imagem</button>
                                 @endif
                             </td>
-                            <td><a href="{{ route('publicacao.show',['publicacao' => $p['id']])}}" class="btn btn-sm btn-primary" class="btn btn-sm btn-warning">Ver</a></td>
-                            <td><a href="{{ route('publicacao.edit',['publicacao' => $p['id']])}}" class="btn btn-sm btn-warning">Editar</a></td>
+                            <td><a href="{{ route('publicacao.show',['publicacao' => $p['id']])}}" class="btn btn-sm btn-outline-primary" class="btn btn-sm btn-outline-warning">Ver</a></td>
+                            <td><a href="{{ route('publicacao.edit',['publicacao' => $p['id']])}}" class="btn btn-sm btn-outline-warning">Editar</a></td>
                         </tr>
 
 

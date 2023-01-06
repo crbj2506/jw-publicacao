@@ -63,13 +63,13 @@
                     </form>
                 </div>
                     <div class="card-footer">
-                        <button type="submit" class="btn btn-sm btn-success" form="formUpdate">
+                        <button type="submit" class="btn btn-sm btn-outline-success" form="formUpdate">
                             {{ __('Salvar') }}
                         </button>
                         <button type="submit" class="mx-3 btn btn-sm btn-danger" form="formDelete">
                             {{ __('Excluir') }}
                         </button>
-                        <a href="{{ route('publicacao.show', ['publicacao' => $publicacao->id]) }}" class="btn btn-sm btn-warning">Cancelar</a>
+                        <a href="{{ route('publicacao.show', ['publicacao' => $publicacao->id]) }}" class="btn btn-sm btn-outline-warning">Cancelar</a>
 
                         <form method="POST" action="{{ route('publicacao.destroy', ['publicacao' => $publicacao->id]) }}" id="formDelete">
                             @csrf

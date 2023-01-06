@@ -21,10 +21,10 @@
                                 <tbody>
                         @endif
                                     <tr>
-                                        <td>{{$p->item}}</td>
-                                        <td>{{ $p->codigo }}</td>
-                                        <td>{{ $p->nome }}</td>
-                                        <td>{{$p->pivot->quantidade}}</td>
+                                        <td class="py-0 py-md-1">{{$p->item}}</td>
+                                        <td class="py-0 py-md-1">{{ $p->codigo }}</td>
+                                        <td class="py-0 py-md-1">{{ $p->nome }}</td>
+                                        <td class="py-0 py-md-1">{{$p->pivot->quantidade}}</td>
                                     </tr>
                         @if($loop->last)
                                     </tbody>
@@ -33,7 +33,7 @@
                     @endforeach
                 </div>
                 <div class="card-footer">
-                    <a href="{{ route('inventario.edit',['congregacao' => $congregacao->id])}}" class="btn btn-sm btn-primary">Editar</a>
+                    <a href="{{ route('inventario.edit',['congregacao' => $congregacao->id])}}" class="btn btn-sm btn-outline-primary">Editar</a>
                 </div>
                 </div>
             </div>

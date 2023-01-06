@@ -5,7 +5,7 @@
     <div class="row justify-content-center">
         <div class="col-md-12">
             <div class="card">
-                <div class="card-header fs-5 fw-bold">{{ __('Lista de Usuários') }}</div>
+                <div class="card-header fs-5">{{ __('Lista de Usuários') }}</div>
 
                 <div class="card-body">
                     <table class="table table-striped table-hover">
@@ -28,8 +28,8 @@
                                     <td>{{$p['email']}}</td>
                                     <td>{{$p['email_verified_at']}}</td>
                                     <td>{{$p['created_at']}}</td>
-                                    <td><a href="{{ route('user.show',['user' => $p['id']])}}" class="btn btn-sm btn-primary" class="btn btn-sm btn-warning">Ver</a></td>
-                                    <td><a href="{{ route('user.edit',['user' => $p['id']])}}" class="btn btn-sm btn-warning">Editar</a></td>
+                                    <td><a href="{{ route('user.show',['user' => $p['id']])}}" class="btn btn-sm btn-outline-primary" class="btn btn-sm btn-outline-warning">Ver</a></td>
+                                    <td><a href="{{ route('user.edit',['user' => $p['id']])}}" class="btn btn-sm btn-outline-warning">Editar</a></td>
                                 </tr>
                             @endforeach
                         </tbody>

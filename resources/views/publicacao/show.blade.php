@@ -61,7 +61,7 @@
                     </form>
                 </div>              
                 <div class="card-footer">
-                    <a href="{{ route('publicacao.edit',['publicacao' => $publicacao])}}" class="btn btn-sm btn-primary">Editar</a>
+                    <a href="{{ route('publicacao.edit',['publicacao' => $publicacao])}}" class="btn btn-sm btn-outline-primary">Editar</a>
                 </div>
             </div>
         </div>

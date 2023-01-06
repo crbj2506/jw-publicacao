@@ -5,7 +5,7 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
-                <div class="card-header fs-5 fw-bold">{{ __('Lista de Permissões') }}</div>
+                <div class="card-header fs-5">{{ __('Lista de Permissões') }}</div>
 
                 <div class="card-body">
                     <table class="table table-striped table-hover">
@@ -22,8 +22,8 @@
                                 <tr>
                                     <th scope="row">{{$p['id']}}</th>
                                     <td>{{$p['permissao']}}</td>
-                                    <td><a href="{{ route('permissao.show',['permissao' => $p['id']])}}" class="btn btn-sm btn-primary" class="btn btn-sm btn-warning">Ver</a></td>
-                                    <td><a href="{{ route('permissao.edit',['permissao' => $p['id']])}}" class="btn btn-sm btn-warning">Editar</a></td>
+                                    <td><a href="{{ route('permissao.show',['permissao' => $p['id']])}}" class="btn btn-sm btn-outline-primary" class="btn btn-sm btn-outline-warning">Ver</a></td>
+                                    <td><a href="{{ route('permissao.edit',['permissao' => $p['id']])}}" class="btn btn-sm btn-outline-warning">Editar</a></td>
                                 </tr>
                             @endforeach
                         </tbody>

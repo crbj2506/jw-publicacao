@@ -28,10 +28,10 @@
                     </form>
                 </div>
                 <div class="card-footer">
-                    <button type="submit" class="btn btn-sm btn-success" form="formUpdate">
+                    <button type="submit" class="btn btn-sm btn-outline-success" form="formUpdate">
                         {{ __('Atualizar') }}
                     </button>
-                    <a href="{{ route('inventario.show', ['congregacao' => $congregacao]) }}" class="btn btn-sm btn-warning mx-3">Cancelar</a>
+                    <a href="{{ route('inventario.show', ['congregacao' => $congregacao]) }}" class="btn btn-sm btn-outline-warning mx-3">Cancelar</a>
                 </div>
             </div>
             <div class="card mt-3">
@@ -67,7 +67,7 @@
 
 
                 <div class="card-footer">
-                    <button type="submit" class="btn btn-sm btn-success" form="formCreate">
+                    <button type="submit" class="btn btn-sm btn-outline-success" form="formCreate">
                         {{ __('Adicionar') }}
                     </button>
                 </div>

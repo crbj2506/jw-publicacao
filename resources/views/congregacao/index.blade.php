@@ -5,7 +5,7 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
-                <div class="card-header fs-5 fw-bold">{{ __('Lista de Congregações') }}</div>
+                <div class="card-header fs-5">{{ __('Lista de Congregações') }}</div>
 
                 <div class="card-body">
                     <table class="table table-striped table-hover">
@@ -23,9 +23,9 @@
                                 <tr>
                                     <th scope="row">{{$c['id']}}</th>
                                     <td>{{$c['nome']}}</td>
-                                    <td><a href="{{ route('congregacao.show',['congregacao' => $c['id']])}}" class="btn btn-sm btn-primary" class="btn btn-sm btn-warning">Ver</a></td>
-                                    <td><a href="{{ route('congregacao.edit',['congregacao' => $c['id']])}}" class="btn btn-sm btn-warning">Editar</a></td>
-                                    <td><a href="{{ route('inventario.show',['congregacao' => $c['id']])}}" class="btn btn-sm btn-primary">Ver Inventário</a></td>
+                                    <td><a href="{{ route('congregacao.show',['congregacao' => $c['id']])}}" class="btn btn-sm btn-outline-primary" class="btn btn-sm btn-outline-warning">Ver</a></td>
+                                    <td><a href="{{ route('congregacao.edit',['congregacao' => $c['id']])}}" class="btn btn-sm btn-outline-warning">Editar</a></td>
+                                    <td><a href="{{ route('inventario.show',['congregacao' => $c['id']])}}" class="btn btn-sm btn-outline-primary">Ver Inventário</a></td>
                                 </tr>
                             @endforeach
                         </tbody>
