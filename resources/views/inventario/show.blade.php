@@ -8,11 +8,27 @@
                 <div class="card-header fs-5">{{ __('Visualizando Inventário da Congregação ') . $congregacao->nome }}</div>
                 <div class="card-body">
                     @foreach ( $congregacao->publicacoes as $key => $p)
-                        @if($p->pivot->quantidade > 0)
-                            <div class="input-group mb-3">
-                                <span class="input-group-text">{{ $p->codigo }} - {{ $p->nome }}</span>
-                                <input id="{{$p->id}}" type="number" class='text-end form-control' name="{{$p->id}}" value="{{$p->pivot->quantidade}}" disabled>
-                            </div>
+                        @if($loop->first)
+                            <table class="table table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Item</th>
+                                        <th scope="col">Código</th>
+                                        <th scope="col">Publicação</th>
+                                        <th scope="col">Estoque</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                        @endif
+                                    <tr>
+                                        <td>{{$p->item}}</td>
+                                        <td>{{ $p->codigo }}</td>
+                                        <td>{{ $p->nome }}</td>
+                                        <td>{{$p->pivot->quantidade}}</td>
+                                    </tr>
+                        @if($loop->last)
+                                    </tbody>
+                                </table>
                         @endif
                     @endforeach
                 </div>
