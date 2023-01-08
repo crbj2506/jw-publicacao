@@ -72,7 +72,8 @@ class InventarioController extends Controller
         $this->inventario->create([
             'congregacao_id' => $congregacao->id, 
             'publicacao_id' => $request->all('publicacao_id')['publicacao_id'], 
-            'quantidade' => $request->all('quantidade')['quantidade']]);
+            'quantidade' => $request->all('quantidade')['quantidade'], 
+            'local' => $request->all('local')['local']]);
 
         return redirect()->route('inventario.show', ['congregacao' => $congregacao]);
     }
@@ -131,12 +132,15 @@ class InventarioController extends Controller
                     ->where('congregacao_id', $congregacao->id)
                     ->where('publicacao_id', $publicacao)
                     ->update(['quantidade' => $quantidade]);
+                $this->inventario
+                    ->where('congregacao_id', $congregacao->id)
+                    ->where('publicacao_id', $publicacao)
+                    ->update(['local' => $request->all('local')['local'][$publicacao]]);
             }else{
                 $this->inventario
                     ->where('congregacao_id', $congregacao->id)
                     ->where('publicacao_id', $publicacao)
                     ->delete();
-
             }
 
         }        

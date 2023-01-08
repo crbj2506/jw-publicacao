@@ -12,6 +12,7 @@ class Inventario extends Model
         'congregacao_id',
         'publicacao_id',
         'quantidade',
+        'local',
     ];
 
 }

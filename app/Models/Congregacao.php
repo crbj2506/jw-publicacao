@@ -26,7 +26,7 @@ class Congregacao extends Model
     // Várias Congregações podem ter várias Publicações (tabela auxiliar)
     public function publicacoes(){
         //Publicações pertencem a muitas Conngregações (tabela auxiliar)
-        return $this->belongsToMany('App\Models\Publicacao', 'inventarios')->withPivot('quantidade');
+        return $this->belongsToMany('App\Models\Publicacao', 'inventarios')->withPivot('quantidade','local');
     }
 
 }

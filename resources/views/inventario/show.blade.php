@@ -15,6 +15,7 @@
                                         <th scope="col">Item</th>
                                         <th scope="col">Código</th>
                                         <th scope="col">Publicação</th>
+                                        <th scope="col">Localização</th>
                                         <th scope="col">Estoque</th>
                                     </tr>
                                 </thead>
@@ -24,6 +25,7 @@
                                         <td class="py-0 py-md-1">{{$p->item}}</td>
                                         <td class="py-0 py-md-1">{{ $p->codigo }}</td>
                                         <td class="py-0 py-md-1">{{ $p->nome }}</td>
+                                        <td class="py-0 py-md-1">{{ $p->pivot->local}}</td>
                                         <td class="py-0 py-md-1">{{$p->pivot->quantidade}}</td>
                                     </tr>
                         @if($loop->last)

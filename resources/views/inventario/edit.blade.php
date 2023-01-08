@@ -16,9 +16,16 @@
                             @if($p->pivot->quantidade > 0)
                                 <div class="input-group mb-3">
                                     <span class="input-group-text">{{ $p->codigo }} - {{ $p->nome }}</span>
-                                    <input id="publicacao[{{$p->id}}]" type="number" class="text-end form-control @error('publicacao.'.$p->id) is-invalid @enderror" name="publicacao[{{$p->id}}]" value="{{ old("'.$p->id.'") ? old("'.$p->id.'") : $p->pivot->quantidade }}" required>
+                                    <input id="publicacao[{{$p->id}}]" type="number" class="text-end form-control @error('publicacao.'.$p->id) is-invalid @enderror" name="publicacao[{{$p->id}}]" value="{{ old("publicacao.'.$p->id.'") ? old("publicacao.'.$p->id.'") : $p->pivot->quantidade }}" required>
                                     <div class="invalid-feedback">
                                     @error('publicacao.'.$p->id)
+                                        {{$message}}
+                                    @enderror
+                                    </div>
+                                    <span class="input-group-text">{{ __('Local') }}</span>
+                                    <input id="local[{{$p->id}}]" type="text" class="text-end form-control @error('local.'.$p->id) is-invalid @enderror" name="local[{{$p->id}}]" value="{{ old("publicacao.'.$p->id.'") ? old("local.'.$p->id.'") : $p->pivot->local }}">
+                                    <div class="invalid-feedback">
+                                    @error('local.'.$p->id)
                                         {{$message}}
                                     @enderror
                                     </div>
@@ -59,6 +66,13 @@
                             <span class="input-group-text" id="InputLabelQuantidade">Quantidade</span>
                             <input id="quantidade" type="number" class="text-end form-control @error('quantidade') is-invalid @enderror"  name="quantidade" required>
                             @error('quantidade')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text" id="InputLabelLocal">Local</span>
+                            <input id="local" type="text" class="text-end form-control @error('local') is-invalid @enderror"  name="local" required>
+                            @error('local')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
