@@ -17,6 +17,7 @@
                                         <th scope="col">Publicação</th>
                                         <th scope="col">Localização</th>
                                         <th scope="col">Estoque</th>
+                                        <th scope="col">Atualizado em</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -27,6 +28,7 @@
                                         <td class="py-0 py-md-1">{{ $p->nome }}</td>
                                         <td class="py-0 py-md-1">{{ $p->pivot->local}}</td>
                                         <td class="py-0 py-md-1">{{$p->pivot->quantidade}}</td>
+                                        <td class="py-0 py-md-1">{{$p->pivot->updated_at}}</td>
                                     </tr>
                         @if($loop->last)
                                     </tbody>
