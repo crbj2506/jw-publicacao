@@ -17,12 +17,14 @@ class PublicacaoController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         //
-        //$publicacoes = $this->publicacao->all();
-        $publicacoes = $this->publicacao->paginate(10);
-        return view('publicacao.index',['publicacoes' => $publicacoes]);
+        if(!empty($request->all('filtro') ) ){
+            $publicacoes = $this->publicacao->where('nome', 'like', '%'. $request->all('filtro')['filtro']. '%');
+        }
+        $publicacoes = $publicacoes->paginate(10);
+        return view('publicacao.index',['publicacoes' => $publicacoes, 'filtro' => $request->all('filtro')['filtro']]);
     }
 
     /**

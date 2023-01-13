@@ -5,7 +5,24 @@
     <div class="row justify-content-center">
         <div class="col-md-10">
             <div class="card">
-                <div class="card-header">{{ __('Lista de Publicações Cadastradas') }}</div>
+                <div class="card-header container">
+                    <div class="row">
+                        <div class="col">{{ __('Lista de Publicações Cadastradas') }}</div>
+                        <div class="col">
+                            <form method="POST" action="{{ route('publicacao.index') }}" enctype="multipart/form-data" id="formFiltro">
+                                @csrf
+                                <div class="input-group input-group-sm mb-3">
+                                    <span class="input-group-text">Filtrar por Nome</span>
+                                    <input id="filtro" name="filtro" type="text" class="form-control" placeholder="digite parte do nome" value="{{ $filtro }}">
+                                    <button type="submit" class="btn btn-sm btn-outline-primary" form="formFiltro">
+                                        {{ __('Filtrar') }}
+                                    </button>
+                                    <a href="{{ route('publicacao.index')}}" class="btn btn-sm btn-outline-success">Limpar</a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
 
                 <div class="card-body">
                     <table class="table">
