@@ -15,7 +15,7 @@
                         @foreach ( $congregacao->publicacoes as $key => $p)
                             @if($p->pivot->quantidade > 0)
                                 <div class="input-group mb-3">
-                                    <span class="input-group-text">{{ $p->codigo }} - {{ $p->nome }}</span>
+                                    <span class="input-group-text">{{ $p->codigo }} - {{ $p->nome }} - {{ $p->observacao }}</span>
                                     <input id="publicacao[{{$p->id}}]" type="number" class="text-end form-control @error('publicacao.'.$p->id) is-invalid @enderror" name="publicacao[{{$p->id}}]" value="{{ old("publicacao.'.$p->id.'") ? old("publicacao.'.$p->id.'") : $p->pivot->quantidade }}" required>
                                     <div class="invalid-feedback">
                                     @error('publicacao.'.$p->id)

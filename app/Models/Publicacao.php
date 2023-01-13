@@ -14,6 +14,7 @@ class Publicacao extends Model
     protected $table = 'publicacoes';  
     protected $fillable = [
         'nome',
+        'observacao',
         'codigo',
         'item',
         'imagem'
@@ -24,7 +25,7 @@ class Publicacao extends Model
         return [
             'nome' => 'required|unique:publicacoes,nome,'.$id.'|min:5',
             'codigo' => 'unique:publicacoes,codigo,'.$id.'|min:2|max:8',
-            'item' => 'required|unique:publicacoes,item,'.$id.'|min:4|max:7'
+            'item' => 'nullable|sometimes|unique:publicacoes,item,'.$id.'|min:4|max:7'
             //'imagem' => 'file|mimes:jpg',
         ];
     }

@@ -13,6 +13,7 @@
                             <tr>
                                 <th scope="col">#</th>
                                 <th scope="col">Nome</th>
+                                <th scope="col">Observação</th>
                                 <th scope="col">Item</th>
                                 <th scope="col">Código</th>
                                 <th scope="col">Imagem</th>
@@ -25,6 +26,7 @@
                         <tr>
                             <th scope="row">{{$p['id']}}</th>
                             <td>{{$p['nome']}}</td>
+                            <td>{{$p['observacao']}}</td>
                             <td>{{$p['item']}}</td>
                             <td>{{$p['codigo']}}</td>
                             <td> 

@@ -51,6 +51,7 @@ class PublicacaoController extends Controller
             $imagem_urn = $imagem->store('imagens', 'public');
             $publicacao = $this->publicacao->create([
                 'nome' => $request->nome,
+                'observacao' => $request->observacao,
                 'imagem' => $imagem_urn,
                 'codigo' => $request->codigo,
                 'item' => $request->item
@@ -58,6 +59,7 @@ class PublicacaoController extends Controller
         }else{
             $publicacao = $this->publicacao->create([
                 'nome' => $request->nome,
+                'observacao' => $request->observacao,
                 'codigo' => $request->codigo,
                 'item' => $request->item
             ]);

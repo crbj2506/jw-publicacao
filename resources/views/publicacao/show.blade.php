@@ -31,6 +31,15 @@
 
 
                         <div class="row mb-3">
+                            <label for="observacao" class="col-md-4 col-form-label text-md-end">{{ __('Observação') }}</label>
+
+                            <div class="col-md-6">
+                                <input id="observacao" type="text" class="form-control" name="observacao" value="{{ $publicacao->observacao }}" disabled>
+                            </div>
+                        </div>
+
+
+                        <div class="row mb-3">
                             <label for="codigo" class="col-md-4 col-form-label text-md-end">{{ __('Código') }}</label>
 
                             <div class="col-md-6">

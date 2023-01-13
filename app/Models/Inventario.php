@@ -14,5 +14,9 @@ class Inventario extends Model
         'quantidade',
         'local',
     ];
-
+    
+    public function congregacao(){
+        //Um inventário pertence a uma Conngregação
+        return $this->belongsTo('App\Models\Congregacao');
+    }
 }

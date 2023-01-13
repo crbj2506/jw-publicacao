@@ -22,6 +22,10 @@ class InventarioController extends Controller
     public function index()
     {
         //
+        $inventarios = Inventario::groupBy('congregacao_id')
+            ->selectRaw('congregacao_id, count(publicacao_id) as itens, sum(quantidade) as publicacoes, max(updated_at) as updated_at')
+            ->paginate(10);
+        return view('inventario.index',['inventarios' => $inventarios]);
     }
 
     /**
@@ -130,7 +134,7 @@ class InventarioController extends Controller
             if($quantidade > 0){
                 $inventario = $this->inventario
                     ->where('congregacao_id', $congregacao->id)
-                    ->where('publicacao_id', $publicacao)->get()[0];
+                    ->where('publicacao_id', $publicacao)->first();
                 if($inventario->quantidade != $quantidade){
                     $this->inventario
                         ->where('congregacao_id', $congregacao->id)

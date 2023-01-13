@@ -25,6 +25,20 @@
                         </div>
 
                         <div class="row mb-3">
+                            <label for="observacao" class="col-md-4 col-form-label text-md-end">{{ __('Observação') }}</label>
+
+                            <div class="col-md-6">
+                                <input id="observacao" type="text" class="form-control @error('observacao') is-invalid @enderror" name="observacao" value="{{ $publicacao->observacao ?? old('observacao') }}" autocomplete="observacao" autofocus>
+
+                                @error('observacao')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
                             <label for="codigo" class="col-md-4 col-form-label text-md-end">{{ __('Código') }}</label>
 
                             <div class="col-md-6">
@@ -42,7 +56,7 @@
                             <label for="item" class="col-md-4 col-form-label text-md-end">{{ __('Item') }}</label>
 
                             <div class="col-md-6">
-                                <input id="item" type="text" class="form-control @error('item') is-invalid @enderror" name="item" value="{{ $publicacao->item ?? old('item') }}" required autocomplete="codigo" autofocus>
+                                <input id="item" type="text" class="form-control @error('item') is-invalid @enderror" name="item" value="{{ $publicacao->item ?? old('item') }}" autocomplete="codigo" autofocus>
 
                                 @error('item')
                                     <span class="invalid-feedback" role="alert">
@@ -66,7 +80,7 @@
                         <button type="submit" class="btn btn-sm btn-outline-success" form="formUpdate">
                             {{ __('Salvar') }}
                         </button>
-                        <button type="submit" class="mx-3 btn btn-sm btn-danger" form="formDelete">
+                        <button type="submit" class="mx-3 btn btn-sm btn-outline-danger" form="formDelete">
                             {{ __('Excluir') }}
                         </button>
                         <a href="{{ route('publicacao.show', ['publicacao' => $publicacao->id]) }}" class="btn btn-sm btn-outline-warning">Cancelar</a>

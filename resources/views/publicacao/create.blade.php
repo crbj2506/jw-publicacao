@@ -27,6 +27,21 @@
 
 
                         <div class="row mb-3">
+                            <label for="observacao" class="col-md-4 col-form-label text-md-end">{{ __('Observação') }}</label>
+
+                            <div class="col-md-6">
+                                <input id="observacao" type="text" class="form-control @error('observacao') is-invalid @enderror" name="observacao" value="{{ old('observacao') }}" autocomplete="observacao" autofocus>
+
+                                @error('observacao')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+                        </div>
+
+
+                        <div class="row mb-3">
                             <label for="codigo" class="col-md-4 col-form-label text-md-end">{{ __('Código') }}</label>
 
                             <div class="col-md-6">
@@ -45,7 +60,7 @@
                             <label for="item" class="col-md-4 col-form-label text-md-end">{{ __('Item') }}</label>
 
                             <div class="col-md-6">
-                                <input id="item" type="text" class="form-control @error('item') is-invalid @enderror" name="item" value="{{ old('item') }}" required autocomplete="codigo" autofocus>
+                                <input id="item" type="text" class="form-control @error('item') is-invalid @enderror" name="item" value="{{ old('item') }}" autocomplete="codigo" autofocus>
 
                                 @error('item')
                                     <span class="invalid-feedback" role="alert">

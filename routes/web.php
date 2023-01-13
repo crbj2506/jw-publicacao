@@ -51,3 +51,7 @@ Route::middleware('verified', 'permissao:,Servo,Administrador')
 Route::middleware('verified', 'permissao:,Servo,Administrador')
     ->name('inventario.update')
     ->put('inventario/{congregacao}/edit', [App\Http\Controllers\InventarioController::class, 'update']);
+
+Route::middleware('verified', 'permissao:,Servo,Administrador')
+    ->name('inventario.index')
+    ->get('inventario', [App\Http\Controllers\InventarioController::class, 'index']);
