@@ -128,14 +128,21 @@ class InventarioController extends Controller
         $request->validate($rules,$feedback);
         foreach ($request->all('publicacao')['publicacao'] as $publicacao => $quantidade) {
             if($quantidade > 0){
-                $this->inventario
+                $inventario = $this->inventario
                     ->where('congregacao_id', $congregacao->id)
-                    ->where('publicacao_id', $publicacao)
-                    ->update(['quantidade' => $quantidade]);
-                $this->inventario
-                    ->where('congregacao_id', $congregacao->id)
-                    ->where('publicacao_id', $publicacao)
-                    ->update(['local' => $request->all('local')['local'][$publicacao]]);
+                    ->where('publicacao_id', $publicacao)->get()[0];
+                if($inventario->quantidade != $quantidade){
+                    $this->inventario
+                        ->where('congregacao_id', $congregacao->id)
+                        ->where('publicacao_id', $publicacao)
+                        ->update(['quantidade' => $quantidade]);
+                }
+                if($inventario->local != $request->all('local')['local'][$publicacao]){
+                    $this->inventario
+                        ->where('congregacao_id', $congregacao->id)
+                        ->where('publicacao_id', $publicacao)
+                        ->update(['local' => $request->all('local')['local'][$publicacao]]);
+                }
             }else{
                 $this->inventario
                     ->where('congregacao_id', $congregacao->id)
