@@ -76,20 +76,30 @@
                         </div>
                     </form>
                 </div>
-                    <div class="card-footer">
-                        <button type="submit" class="btn btn-sm btn-outline-success" form="formUpdate">
-                            {{ __('Salvar') }}
-                        </button>
-                        <button type="submit" class="mx-3 btn btn-sm btn-outline-danger" form="formDelete">
-                            {{ __('Excluir') }}
-                        </button>
-                        <a href="{{ route('publicacao.show', ['publicacao' => $publicacao->id]) }}" class="btn btn-sm btn-outline-warning">Cancelar</a>
+               
+                <div class="card-footer container">
+                    <div class="row">
+                        <div class="col">
+                            <button type="submit" class="btn btn-sm btn-outline-success" form="formUpdate">
+                                {{ __('Salvar') }}
+                            </button>
+                            <button type="submit" class="mx-3 btn btn-sm btn-outline-danger" form="formDelete">
+                                {{ __('Excluir') }}
+                            </button>
+                            <a href="{{ route('publicacao.show', ['publicacao' => $publicacao->id]) }}" class="btn btn-sm btn-outline-warning">Cancelar</a>
 
-                        <form method="POST" action="{{ route('publicacao.destroy', ['publicacao' => $publicacao->id]) }}" id="formDelete">
-                            @csrf
-                            @method('DELETE')
-                        </form>
-                    </div>
+                            <form method="POST" action="{{ route('publicacao.destroy', ['publicacao' => $publicacao->id]) }}" id="formDelete">
+                                @csrf
+                                @method('DELETE')
+                            </form>
+                        </div>
+
+                        <div class="col text-end">
+                            <a href="{{ $publicacaoAnterior ? route('publicacao.edit',['publicacao' => $publicacaoAnterior]) : '' }}" class="btn btn-sm btn-outline-secondary @if(!$publicacaoAnterior) disabled @endif me-2">Anterior</a>
+                            <a href="{{ $publicacaoPosterior ? route('publicacao.edit',['publicacao' => $publicacaoPosterior]) : '' }}" class="btn btn-sm btn-outline-secondary @if(!$publicacaoPosterior) disabled @endif me-2">Posterior</a>
+                        </div>
+                    </div>  
+                </div>
             </div>
         </div>
     </div>

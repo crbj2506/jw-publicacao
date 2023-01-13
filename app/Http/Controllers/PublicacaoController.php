@@ -77,7 +77,9 @@ class PublicacaoController extends Controller
     {
         //
         $publicacao = $this->publicacao->find($id);
-        return view('publicacao.show', ['publicacao' => $publicacao]);
+        $idPublicacaoAnterior = $this->publicacao->where('id', '<', $id)->max('id');
+        $idPublicacaoPosterior = $this->publicacao->where('id', '>', $id)->min('id');
+        return view('publicacao.show', ['publicacao' => $publicacao, 'idPublicacaoAnterior' => $idPublicacaoAnterior, 'idPublicacaoPosterior' => $idPublicacaoPosterior]);
     }
 
     /**
@@ -89,7 +91,9 @@ class PublicacaoController extends Controller
     public function edit(Publicacao $publicacao)
     {
         //
-        return view('publicacao.edit', ['publicacao' => $publicacao]);
+        $publicacaoAnterior = $this->publicacao->where('id', '<', $publicacao->id)->get()->last();
+        $publicacaoPosterior = $this->publicacao->where('id', '>', $publicacao->id)->get()->first();
+        return view('publicacao.edit', ['publicacao' => $publicacao, 'publicacaoAnterior' => $publicacaoAnterior, 'publicacaoPosterior' => $publicacaoPosterior]);
     }
 
     /**

@@ -69,9 +69,16 @@
                         @endif
                     </form>
                 </div>              
-                <div class="card-footer">
-                    <a href="{{ route('publicacao.edit',['publicacao' => $publicacao])}}" class="btn btn-sm btn-outline-primary">Editar</a>
-                </div>
+                <div class="card-footer container">
+                    <div class="row">
+                        <div class="col">
+                            <a href="{{ route('publicacao.edit',['publicacao' => $publicacao->id])}}" class="btn btn-sm btn-outline-primary">Editar</a>
+                        </div>
+                        <div class="col text-end">
+                            <a href="{{ $idPublicacaoAnterior ? route('publicacao.show',['publicacao' => $idPublicacaoAnterior]) : '' }}" class="btn btn-sm btn-outline-secondary @if(!$idPublicacaoAnterior) disabled @endif me-2">Anterior</a>
+                            <a href="{{ $idPublicacaoPosterior ? route('publicacao.show',['publicacao' => $idPublicacaoPosterior]) : '' }}" class="btn btn-sm btn-outline-secondary @if(!$idPublicacaoPosterior) disabled @endif me-2">Posterior</a>
+                        </div>
+                    </div>
             </div>
         </div>
     </div>
