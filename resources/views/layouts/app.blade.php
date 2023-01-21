@@ -63,6 +63,20 @@
                                 </li>
                                 <li class="nav-item dropdown">
                                     <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                                    {{ __('Estoques') }}
+                                    </a>
+
+                                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                        <a class="dropdown-item" href="{{ route('estoque.index') }}">
+                                            {{ __('Listar') }}
+                                        </a>
+                                        <a class="dropdown-item" href="{{ route('estoque.create') }}">
+                                            {{ __('Adicionar') }}
+                                        </a>
+                                    </div>
+                                </li>
+                                <li class="nav-item dropdown">
+                                    <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                                     {{ __('Publicações') }}
                                     </a>
 
@@ -71,6 +85,62 @@
                                             {{ __('Listar') }}
                                         </a>
                                         <a class="dropdown-item" href="{{ route('publicacao.create') }}">
+                                            {{ __('Adicionar') }}
+                                        </a>
+                                    </div>
+                                </li>
+                                <li class="nav-item dropdown">
+                                    <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                                    {{ __('Conteúdo') }}
+                                    </a>
+
+                                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                        <a class="dropdown-item" href="{{ route('conteudo.index') }}">
+                                            {{ __('Listar') }}
+                                        </a>
+                                        <a class="dropdown-item" href="{{ route('conteudo.create') }}">
+                                            {{ __('Adicionar') }}
+                                        </a>
+                                    </div>
+                                </li>
+                                <li class="nav-item dropdown">
+                                    <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                                    {{ __('Volumes') }}
+                                    </a>
+
+                                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                        <a class="dropdown-item" href="{{ route('volume.index') }}">
+                                            {{ __('Listar') }}
+                                        </a>
+                                        <a class="dropdown-item" href="{{ route('volume.create') }}">
+                                            {{ __('Adicionar') }}
+                                        </a>
+                                    </div>
+                                </li>
+                                <li class="nav-item dropdown">
+                                    <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                                    {{ __('Envios') }}
+                                    </a>
+
+                                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                        <a class="dropdown-item" href="{{ route('envio.index') }}">
+                                            {{ __('Listar') }}
+                                        </a>
+                                        <a class="dropdown-item" href="{{ route('envio.create') }}">
+                                            {{ __('Adicionar') }}
+                                        </a>
+                                    </div>
+                                </li>
+                                <li class="nav-item dropdown">
+                                    <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                                    {{ __('Locais') }}
+                                    </a>
+
+                                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                        <a class="dropdown-item" href="{{ route('local.index') }}">
+                                            {{ __('Listar') }}
+                                        </a>
+                                        <a class="dropdown-item" href="{{ route('local.create') }}">
                                             {{ __('Adicionar') }}
                                         </a>
                                     </div>

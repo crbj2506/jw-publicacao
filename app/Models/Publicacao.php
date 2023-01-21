@@ -24,7 +24,7 @@ class Publicacao extends Model
     public function rules($id){
         return [
             'nome' => 'required|unique:publicacoes,nome,'.$id.'|min:5',
-            'codigo' => 'unique:publicacoes,codigo,'.$id.'|min:2|max:8',
+            'codigo' => 'unique:publicacoes,codigo,'.$id.'|min:2|max:10',
             'item' => 'nullable|sometimes|unique:publicacoes,item,'.$id.'|min:4|max:7'
             //'imagem' => 'file|mimes:jpg',
         ];

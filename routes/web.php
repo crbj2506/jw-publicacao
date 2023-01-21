@@ -30,9 +30,9 @@ Route::middleware('verified', 'permissao:,Servo,Administrador')
 Route::middleware('verified', 'permissao:,Servo,Administrador')
     ->resource('publicacao', 'App\Http\Controllers\PublicacaoController');
 
-Route::middleware('verified', 'permissao:,Servo,Administrador')
-    ->name('publicacao.index')
-    ->post('publicacao', [App\Http\Controllers\PublicacaoController::class, 'index']);
+//Route::middleware('verified', 'permissao:,Servo,Administrador')
+//    ->name('publicacao.index')
+//    ->post('publicacao', [App\Http\Controllers\PublicacaoController::class, 'index']);
 
 Route::middleware('verified', 'permissao:,,Administrador')
     ->resource('permissao', 'App\Http\Controllers\PermissaoController');
@@ -40,6 +40,30 @@ Route::middleware('verified', 'permissao:,,Administrador')
 Route::middleware('verified', 'permissao:,,Administrador')
     ->resource('user', 'App\Http\Controllers\UserController');
 
+Route::middleware('verified', 'permissao:,,Administrador')
+    ->resource('envio', 'App\Http\Controllers\EnvioController');
+
+Route::middleware('verified', 'permissao:,,Administrador')
+    ->resource('volume', 'App\Http\Controllers\VolumeController');
+
+Route::middleware('verified', 'permissao:,,Administrador')
+    ->resource('conteudo', 'App\Http\Controllers\ConteudoController');
+
+Route::middleware('verified', 'permissao:,,Administrador')
+    ->resource('local', 'App\Http\Controllers\LocalController');
+
+Route::middleware('verified', 'permissao:,,Administrador')
+    ->resource('estoque', 'App\Http\Controllers\EstoqueController');
+
+
+
+Route::middleware('verified', 'permissao:,Servo,Administrador')
+    ->name('inventario.mostra')
+    ->get('inventario/{ano}/{mes}/{congregacao_id}', [App\Http\Controllers\InventarioController::class, 'mostra']);
+
+Route::middleware('verified', 'permissao:,,Administrador')
+    ->resource('inventario', 'App\Http\Controllers\InventarioController');
+/*
 Route::middleware('verified', 'permissao:,Servo,Administrador')
     ->name('inventario.store')
     ->post('inventario/{congregacao}', [App\Http\Controllers\InventarioController::class, 'store']);
@@ -59,3 +83,4 @@ Route::middleware('verified', 'permissao:,Servo,Administrador')
 Route::middleware('verified', 'permissao:,Servo,Administrador')
     ->name('inventario.index')
     ->get('inventario', [App\Http\Controllers\InventarioController::class, 'index']);
+*/

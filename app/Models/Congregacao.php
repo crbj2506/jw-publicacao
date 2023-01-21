@@ -29,4 +29,8 @@ class Congregacao extends Model
         return $this->belongsToMany('App\Models\Publicacao', 'inventarios')->withPivot('quantidade','local','updated_at');
     }
 
+    public function envios(){
+        return $this->hasMany('App\Models\Envio');
+    }
+
 }
