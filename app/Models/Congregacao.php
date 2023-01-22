@@ -24,13 +24,21 @@ class Congregacao extends Model
         ];
     }
     // Várias Congregações podem ter várias Publicações (tabela auxiliar)
-    public function publicacoes(){
+    //public function publicacoes(){
         //Publicações pertencem a muitas Conngregações (tabela auxiliar)
-        return $this->belongsToMany('App\Models\Publicacao', 'inventarios')->withPivot('quantidade','local','updated_at');
-    }
+        //return $this->belongsToMany('App\Models\Publicacao', 'inventarios')->withPivot('quantidade','local','updated_at');
+    //}
 
     public function envios(){
         return $this->hasMany('App\Models\Envio');
+    }
+
+    public function locais(){
+        return $this->hasMany('App\Models\Local');
+    }
+
+    public function inventarios(){
+        return $this->hasMany('App\Models\Inventario');
     }
 
 }

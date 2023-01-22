@@ -30,4 +30,8 @@ class Local extends Model
         //Um Local pertence a uma Congregação
         return $this->belongsTo('App\Models\Congregacao');
     }
+
+    public function estoques(){
+        return $this->hasMany('App\Models\Estoque');
+    }
 }
