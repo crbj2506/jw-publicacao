@@ -30,9 +30,10 @@ Route::middleware('verified', 'permissao:,Servo,Administrador')
 Route::middleware('verified', 'permissao:,Servo,Administrador')
     ->resource('publicacao', 'App\Http\Controllers\PublicacaoController');
 
-//Route::middleware('verified', 'permissao:,Servo,Administrador')
-//    ->name('publicacao.index')
-//    ->post('publicacao', [App\Http\Controllers\PublicacaoController::class, 'index']);
+//Rota para POST do Filtro de Publicações
+Route::middleware('verified', 'permissao:,Servo,Administrador')
+    ->name('publicacao.index')
+    ->post('publicacao', [App\Http\Controllers\PublicacaoController::class, 'index']);
 
 Route::middleware('verified', 'permissao:,,Administrador')
     ->resource('permissao', 'App\Http\Controllers\PermissaoController');
