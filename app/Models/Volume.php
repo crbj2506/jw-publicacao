@@ -33,4 +33,8 @@ class Volume extends Model
         return $this->belongsToMany('App\Models\Publicacao', 'conteudos')->withPivot('quantidade','updated_at');
     }
 
+    public function conteudos(){
+        return $this->hasMany('App\Models\Conteudo');
+    }
+
 }
