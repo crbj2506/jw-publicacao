@@ -55,7 +55,13 @@ Route::middleware('verified', 'permissao:,,Administrador')
 Route::middleware('verified', 'permissao:,,Administrador')
     ->resource('estoque', 'App\Http\Controllers\EstoqueController');
 
+Route::middleware('verified', 'permissao:,Servo,Administrador')
+    ->name('inventario.inventariar')
+    ->get('inventario/inventariar', [App\Http\Controllers\InventarioController::class, 'inventariar']);
 
+Route::middleware('verified', 'permissao:,Servo,Administrador')
+    ->name('inventario.inventariar')
+    ->post('inventario/inventariar', [App\Http\Controllers\InventarioController::class, 'inventariar']);
 
 Route::middleware('verified', 'permissao:,Servo,Administrador')
     ->name('inventario.mostra')

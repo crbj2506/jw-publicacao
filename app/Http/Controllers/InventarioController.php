@@ -45,7 +45,7 @@ class InventarioController extends Controller
     public function create()
     {
         //
-        $congregacoes = Congregacao::all();
+        $congregacoes = Congregacao::orderBy('nome')->get();
         $publicacoes = Publicacao::orderBy('nome')->get();
         return view('inventario.create',['congregacoes' => $congregacoes,'publicacoes' => $publicacoes]);
     }
@@ -56,112 +56,119 @@ class InventarioController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function inventariar(Request $request)
     {
         //
-        $ano = $request->all('ano')['ano'];
-        $mes = $request->all('mes')['mes'];
-        $congregacao_id = (int) $request->all('congregacao_id')['congregacao_id'];
-        $inventario['ano'] = $ano;
-        $inventario['mes'] = $mes;
-        $inventario['congregacao_id'] = $congregacao_id;
-        $request->validate($this->inventario->rules($ano,$mes,$congregacao_id,$id = null), $this->inventario->feedback());
-
-        // Ver se tem Envios não Inventáriados e com data de retirada
-        $enviosNaoInventariados = Conteudo::select('*')
-            ->join('volumes','volumes.id', '=', 'conteudos.volume_id')
-            ->join('envios','envios.id', '=', 'volumes.envio_id')
-            ->where('envios.congregacao_id', $congregacao_id)
-            ->where('envios.inventariado',0)
-            ->where('envios.retirada','!=',null)
-            ->pluck('nota')
-            ->unique();
-
-        // Inventário Anterior
-        if($mes == '01'){
-            $inventarioAnterior['ano'] = (string)((int) $ano -1);
-            $inventarioAnterior['mes'] = '12';
-        }elseif($mes == '10' | $mes == '11'){
-            $inventarioAnterior['ano'] = (string) $ano;
-            $inventarioAnterior['mes'] = (string)((int) $mes -1);
+        // Se não existe REQUEST mostra View inventariar
+        if(!$request->all()){
+            $congregacoes = Congregacao::orderBy('nome')->get();
+            $publicacoes = Publicacao::orderBy('nome')->get();
+            return view('inventario.inventariar',['congregacoes' => $congregacoes,'publicacoes' => $publicacoes]);
         }else{
-            $inventarioAnterior['ano'] = (string) $ano;
-            $inventarioAnterior['mes'] = '0'. (int) $mes -1;
-        }
+            $ano = $request->all('ano')['ano'];
+            $mes = $request->all('mes')['mes'];
+            $congregacao_id = (int) $request->all('congregacao_id')['congregacao_id'];
+            $inventario['ano'] = $ano;
+            $inventario['mes'] = $mes;
+            $inventario['congregacao_id'] = $congregacao_id;
+            $request->validate($this->inventario->rulesInventariar($ano,$mes,$congregacao_id,$id = null), $this->inventario->feedback());
 
-        $publicacoesEmEstoque = Estoque::select('*')
-            ->join('locais','locais.id', '=', 'estoques.local_id')
-            ->where('locais.congregacao_id', $congregacao_id)
-            ->pluck('publicacao_id')
-            ->unique();
-        $publicacoesRecebidas = Conteudo::select('*')
-            ->join('volumes','volumes.id', '=', 'conteudos.volume_id')
-            ->join('envios','envios.id', '=', 'volumes.envio_id')
-            ->where('envios.congregacao_id', $congregacao_id)
-            ->where('envios.inventariado',0)
-            ->pluck('publicacao_id')
-            ->unique();
-        $publicacoesParaInventariar = $publicacoesEmEstoque->merge($publicacoesRecebidas)->unique();
-
-        foreach ($publicacoesParaInventariar as $key => $publicacao_id) {
-            $recebido = (int) DB::table('conteudos')->select('*')
+            // Ver se tem Envios não Inventáriados e com data de retirada
+            $enviosNaoInventariados = Conteudo::select('*')
                 ->join('volumes','volumes.id', '=', 'conteudos.volume_id')
                 ->join('envios','envios.id', '=', 'volumes.envio_id')
-                ->where('envios.congregacao_id',$congregacao_id)
-                ->where('conteudos.publicacao_id', $publicacao_id)
-                ->whereIn('envios.nota', $enviosNaoInventariados)
-                ->sum('quantidade');
-            
-            $estoque = (int) DB::table('estoques')->select('*')
-                ->join('locais', 'locais.id','=','estoques.local_id')
-                ->where('locais.congregacao_id',$congregacao_id)
-                ->where('estoques.publicacao_id', $publicacao_id)
-                ->sum('quantidade');
-                
-
-            if(Inventario::where('ano', $inventarioAnterior['ano'])
-                ->where('mes',$inventarioAnterior['mes'])
-                ->where('congregacao_id', $congregacao_id)
-                ->where('publicacao_id', $publicacao_id)
-                ->get()
-                ->isEmpty()
-            ){
-                $estoqueAnterior = 0;
+                ->where('envios.congregacao_id', $congregacao_id)
+                ->where('envios.inventariado',0)
+                ->where('envios.retirada','!=',null)
+                ->pluck('nota')
+                ->unique();
+    
+            // Inventário Anterior
+            if($mes == '01'){
+                $inventarioAnterior['ano'] = (string)((int) $ano -1);
+                $inventarioAnterior['mes'] = '12';
+            }elseif($mes == '10' | $mes == '11'){
+                $inventarioAnterior['ano'] = (string) $ano;
+                $inventarioAnterior['mes'] = (string)((int) $mes -1);
             }else{
-                $estoqueAnterior =  (int) Inventario::where('ano', $inventarioAnterior['ano'])
+                $inventarioAnterior['ano'] = (string) $ano;
+                $inventarioAnterior['mes'] = '0'. (int) $mes -1;
+            }
+    
+            $publicacoesEmEstoque = Estoque::select('*')
+                ->join('locais','locais.id', '=', 'estoques.local_id')
+                ->where('locais.congregacao_id', $congregacao_id)
+                ->pluck('publicacao_id')
+                ->unique();
+            $publicacoesRecebidas = Conteudo::select('*')
+                ->join('volumes','volumes.id', '=', 'conteudos.volume_id')
+                ->join('envios','envios.id', '=', 'volumes.envio_id')
+                ->where('envios.congregacao_id', $congregacao_id)
+                ->where('envios.inventariado',0)
+                ->pluck('publicacao_id')
+                ->unique();
+            $publicacoesParaInventariar = $publicacoesEmEstoque->merge($publicacoesRecebidas)->unique();
+    
+            foreach ($publicacoesParaInventariar as $key => $publicacao_id) {
+                $recebido = (int) DB::table('conteudos')->select('*')
+                    ->join('volumes','volumes.id', '=', 'conteudos.volume_id')
+                    ->join('envios','envios.id', '=', 'volumes.envio_id')
+                    ->where('envios.congregacao_id',$congregacao_id)
+                    ->where('conteudos.publicacao_id', $publicacao_id)
+                    ->whereIn('envios.nota', $enviosNaoInventariados)
+                    ->sum('quantidade');
+                
+                $estoque = (int) DB::table('estoques')->select('*')
+                    ->join('locais', 'locais.id','=','estoques.local_id')
+                    ->where('locais.congregacao_id',$congregacao_id)
+                    ->where('estoques.publicacao_id', $publicacao_id)
+                    ->sum('quantidade');
+                    
+    
+                if(Inventario::where('ano', $inventarioAnterior['ano'])
                     ->where('mes',$inventarioAnterior['mes'])
                     ->where('congregacao_id', $congregacao_id)
                     ->where('publicacao_id', $publicacao_id)
-                    ->sum('estoque');
-            }
+                    ->get()
+                    ->isEmpty()
+                ){
+                    $estoqueAnterior = 0;
+                }else{
+                    $estoqueAnterior =  (int) Inventario::where('ano', $inventarioAnterior['ano'])
+                        ->where('mes',$inventarioAnterior['mes'])
+                        ->where('congregacao_id', $congregacao_id)
+                        ->where('publicacao_id', $publicacao_id)
+                        ->sum('estoque');
+                }
+                    
+                // SAÍDA = Estoque Anterior (da publicação) MAIS Recebido Atual MENOS Estoque Atual
+                if($recebido == 0 && $estoqueAnterior == 0){
+                    $saida = 0;
+                }else{
+                    $saida = $estoqueAnterior + $recebido - $estoque;
+                }
+                if($saida == 0 && $recebido == 0 && $estoque == 0){
+                    continue;
+                }
                 
-            // SAÍDA = Estoque Anterior (da publicação) MAIS Recebido Atual MENOS Estoque Atual
-            if($recebido == 0 && $estoqueAnterior == 0){
-                $saida = 0;
-            }else{
-                $saida = $estoqueAnterior + $recebido - $estoque;
+                $itemInventario = [
+                    'ano' => $ano,
+                    'mes' => $mes,
+                    'congregacao_id' => $congregacao_id,
+                    'publicacao_id' => $publicacao_id,
+                    'recebido' => $recebido,
+                    'estoque' => $estoque,
+                    'saida' => $saida,
+                ];
+                $this->inventario->create($itemInventario);
+    
+                $publicacoes[] = Publicacao::find($publicacao_id)->get();
             }
-            if($saida == 0 && $recebido == 0 && $estoque == 0){
-                continue;
+            foreach ($enviosNaoInventariados as $key => $nota) {
+                Envio::where('nota',$nota)->update(['inventariado' => 1]);
             }
-            
-            $itemInventario = [
-                'ano' => $ano,
-                'mes' => $mes,
-                'congregacao_id' => $congregacao_id,
-                'publicacao_id' => $publicacao_id,
-                'recebido' => $recebido,
-                'estoque' => $estoque,
-                'saida' => $saida,
-            ];
-            $this->inventario->create($itemInventario);
-
-            $publicacoes[] = Publicacao::find($publicacao_id)->get();
+            return redirect()->route('inventario.mostra', ['ano' => $ano, 'mes' => $mes, 'congregacao_id' => $congregacao_id]);
         }
-        foreach ($enviosNaoInventariados as $key => $nota) {
-            Envio::where('nota',$nota)->update(['inventariado' => 1]);
-        }
-        return redirect()->route('inventario.mostra', ['ano' => $ano, 'mes' => $mes, 'congregacao_id' => $congregacao_id]);
     }
 
     /**
@@ -194,7 +201,7 @@ class InventarioController extends Controller
     {
         //
         $inventario = $this->inventario->find($id);
-        $congregacoes = Congregacao::all();
+        $congregacoes = Congregacao::orderBy('nome')->get();
         $publicacoes = Publicacao::orderBy('nome')->get();
         return view('inventario.show', ['inventario' => $inventario, 'congregacoes' => $congregacoes, 'publicacoes' => $publicacoes]);
     }
@@ -208,7 +215,7 @@ class InventarioController extends Controller
     public function edit(Inventario $inventario)
     {
         //
-        $congregacoes = Congregacao::all();
+        $congregacoes = Congregacao::orderBy('nome')->get();
         $publicacoes = Publicacao::orderBy('nome')->get();
         return view('inventario.edit', ['inventario' => $inventario, 'congregacoes' => $congregacoes, 'publicacoes' => $publicacoes]);
     }

@@ -33,7 +33,7 @@ class EnvioController extends Controller
     public function create()
     {
         //
-        $congregacoes = Congregacao::all();
+        $congregacoes = Congregacao::orderBy('nome')->get();
         return view('envio.create',['congregacoes' => $congregacoes]);
     }
 
@@ -61,7 +61,7 @@ class EnvioController extends Controller
     {
         //
         $envio = $this->envio->find($id);
-        $congregacoes = Congregacao::all();
+        $congregacoes = Congregacao::orderBy('nome')->get();
         return view('envio.show', ['envio' => $envio, 'congregacoes' => $congregacoes]);
     }
 
@@ -74,7 +74,7 @@ class EnvioController extends Controller
     public function edit(Envio $envio)
     {
         //
-        $congregacoes = Congregacao::all();
+        $congregacoes = Congregacao::orderBy('nome')->get();
         return view('envio.edit', ['envio' => $envio, 'congregacoes' => $congregacoes]);
     }
 

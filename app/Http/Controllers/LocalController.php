@@ -35,7 +35,7 @@ class LocalController extends Controller
     public function create()
     {
         //
-        $congregacoes = Congregacao::all();
+        $congregacoes = Congregacao::orderBy('nome')->get();
         return view('local.create',['congregacoes' => $congregacoes]);
     }
 
@@ -63,7 +63,7 @@ class LocalController extends Controller
     {
         //
         $local = $this->local->find($id);
-        $congregacoes = Congregacao::all();
+        $congregacoes = Congregacao::orderBy('nome')->get();
         return view('local.show', ['local' => $local, 'congregacoes' => $congregacoes]);
     }
 
@@ -76,7 +76,7 @@ class LocalController extends Controller
     public function edit(Local $local)
     {
         //
-        $congregacoes = Congregacao::all();
+        $congregacoes = Congregacao::orderBy('nome')->get();
         return view('local.edit', ['local' => $local, 'congregacoes' => $congregacoes]);
     }
 
