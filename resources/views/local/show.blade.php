@@ -33,12 +33,12 @@
                     </div>
                 
                     <div class="input-group mb-3">
-                        <span class="input-group-text">{{ __('Nota') }}</span>
+                        <span class="input-group-text">{{ __('Sigla') }}</span>
                         <input id="sigla" type="text" class="form-control" name="sigla" value="{{ $local->sigla }}" disabled>
                     </div>
                     
                     <div class="input-group mb-3">
-                        <span class="input-group-text">{{ __('Data') }}</span>
+                        <span class="input-group-text">{{ __('Nome') }}</span>
                         <input id="nome" type="text" class="form-control" name="nome" value="{{ $local->nome }}" disabled>
                     </div>
                 </div>

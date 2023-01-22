@@ -21,7 +21,10 @@ class EstoqueController extends Controller
     public function index()
     {
         //
-        $estoques = $this->estoque->paginate(50);
+        $estoques = $this->estoque->select('*')
+            ->orderBy(Local::select('sigla')
+                ->whereColumn('locais.id', 'estoques.local_id')
+            )->paginate(50);
         return view('estoque.index',['estoques' => $estoques]);
     }
 
@@ -33,8 +36,8 @@ class EstoqueController extends Controller
     public function create()
     {
         //
-        $locais = Local::all();
-        $publicacoes = Publicacao::all();
+        $locais = Local::orderBy('sigla')->get();
+        $publicacoes = Publicacao::orderBy('nome')->get();
         return view('estoque.create',['locais' => $locais,'publicacoes' => $publicacoes]);
     }
 
@@ -64,8 +67,8 @@ class EstoqueController extends Controller
     {
         //
         $estoque = $this->estoque->find($id);
-        $locais = Local::all();
-        $publicacoes = Publicacao::all();
+        $locais = Local::orderBy('sigla')->get();
+        $publicacoes = Publicacao::orderBy('nome')->get();
         return view('estoque.show', ['estoque' => $estoque, 'locais' => $locais, 'publicacoes' => $publicacoes]);
     }
 
@@ -78,8 +81,8 @@ class EstoqueController extends Controller
     public function edit(Estoque $estoque)
     {
         //
-        $locais = Local::all();
-        $publicacoes = Publicacao::all();
+        $locais = Local::orderBy('sigla')->get();
+        $publicacoes = Publicacao::orderBy('nome')->get();
         return view('estoque.edit', ['estoque' => $estoque, 'locais' => $locais, 'publicacoes' => $publicacoes]);
     }
 

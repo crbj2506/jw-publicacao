@@ -43,7 +43,7 @@
                     </div>
                     <div class="input-group mb-3">
                         <span class="input-group-text">{{ __('Retirada') }}</span>
-                        <input id="retirada" type="retirada" class="form-control" name="retirada" value="{{ $envio->retirada }}" disabled>
+                        <input id="retirada" type="date" class="form-control" name="retirada" value="{{ $envio->retirada }}" disabled>
                     </div>
                 </div>
                 <div class="card-footer">

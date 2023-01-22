@@ -10,6 +10,7 @@
                             <tr>
                                 <th class="text-center" scope="col">#</th>
                                 <th class="text-center" scope="col">Local</th>
+                                <th class="text-center" scope="col">Código</th>
                                 <th class="text-center" scope="col">Publicacao</th>
                                 <th class="text-center" scope="col">Observação</th>
                                 <th class="text-center" scope="col">Quantidade</th>
@@ -21,8 +22,9 @@
                             @foreach ($estoques as $key => $e) 
                                 <tr>
                                     <th class="py-0 text-center" scope="row">{{$e->id}}</th>
-                                    <td class="py-0 text-center" scope="row">{{$e->local->sigla}} - {{$e->local->nome}}</td>
-                                    <td class="py-0 text-center" scope="row">{{$e->publicacao->nome}}</td>
+                                    <td class="py-0" scope="row">{{$e->local->sigla}} - {{$e->local->nome}}</td>
+                                    <td class="py-0 text-end" scope="row">{{$e->publicacao->codigo}}</td>
+                                    <td class="py-0" scope="row">{{$e->publicacao->nome}}</td>
                                     <td class="py-0 text-center" scope="row">{{$e->publicacao->observacao}}</td>
                                     <td class="py-0 text-center" scope="row">{{$e->quantidade}}</td>
                                     <td class="py-0 text-center" scope="row"><a href="{{ route('estoque.show',['estoque' => $e->id])}}" class="btn btn-sm btn-outline-primary py-0">Ver</a></td>

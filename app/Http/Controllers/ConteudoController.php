@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 
 class ConteudoController extends Controller
 {
+    public $conteudo;
     public function __construct(Conteudo $conteudo){
         $this->conteudo = $conteudo;
     }
@@ -20,7 +21,7 @@ class ConteudoController extends Controller
     public function index()
     {
         //
-        $conteudos = $this->conteudo->paginate(50);
+        $conteudos = $this->conteudo->orderByDesc('id')->paginate(50);
         return view('conteudo.index',['conteudos' => $conteudos]);
     }
 
@@ -32,8 +33,8 @@ class ConteudoController extends Controller
     public function create()
     {
         //
-        $volumes = Volume::all();
-        $publicacoes = Publicacao::all();
+        $volumes = Volume::orderByDesc('id')->get();
+        $publicacoes = Publicacao::orderBy('nome')->get();
         return view('conteudo.create',['volumes' => $volumes,'publicacoes' => $publicacoes]);
     }
 
@@ -61,8 +62,8 @@ class ConteudoController extends Controller
     {
         //
         $conteudo = $this->conteudo->find($id);
-        $volumes = Volume::all();
-        $publicacoes = Publicacao::all();
+        $volumes = Volume::orderByDesc('id')->get();
+        $publicacoes = Publicacao::orderBy('nome')->get();
         return view('conteudo.show', ['conteudo' => $conteudo, 'volumes' => $volumes, 'publicacoes' => $publicacoes]);
     }
 
@@ -75,8 +76,8 @@ class ConteudoController extends Controller
     public function edit(Conteudo $conteudo)
     {
         //
-        $volumes = Volume::all();
-        $publicacoes = Publicacao::all();
+        $volumes = Volume::orderByDesc('id')->get();
+        $publicacoes = Publicacao::orderBy('nome')->get();
         return view('conteudo.edit', ['conteudo' => $conteudo, 'volumes' => $volumes, 'publicacoes' => $publicacoes]);
     }
 

@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Storage;
 
 class PublicacaoController extends Controller
 {
+    public $publicacao;
     public function __construct(Publicacao $publicacao){
         $this->publicacao = $publicacao;
     }
@@ -23,7 +24,7 @@ class PublicacaoController extends Controller
         if(!empty($request->all('filtro') ) ){
             $publicacoes = $this->publicacao->where('nome', 'like', '%'. $request->all('filtro')['filtro']. '%');
         }
-        $publicacoes = $publicacoes->paginate(10);
+        $publicacoes = $publicacoes->orderBy('nome')->paginate(50);
         return view('publicacao.index',['publicacoes' => $publicacoes, 'filtro' => $request->all('filtro')['filtro']]);
     }
 

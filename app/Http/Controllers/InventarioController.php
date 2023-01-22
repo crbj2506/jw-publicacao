@@ -28,7 +28,12 @@ class InventarioController extends Controller
     public function index()
     {
         //
-        $inventarios = $this->inventario->paginate(50);
+        $inventarios = $this->inventario
+            ->orderByDesc('ano')
+            ->orderByDesc('mes')
+            ->orderBy(Publicacao::select('nome')
+                ->whereColumn('publicacoes.id', 'inventarios.publicacao_id'))
+            ->paginate(50);
         return view('inventario.index',['inventarios' => $inventarios]);
     }
 
@@ -41,7 +46,7 @@ class InventarioController extends Controller
     {
         //
         $congregacoes = Congregacao::all();
-        $publicacoes = Publicacao::all();
+        $publicacoes = Publicacao::orderBy('nome')->get();
         return view('inventario.create',['congregacoes' => $congregacoes,'publicacoes' => $publicacoes]);
     }
 
@@ -62,27 +67,15 @@ class InventarioController extends Controller
         $inventario['congregacao_id'] = $congregacao_id;
         $request->validate($this->inventario->rules($ano,$mes,$congregacao_id,$id = null), $this->inventario->feedback());
 
-        // Ver se tem Estoque
-        //$estoques = Estoque::select('publicacao_id', DB::raw('sum(quantidade) as quantidade_publicacao'))->groupBy('publicacao_id')->get();
-
-        /*$estoque = DB::table('estoques')
-            ->select('*')
-            ->join('locais','locais.id', '=', 'estoques.local_id')
-            ->where('locais.congregacao_id', $congregacao_id)
-            ->get()
-            ;
-        dd($estoque);*/
-
-        // Ver se tem Envios não Inventáriados
+        // Ver se tem Envios não Inventáriados e com data de retirada
         $enviosNaoInventariados = Conteudo::select('*')
             ->join('volumes','volumes.id', '=', 'conteudos.volume_id')
             ->join('envios','envios.id', '=', 'volumes.envio_id')
             ->where('envios.congregacao_id', $congregacao_id)
             ->where('envios.inventariado',0)
+            ->where('envios.retirada','!=',null)
             ->pluck('nota')
             ->unique();
-
-        //dd('enviosNaoInventariados',$enviosNaoInventariados);
 
         // Inventário Anterior
         if($mes == '01'){
@@ -109,9 +102,6 @@ class InventarioController extends Controller
             ->pluck('publicacao_id')
             ->unique();
         $publicacoesParaInventariar = $publicacoesEmEstoque->merge($publicacoesRecebidas)->unique();
-
-        //dd('Publicações Recebidas', $publicacoesRecebidas, 'Publicações em Estoque da Congragação', $publicacoesEmEstoque, 'Publicações para Inventarias', $publicacoesParaInventariar);
-        //dd('Publicações em Estoque da Congragação', $publicacoesEmEstoque);
 
         foreach ($publicacoesParaInventariar as $key => $publicacao_id) {
             $recebido = (int) DB::table('conteudos')->select('*')
@@ -155,9 +145,6 @@ class InventarioController extends Controller
                 continue;
             }
             
-            //dd(Inventario::where('ano', $inventarioAnterior['ano'])
-            //->where('mes',$inventarioAnterior['mes'])
-            //->where('publicacao_id', $publicacao_id)->get());
             $itemInventario = [
                 'ano' => $ano,
                 'mes' => $mes,
@@ -186,7 +173,12 @@ class InventarioController extends Controller
     public function mostra($ano,$mes,$congregacao_id)
     {
         //
-        $inventarios = $this->inventario->where('ano', $ano)->where('mes', $mes)->where('congregacao_id', $congregacao_id)->paginate(10);
+        $inventarios = $this->inventario->where('ano', $ano)->where('mes', $mes)->where('congregacao_id', $congregacao_id)
+        ->orderByDesc('ano')
+        ->orderByDesc('mes')
+        ->orderBy(Publicacao::select('nome')
+            ->whereColumn('publicacoes.id', 'inventarios.publicacao_id'))
+        ->paginate(50);
         
         //dd($ano,$mes,$congregacao_id, $inventarios);
         return view('inventario.index', ['inventarios' => $inventarios]);
@@ -203,7 +195,7 @@ class InventarioController extends Controller
         //
         $inventario = $this->inventario->find($id);
         $congregacoes = Congregacao::all();
-        $publicacoes = Publicacao::all();
+        $publicacoes = Publicacao::orderBy('nome')->get();
         return view('inventario.show', ['inventario' => $inventario, 'congregacoes' => $congregacoes, 'publicacoes' => $publicacoes]);
     }
 
@@ -217,7 +209,7 @@ class InventarioController extends Controller
     {
         //
         $congregacoes = Congregacao::all();
-        $publicacoes = Publicacao::all();
+        $publicacoes = Publicacao::orderBy('nome')->get();
         return view('inventario.edit', ['inventario' => $inventario, 'congregacoes' => $congregacoes, 'publicacoes' => $publicacoes]);
     }
 
