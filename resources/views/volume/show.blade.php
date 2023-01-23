@@ -60,6 +60,7 @@
                         </tr>
                     </thead>
                     <tbody>
+                    @php($volume->conteudos = $volume->conteudos->sortDesc())
                         @foreach ($volume->conteudos as $key => $c) 
                             <tr>
                                 <th class="py-0 text-center" scope="row">{{$c->id}}</th>

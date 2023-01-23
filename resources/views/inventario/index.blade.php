@@ -3,21 +3,37 @@
 @section('content')
 <div class="container-fluid d-flex justify-content-center">
     <div class="card">
-        <div class="card-header container-fluid">
-            <div class="row">
-                <div class="col">
+        <div class="card-header">
                     {{ __('Lista de Inventários') }}
+        </div>    
+        <div class="card-header p-1">    
+            <form  id="formFiltro" method="POST" action="{{ route('inventario.indexFiltrado')}}" enctype="multipart/form-data">
+                @csrf
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text" id="selectLabelCongregacao">Filtros</span>
+                    <select class="form-select @error('congregacao_id') is-invalid @enderror" id="selectCongregacao" name="congregacao_id">
+                        <option  value="" selected>Congregação...</option>
+                        @foreach ( $inventarios->congregacoesFiltro as $key => $c)
+                            <option value="{{$c->id}}" {{(@old('congregacao_id') == $c->id) || ($inventarios->filtros['congregacao_id'] == $c->id) || ($inventarios->congregacaoIdFiltro == $c->id) ? 'selected': ''}}>{{ $c->nome }}</option>
+                        @endforeach
+                    </select>
+                    <select class="form-select @error('ano') is-invalid @enderror" id="selectAno" name="ano">
+                        <option  value="" selected>Ano...</option>
+                        @foreach ( $inventarios->anosFiltro as $key => $ano)
+                            <option value="{{$ano->ano}}" {{(@old('ano') == $ano->ano) || ($inventarios->filtros['ano'] == $ano->ano)  || ($inventarios->anoFiltro == $ano->ano) ? 'selected': ''}}>{{ $ano->ano }}</option>
+                        @endforeach
+                    </select>
+                    <select class="form-select @error('mes') is-invalid @enderror" id="selectAno" name="mes">
+                        <option  value="" selected>Mês...</option>
+                        @foreach ( $inventarios->mesesFiltro as $key => $mes)
+                            <option value="{{$mes->mes}}" {{(@old('mes') == $mes->mes) || ($inventarios->filtros['mes'] == $mes->mes) ? 'selected': ''}}>{{ $mes->mes }}</option>
+                        @endforeach
+                    </select>
+                    <button type="submit" class="btn btn-sm btn-outline-primary" form="formFiltro"> Filtrar </button>
+                    <a href="{{ route('inventario.index')}}" class="btn btn-sm btn-outline-success">Limpar</a>
                 </div>
-                <div class="col">
-                    <div class="input-group input-group-sm mb-3">
-                        <span class="input-group-text">Filtrar por:</span>
-                        <input id="filtro" name="filtro" type="text" class="form-control" placeholder="colocar aqui select ano mes e congregacao">
-                        <button type="submit" class="btn btn-sm btn-outline-primary" form="formFiltro"> Filtrar </button>
-                        <a href="" class="btn btn-sm btn-outline-success">Limpar</a>
-                    </div>
-                </div>
-            </div>
-        </div>
+            </form> 
+        </div>               
         <div class="card-body">
             <table class="table table-striped table-hover">
                 <thead>

@@ -25,15 +25,59 @@ class InventarioController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         //
+
+        $congregacaoIdFiltro = null;
+        $anoFiltro = null;
+        $mesFiltro = null;
+
+        if(empty($request->query())){
+            $request->session()->forget('congregacaoIdFiltro');
+            $request->session()->forget('anoFiltro');
+            $request->session()->forget('mesFiltro');
+        };
+
         $inventarios = $this->inventario
-            ->orderByDesc('ano')
-            ->orderByDesc('mes')
-            ->orderBy(Publicacao::select('nome')
-                ->whereColumn('publicacoes.id', 'inventarios.publicacao_id'))
-            ->paginate(50);
+        ->orderByDesc('ano')
+        ->orderByDesc('mes')
+        ->orderBy(Publicacao::select('nome')
+            ->whereColumn('publicacoes.id', 'inventarios.publicacao_id'));
+
+        if($request->all('congregacao_id')['congregacao_id'] || $request->session()->exists('congregacaoIdFiltro')){
+            $congregacaoIdFiltro = $request->session()->exists('congregacaoIdFiltro') ? $request->session()->get('congregacaoIdFiltro') : $request->all('congregacao_id')['congregacao_id'];
+            if($request->all('congregacao_id')['congregacao_id']){
+                $request->session()->put('congregacaoIdFiltro', $congregacaoIdFiltro);
+            }
+            $inventarios = $inventarios->where('congregacao_id', $congregacaoIdFiltro);
+        }
+
+        if($request->all('ano')['ano'] || $request->session()->exists('anoFiltro')){
+            $anoFiltro = $request->session()->exists('anoFiltro') ? $request->session()->get('anoFiltro') : $request->all('ano')['ano'];
+            if($request->all('ano')['ano']){
+                $request->session()->put('anoFiltro', $anoFiltro);
+            }
+            $inventarios = $inventarios->where('ano', $anoFiltro);
+        }
+
+        if($request->all('mes')['mes'] || $request->session()->exists('mesFiltro')){
+            $mesFiltro = $request->session()->exists('mesFiltro') ? $request->session()->get('mesFiltro') : $request->all('mes')['mes'];
+            if($request->all('mes')['mes']){
+                $request->session()->put('mesFiltro', $mesFiltro);
+            }
+            $inventarios = $inventarios->where('mes', $mesFiltro);
+        }
+        $inventarios = $inventarios->paginate(50);
+        $inventarios->filtros = $request->all('congregacao_id', 'ano', 'mes');
+        $inventarios->congregacoesFiltro = Congregacao::select('id','nome')->orderBy('nome')->distinct()->get();
+        $inventarios->anosFiltro = Inventario::select('ano')->orderBy('ano')->distinct()->get();
+        $inventarios->mesesFiltro = Inventario::select('mes')->orderBy('mes')->distinct()->get();
+        $inventarios->congregacaoIdFiltro = $congregacaoIdFiltro;
+        $inventarios->anoFiltro = $anoFiltro;
+        $inventarios->mesFiltro = $mesFiltro;
+
+        echo "Cong [$congregacaoIdFiltro] Ano [$anoFiltro] Mês [$mesFiltro]";
         return view('inventario.index',['inventarios' => $inventarios]);
     }
 

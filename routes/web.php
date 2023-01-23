@@ -32,7 +32,7 @@ Route::middleware('verified', 'permissao:,Servo,Administrador')
 
 //Rota para POST do Filtro de Publicações
 Route::middleware('verified', 'permissao:,Servo,Administrador')
-    ->name('publicacao.index')
+    ->name('publicacao.indexPost')
     ->post('publicacao', [App\Http\Controllers\PublicacaoController::class, 'index']);
 
 Route::middleware('verified', 'permissao:,,Administrador')
@@ -61,15 +61,36 @@ Route::middleware('verified', 'permissao:,Servo,Administrador')
     ->get('inventario/inventariar', [App\Http\Controllers\InventarioController::class, 'inventariar']);
 
 Route::middleware('verified', 'permissao:,Servo,Administrador')
-    ->name('inventario.inventariar')
+    ->name('inventario.inventariarPost')
     ->post('inventario/inventariar', [App\Http\Controllers\InventarioController::class, 'inventariar']);
 
 Route::middleware('verified', 'permissao:,Servo,Administrador')
     ->name('inventario.mostra')
     ->get('inventario/{ano}/{mes}/{congregacao_id}', [App\Http\Controllers\InventarioController::class, 'mostra']);
 
+
+// ###########################
+// ##  CONJUNTO INVENTÁRIO
+// ###########################
 Route::middleware('verified', 'permissao:,,Administrador')
     ->resource('inventario', 'App\Http\Controllers\InventarioController');
+
+Route::middleware('verified', 'permissao:,Servo,Administrador')
+    ->name('inventario.indexFiltrado')
+    ->post('inventario', [App\Http\Controllers\InventarioController::class, 'index']);
+
+Route::middleware('verified', 'permissao:,Servo,Administrador')
+    ->name('inventario.inventariar')
+    ->get('inventario/inventariar', [App\Http\Controllers\InventarioController::class, 'inventariar']);
+
+Route::middleware('verified', 'permissao:,Servo,Administrador')
+    ->name('inventario.inventariarPost')
+    ->post('inventario/inventariar', [App\Http\Controllers\InventarioController::class, 'inventariar']);
+
+Route::middleware('verified', 'permissao:,Servo,Administrador')
+    ->name('inventario.mostra')
+    ->get('inventario/{ano}/{mes}/{congregacao_id}', [App\Http\Controllers\InventarioController::class, 'mostra']);
+    
 /*
 Route::middleware('verified', 'permissao:,Servo,Administrador')
     ->name('inventario.store')
