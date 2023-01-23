@@ -78,18 +78,12 @@ class InventarioController extends Controller
         $inventarios->mesFiltro = $mesFiltro;
 
         // Dinamismo na paginação
-        if($inventarios->currentPage() == 1){
-            $inventarios->d1 = 0;
-            $inventarios->d2 = 4;
-        }elseif($inventarios->currentPage() == 2){
-            $inventarios->d1 = 1;
-            $inventarios->d2 = 3;
-        }elseif($inventarios->currentPage() == $inventarios->lastPage()){
-            $inventarios->d1 = 4;
-            $inventarios->d2 = 0;
-        }elseif($inventarios->currentPage() == $inventarios->lastPage() -1 ){
-            $inventarios->d1 = 3;
-            $inventarios->d2 = 1;
+        if($inventarios->currentPage() == 1 || $inventarios->currentPage() == 2){
+            $inventarios->d1 = $inventarios->currentPage() - 1;
+            $inventarios->d2 = 4 - $inventarios->d1;
+        }elseif($inventarios->currentPage() == $inventarios->lastPage() || $inventarios->currentPage() == $inventarios->lastPage() -1){
+            $inventarios->d2 = $inventarios->lastPage() - $inventarios->currentPage();
+            $inventarios->d1 = 4 - $inventarios->d2 ; 
         }else{
             $inventarios->d1 = $inventarios->d2 = 2;
         }
