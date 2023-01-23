@@ -20,13 +20,13 @@
                     <select class="form-select @error('ano') is-invalid @enderror" id="selectAno" name="ano">
                         <option  value="" selected>Ano...</option>
                         @foreach ( $inventarios->anosFiltro as $key => $ano)
-                            <option value="{{$ano->ano}}" {{(@old('ano') == $ano->ano) || ($inventarios->filtros['ano'] == $ano->ano)  || ($inventarios->anoFiltro == $ano->ano) ? 'selected': ''}}>{{ $ano->ano }}</option>
+                            <option value="{{$ano->ano}}" {{(@old('ano') == $ano->ano) || ($inventarios->filtros['ano'] == $ano->ano) || ($inventarios->anoFiltro == $ano->ano) ? 'selected': ''}}>{{ $ano->ano }}</option>
                         @endforeach
                     </select>
                     <select class="form-select @error('mes') is-invalid @enderror" id="selectAno" name="mes">
                         <option  value="" selected>Mês...</option>
                         @foreach ( $inventarios->mesesFiltro as $key => $mes)
-                            <option value="{{$mes->mes}}" {{(@old('mes') == $mes->mes) || ($inventarios->filtros['mes'] == $mes->mes) ? 'selected': ''}}>{{ $mes->mes }}</option>
+                            <option value="{{$mes->mes}}" {{(@old('mes') == $mes->mes) || ($inventarios->filtros['mes'] == $mes->mes) || ($inventarios->mesFiltro == $mes->mes) ? 'selected': ''}}>{{ $mes->mes }}</option>
                         @endforeach
                     </select>
                     <button type="submit" class="btn btn-sm btn-outline-primary" form="formFiltro"> Filtrar </button>
