@@ -68,7 +68,7 @@ class InventarioController extends Controller
             }
             $inventarios = $inventarios->where('mes', $mesFiltro);
         }
-        $inventarios = $inventarios->paginate(50);
+        $inventarios = $inventarios->paginate(10);
         $inventarios->filtros = $request->all('congregacao_id', 'ano', 'mes');
         $inventarios->congregacoesFiltro = Congregacao::select('id','nome')->orderBy('nome')->distinct()->get();
         $inventarios->anosFiltro = Inventario::select('ano')->orderBy('ano')->distinct()->get();
@@ -77,7 +77,22 @@ class InventarioController extends Controller
         $inventarios->anoFiltro = $anoFiltro;
         $inventarios->mesFiltro = $mesFiltro;
 
-        echo "Cong [$congregacaoIdFiltro] Ano [$anoFiltro] Mês [$mesFiltro]";
+        // Dinamismo na paginação
+        if($inventarios->currentPage() == 1){
+            $inventarios->d1 = 0;
+            $inventarios->d2 = 4;
+        }elseif($inventarios->currentPage() == 2){
+            $inventarios->d1 = 1;
+            $inventarios->d2 = 3;
+        }elseif($inventarios->currentPage() == $inventarios->lastPage()){
+            $inventarios->d1 = 4;
+            $inventarios->d2 = 0;
+        }elseif($inventarios->currentPage() == $inventarios->lastPage() -1 ){
+            $inventarios->d1 = 3;
+            $inventarios->d2 = 1;
+        }else{
+            $inventarios->d1 = $inventarios->d2 = 2;
+        }
         return view('inventario.index',['inventarios' => $inventarios]);
     }
 
