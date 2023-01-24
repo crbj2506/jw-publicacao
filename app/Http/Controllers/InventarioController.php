@@ -31,20 +31,30 @@ class InventarioController extends Controller
 
         $congregacaoIdFiltro = null;
         $anoFiltro = null;
-        $mesFiltro = null;
+        $mesFiltro = null; 
+        $publicacaoFiltro = null; 
 
         if(empty($request->query())){
             $request->session()->forget('congregacaoIdFiltro');
             $request->session()->forget('anoFiltro');
             $request->session()->forget('mesFiltro');
+            $request->session()->forget('publicacaoFiltro');
         };
 
         $inventarios = $this->inventario
         ->orderByDesc('ano')
         ->orderByDesc('mes')
         ->orderBy(Publicacao::select('nome')
-            ->whereColumn('publicacoes.id', 'inventarios.publicacao_id'));
+        ->whereColumn('publicacoes.id', 'inventarios.publicacao_id'));
 
+        if($request->all('publicacao')['publicacao'] || $request->session()->exists('publicacaoFiltro')){
+            $publicacaoFiltro = $request->session()->exists('publicacaoFiltro') ? $request->session()->get('publicacaoFiltro') : $request->all('publicacao')['publicacao'];
+            if($request->all('publicacao')['publicacao']){
+                $request->session()->put('publicacaoFiltro', $publicacaoFiltro);
+            }
+            $inventarios = $inventarios->whereRelation('publicacao', 'nome', 'like', '%'. $publicacaoFiltro. '%');
+                
+        }
         if($request->all('congregacao_id')['congregacao_id'] || $request->session()->exists('congregacaoIdFiltro')){
             $congregacaoIdFiltro = $request->session()->exists('congregacaoIdFiltro') ? $request->session()->get('congregacaoIdFiltro') : $request->all('congregacao_id')['congregacao_id'];
             if($request->all('congregacao_id')['congregacao_id']){
@@ -76,6 +86,7 @@ class InventarioController extends Controller
         $inventarios->congregacaoIdFiltro = $congregacaoIdFiltro;
         $inventarios->anoFiltro = $anoFiltro;
         $inventarios->mesFiltro = $mesFiltro;
+        $inventarios->publicacaoFiltro = $publicacaoFiltro;
 
         // Dinamismo na paginação
         if($inventarios->currentPage() == 1 || $inventarios->currentPage() == 2){
