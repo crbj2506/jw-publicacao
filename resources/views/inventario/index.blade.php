@@ -7,7 +7,7 @@
                     {{ __('Lista de Inventários') }}
         </div>    
         <div class="card-header p-1">    
-            <form  id="formFiltro" method="POST" action="{{ route('inventario.indexFiltrado')}}" enctype="multipart/form-data">
+            <form  id="formFiltro" method="POST" action="{{ route('inventario.filtrado')}}" enctype="multipart/form-data">
                 @csrf
                 <div class="input-group input-group-sm">
                     <span class="input-group-text" id="selectLabelCongregacao">Filtros</span>

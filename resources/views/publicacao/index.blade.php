@@ -7,7 +7,7 @@
             <div class="row">
                 <div class="col">{{ __('Lista de Publicações Cadastradas') }}</div>
                 <div class="col">
-                    <form method="POST" action="{{ route('publicacao.index') }}" enctype="multipart/form-data" id="formFiltro">
+                    <form method="POST" action="{{ route('publicacao.filtrada') }}" enctype="multipart/form-data" id="formFiltro">
                         @csrf
                         <div class="input-group input-group-sm mb-3">
                             <span class="input-group-text">Filtrar por Nome</span>

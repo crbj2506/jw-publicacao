@@ -32,8 +32,8 @@ Route::middleware('verified', 'permissao:,Servo,Administrador')
 
 //Rota para POST do Filtro de Publicações
 Route::middleware('verified', 'permissao:,Servo,Administrador')
-    ->name('publicacao.indexPost')
-    ->post('publicacao', [App\Http\Controllers\PublicacaoController::class, 'index']);
+    ->name('publicacao.filtrada')
+    ->post('publicacao/filtrada', [App\Http\Controllers\PublicacaoController::class, 'index']);
 
 Route::middleware('verified', 'permissao:,,Administrador')
     ->resource('permissao', 'App\Http\Controllers\PermissaoController');
@@ -76,8 +76,8 @@ Route::middleware('verified', 'permissao:,,Administrador')
     ->resource('inventario', 'App\Http\Controllers\InventarioController');
 
 Route::middleware('verified', 'permissao:,Servo,Administrador')
-    ->name('inventario.indexFiltrado')
-    ->post('inventario', [App\Http\Controllers\InventarioController::class, 'index']);
+    ->name('inventario.filtrado')
+    ->post('inventario/filtrado', [App\Http\Controllers\InventarioController::class, 'index']);
 
 Route::middleware('verified', 'permissao:,Servo,Administrador')
     ->name('inventario.inventariar')
