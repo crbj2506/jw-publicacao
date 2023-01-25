@@ -7,11 +7,11 @@
             <div class="row">
                 <div class="col">{{ __('Lista de Publicações Cadastradas') }}</div>
                 <div class="col">
-                    <form method="POST" action="{{ route('publicacao.filtrada') }}" enctype="multipart/form-data" id="formFiltro">
+                    <form method="POST" action="{{ route('publicacao.filtrada.post') }}" enctype="multipart/form-data" id="formFiltro">
                         @csrf
                         <div class="input-group input-group-sm mb-3">
                             <span class="input-group-text">Filtrar por Nome</span>
-                            <input id="filtro" name="filtro" type="text" class="form-control" placeholder="digite parte do nome" value="{{ $filtro }}">
+                            <input id="filtro" name="filtro" type="text" class="form-control" placeholder="digite parte do nome" value="{{ $publicacoes->nomeFiltro }}">
                             <button type="submit" class="btn btn-sm btn-outline-primary" form="formFiltro">
                                 {{ __('Filtrar') }}
                             </button>
@@ -79,23 +79,27 @@
         </div>
         <div class="card-footer">
             {{--$publicacoes->links() BUGADO!!!!!--}}
-            <ul class="pagination justify-content-center">
-                <li class="page-item">
-                <a class="page-link" href="{{ $publicacoes->url(1) }}"><<</a>
+            <ul class="pagination pagination-sm justify-content-center">
+                <li class="page-item {{ $publicacoes->currentPage() == 1 ? 'disabled' : ''}}">
+                    <a class="page-link" href="{{ $publicacoes->url(1) }}">Página 1</a>
                 </li>
-                <li class="page-item">
-                <a class="page-link" href="{{ $publicacoes->previousPageUrl() }}" tabindex="-1" aria-disabled="true"><</a>
-                </li>@for ( $i= 1 ; $i <= $publicacoes->lastPage() ; $i++)
-                    <li class="page-item {{ $publicacoes->currentPage() == $i ? 'active' : '' }}">
+                <li class="page-item {{ $publicacoes->currentPage() == 1 ? 'disabled' : '' }}">
+                    <a class="page-link" href="{{ $publicacoes->previousPageUrl() }}" tabindex="-1" aria-disabled="true">Anterior</a>
+                </li>
+
+                @for ($i = 1;  $i <= $publicacoes->lastPage() ; $i++)
+                    <li class="page-item {{ $publicacoes->currentPage() == $i ? 'active' : '' }}
+                                        {{ ($i < $publicacoes->currentPage() - $publicacoes->d1) || ($i > $publicacoes->currentPage() + $publicacoes->d2) ? 'd-none' : '' }}">
                         <a class="page-link" href="{{ $publicacoes->url($i) }}">{{ $i }}</a>
                     </li>
                 @endfor
                 <li class="page-item">
-                <a class="page-link" href="{{ $publicacoes->nextPageUrl() }}">></a>
+                    <a class="page-link {{ $publicacoes->currentPage() == $publicacoes->lastPage() ? 'disabled' : '' }}" href="{{ $publicacoes->nextPageUrl() }}">Próxima</a>
                 </li>
                 <li class="page-item">
-                <a class="page-link" href="{{ $publicacoes->url($publicacoes->lastPage()) }}">>></a>
+                    <a class="page-link {{ $publicacoes->currentPage() == $publicacoes->lastPage() ? 'disabled' : '' }}" href="{{ $publicacoes->url($publicacoes->lastPage()) }}">Página {{$publicacoes->lastPage()}}</a>
                 </li>
+            </ul>
             </ul>
         </div>
     </div>

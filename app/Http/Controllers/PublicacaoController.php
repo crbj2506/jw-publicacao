@@ -21,10 +21,36 @@ class PublicacaoController extends Controller
     public function index(Request $request)
     {
         //
-        if(!empty($request->all('filtro') ) ){
-            $publicacoes = $this->publicacao->where('nome', 'like', '%'. $request->all('filtro')['filtro']. '%');
+        $nomeFiltro = null;
+
+        if(empty($request->query())){
+            $request->session()->forget('nomeFiltro');
+        };
+
+        $publicacoes = $this->publicacao;
+
+        if($request->all('filtro')['filtro'] || $request->session()->exists('nomeFiltro')){
+            $nomeFiltro = $request->session()->exists('nomeFiltro') ? $request->session()->get('nomeFiltro') : $request->all('filtro')['filtro'];
+            if($request->all('filtro')['filtro']){
+                $request->session()->put('nomeFiltro', $nomeFiltro);
+            }
+            $publicacoes = $publicacoes->where('nome', 'like', '%'. $nomeFiltro. '%');
         }
-        $publicacoes = $publicacoes->orderBy('nome')->paginate(50);
+        $publicacoes = $publicacoes->paginate(10);
+
+        $publicacoes->filtros = $request->all('filtro');
+        $publicacoes->nomeFiltro = $nomeFiltro;
+
+        // Dinamismo na paginação
+        if($publicacoes->currentPage() == 1 || $publicacoes->currentPage() == 2){
+            $publicacoes->d1 = $publicacoes->currentPage() - 1;
+            $publicacoes->d2 = 4 - $publicacoes->d1;
+        }elseif($publicacoes->currentPage() == $publicacoes->lastPage() || $publicacoes->currentPage() == $publicacoes->lastPage() -1){
+            $publicacoes->d2 = $publicacoes->lastPage() - $publicacoes->currentPage();
+            $publicacoes->d1 = 4 - $publicacoes->d2 ; 
+        }else{
+            $publicacoes->d1 = $publicacoes->d2 = 2;
+        }
         return view('publicacao.index',['publicacoes' => $publicacoes, 'filtro' => $request->all('filtro')['filtro']]);
     }
 
