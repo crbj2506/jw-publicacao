@@ -76,8 +76,18 @@ class EstoqueController extends Controller
         $estoque = $this->estoque->find($id);
         $locais = Local::orderBy('sigla')->get();
         $publicacoes = Publicacao::orderBy('nome')->get();
-        $estoque->estoqueAnterior = $this->estoque->where('id', '<', $id)->max('id');
-        $estoque->estoquePosterior = $this->estoque->where('id', '>', $id)->min('id');
+
+        $estoques = $this->estoque->select('*')
+            ->orderBy(Local::select('sigla')
+                ->whereColumn('locais.id', 'estoques.local_id')
+        )->get();
+
+        $indiceEstoqueAnterior = array_search($estoque, $estoques->all()) - 1;
+        $indiceEstoquePosterior = array_search($estoque, $estoques->all()) + 1;
+        $estoqueAnterior = $estoques->get($indiceEstoqueAnterior);
+        $estoquePosterior = $estoques->get($indiceEstoquePosterior);
+        $estoque->estoqueAnterior = $estoqueAnterior ? $estoqueAnterior->id : null;
+        $estoque->estoquePosterior = $estoquePosterior ? $estoquePosterior->id : null;
         return view('estoque.show', ['estoque' => $estoque, 'locais' => $locais, 'publicacoes' => $publicacoes]);
     }
 
