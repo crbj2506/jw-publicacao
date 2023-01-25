@@ -1,9 +1,9 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use App\Models\Publicacao;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Storage;
 
 class PublicacaoController extends Controller
@@ -36,7 +36,11 @@ class PublicacaoController extends Controller
             }
             $publicacoes = $publicacoes->where('nome', 'like', '%'. $nomeFiltro. '%');
         }
-        $publicacoes = $publicacoes->paginate(10);
+        if(App::environment() == 'local'){
+            $publicacoes = $publicacoes->paginate(10);
+        }else{
+            $publicacoes = $publicacoes->paginate(50);
+        }
 
         $publicacoes->filtros = $request->all('filtro');
         $publicacoes->nomeFiltro = $nomeFiltro;

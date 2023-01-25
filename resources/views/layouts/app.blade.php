@@ -28,39 +28,56 @@
                 </button>
 
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <!-- Left Side Of Navbar -->
-                    <ul class="navbar-nav me-auto">
+                    <div class="container-fluid  d-flex flex-wrap-reverse justify-content-end">
+                        <div class="">
+                            <ul class="navbar-nav me-auto">
+                                @guest
+                                    @if (Route::has('login'))
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="{{ route('login') }}">{{ __('Login') }}</a>
+                                        </li>
+                                    @endif
 
-                    </ul>
+                                    @if (Route::has('register'))
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="{{ route('register') }}">{{ __('Register') }}</a>
+                                        </li>
+                                    @endif
+                                @endguest
+                            </ul>
+                        </div>
+                        <div class="">
+                            <ul class="navbar-nav me-auto">
+                                @auth
+                                    @if(auth()->user()->permissoes->contains('permissao', '=', 'Servo') || auth()->user()->permissoes->contains('permissao', '=', 'Administrador'))
+                                        <li class="nav-item dropdown">
+                                            <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                                            {{ __('Inventários') }}
+                                            </a>
 
-                    <!-- Right Side Of Navbar -->
-                    <ul class="navbar-nav ms-auto">
-                        <!-- Authentication Links -->
-                        @guest
-                            @if (Route::has('login'))
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('login') }}">{{ __('Login') }}</a>
-                                </li>
-                            @endif
+                                            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                                <a class="dropdown-item" href="{{ route('inventario.index') }}">
+                                                    {{ __('Listar') }}
+                                                </a>
+                                            </div>
+                                        </li>
+                                    @endif
+                                @endauth
+                            </ul>
+                        </div>
+                        <div class="">
+                            <ul class="navbar-nav me-auto">
+                                @auth
+                                    @if(auth()->user()->permissoes->contains('permissao', '=', 'Servo') || auth()->user()->permissoes->contains('permissao', '=', 'Administrador'))
 
-                            @if (Route::has('register'))
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('register') }}">{{ __('Register') }}</a>
-                                </li>
-                            @endif
-                        @else
-                            @if(auth()->user()->permissoes->contains('permissao', '=', 'Servo') || auth()->user()->permissoes->contains('permissao', '=', 'Administrador'))
-                                <li class="nav-item dropdown">
-                                    <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                                    {{ __('Inventários') }}
-                                    </a>
-
-                                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                        <a class="dropdown-item" href="{{ route('inventario.index') }}">
-                                            {{ __('Listar') }}
-                                        </a>
-                                    </div>
-                                </li>
+                                    @endif
+                                @endauth
+                            </ul>
+                        </div>
+                        <div class="">
+                            <ul class="navbar-nav me-auto">
+                                @auth
+                                    @if(auth()->user()->permissoes->contains('permissao', '=', 'Servo') || auth()->user()->permissoes->contains('permissao', '=', 'Administrador'))
                                 <li class="nav-item dropdown">
                                     <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                                     {{ __('Estoques') }}
@@ -75,6 +92,14 @@
                                         </a>
                                     </div>
                                 </li>
+                                    @endif
+                                @endauth
+                            </ul>
+                        </div>
+                        <div class="">
+                            <ul class="navbar-nav me-auto">
+                                @auth
+                                    @if(auth()->user()->permissoes->contains('permissao', '=', 'Servo') || auth()->user()->permissoes->contains('permissao', '=', 'Administrador'))
                                 <li class="nav-item dropdown">
                                     <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                                     {{ __('Publicações') }}
@@ -89,6 +114,23 @@
                                         </a>
                                     </div>
                                 </li>
+                                    @endif
+                                @endauth
+                            </ul>
+                        </div>
+                        <div class="">
+                            <ul class="navbar-nav me-auto">
+                                @auth
+                                    @if(auth()->user()->permissoes->contains('permissao', '=', 'Servo') || auth()->user()->permissoes->contains('permissao', '=', 'Administrador'))
+
+                                    @endif
+                                @endauth
+                            </ul>
+                        </div>
+                        <div class="">
+                            <ul class="navbar-nav me-auto">
+                                @auth
+                                    @if(auth()->user()->permissoes->contains('permissao', '=', 'Servo') || auth()->user()->permissoes->contains('permissao', '=', 'Administrador'))
                                 <li class="nav-item dropdown">
                                     <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                                     {{ __('Conteúdo') }}
@@ -103,6 +145,14 @@
                                         </a>
                                     </div>
                                 </li>
+                                    @endif
+                                @endauth
+                            </ul>
+                        </div>
+                        <div class="">
+                            <ul class="navbar-nav me-auto">
+                                @auth
+                                    @if(auth()->user()->permissoes->contains('permissao', '=', 'Servo') || auth()->user()->permissoes->contains('permissao', '=', 'Administrador'))
                                 <li class="nav-item dropdown">
                                     <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                                     {{ __('Volumes') }}
@@ -117,6 +167,14 @@
                                         </a>
                                     </div>
                                 </li>
+                                    @endif
+                                @endauth
+                            </ul>
+                        </div>
+                        <div class="">
+                            <ul class="navbar-nav me-auto">
+                                @auth
+                                    @if(auth()->user()->permissoes->contains('permissao', '=', 'Servo') || auth()->user()->permissoes->contains('permissao', '=', 'Administrador'))
                                 <li class="nav-item dropdown">
                                     <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                                     {{ __('Envios') }}
@@ -131,6 +189,14 @@
                                         </a>
                                     </div>
                                 </li>
+                                    @endif
+                                @endauth
+                            </ul>
+                        </div>
+                        <div class="">
+                            <ul class="navbar-nav me-auto">
+                                @auth
+                                    @if(auth()->user()->permissoes->contains('permissao', '=', 'Servo') || auth()->user()->permissoes->contains('permissao', '=', 'Administrador'))
                                 <li class="nav-item dropdown">
                                     <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                                     {{ __('Locais') }}
@@ -145,6 +211,14 @@
                                         </a>
                                     </div>
                                 </li>
+                                    @endif
+                                @endauth
+                            </ul>
+                        </div>
+                        <div class="">
+                            <ul class="navbar-nav me-auto">
+                                @auth
+                                    @if(auth()->user()->permissoes->contains('permissao', '=', 'Servo') || auth()->user()->permissoes->contains('permissao', '=', 'Administrador'))
                                 <li class="nav-item dropdown">
                                     <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                                     {{ __('Congregações') }}
@@ -159,8 +233,14 @@
                                         </a>
                                     </div>
                                 </li>
-                            @endif
-                            @if(auth()->user()->permissoes->contains('permissao', '=', 'Administrador'))
+                                    @endif
+                                @endauth
+                            </ul>
+                        </div>
+                        <div class="">
+                            <ul class="navbar-nav me-auto">
+                                @auth
+                                    @if(auth()->user()->permissoes->contains('permissao', '=', 'Administrador'))
                                 <li class="nav-item dropdown">
                                     <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                                     {{ __('Permissões') }}
@@ -175,6 +255,14 @@
                                         </a>
                                     </div>
                                 </li>
+                                    @endif
+                                @endauth
+                            </ul>
+                        </div>
+                        <div class="">
+                            <ul class="navbar-nav me-auto">
+                                @auth
+                                    @if(auth()->user()->permissoes->contains('permissao', '=', 'Administrador'))
                                 <li class="nav-item dropdown">
                                     <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                                     {{ __('Usuários') }}
@@ -189,7 +277,13 @@
                                         </a>
                                     </div>
                                 </li>
-                            @endif
+                                    @endif
+                                @endauth
+                            </ul>
+                        </div>
+                        <div class="">
+                            <ul class="navbar-nav me-auto">
+                                @auth
                             <li class="nav-item dropdown">
                                 <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                                     {{ Auth::user()->name }}
@@ -207,8 +301,10 @@
                                     </form>
                                 </div>
                             </li>
-                        @endguest
-                    </ul>
+                                @endauth
+                            </ul>
+                        </div>
+                    </div>
                 </div>
             </div>
         </nav>

@@ -10,6 +10,7 @@ use App\Models\Inventario;
 use App\Models\Publicacao;
 use DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 use Illuminate\Validation\Rule;
 
 class InventarioController extends Controller
@@ -78,7 +79,11 @@ class InventarioController extends Controller
             }
             $inventarios = $inventarios->where('mes', $mesFiltro);
         }
-        $inventarios = $inventarios->paginate(50);
+        if(App::environment() == 'local'){
+            $inventarios = $inventarios->paginate(10);
+        }else{
+            $inventarios = $inventarios->paginate(50);
+        }
         $inventarios->filtros = $request->all('congregacao_id', 'ano', 'mes');
         $inventarios->congregacoesFiltro = Congregacao::select('id','nome')->orderBy('nome')->distinct()->get();
         $inventarios->anosFiltro = Inventario::select('ano')->orderBy('ano')->distinct()->get();
