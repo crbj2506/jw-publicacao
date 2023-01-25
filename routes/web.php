@@ -104,12 +104,12 @@ Route::middleware('verified', 'permissao:,Servo,Administrador')
 
 // Rota para GET do Filtro de Inventários
 Route::middleware('verified', 'permissao:,Servo,Administrador')
-    ->name('inventario.inventariar')
-    ->get('inventario/inventariar', [App\Http\Controllers\InventarioController::class, 'inventariar']);
+    ->name('inventario.inventariar.get')
+    ->get('inventariar', [App\Http\Controllers\InventarioController::class, 'inventariar']);
 
 Route::middleware('verified', 'permissao:,Servo,Administrador')
-    ->name('inventario.inventariarPost')
-    ->post('inventario/inventariar', [App\Http\Controllers\InventarioController::class, 'inventariar']);
+    ->name('inventario.inventariar.post')
+    ->post('inventariar', [App\Http\Controllers\InventarioController::class, 'inventariar']);
 
 Route::middleware('verified', 'permissao:,Servo,Administrador')
     ->name('inventario.mostra')

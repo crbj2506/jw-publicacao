@@ -226,6 +226,7 @@ class InventarioController extends Controller
             foreach ($enviosNaoInventariados as $key => $nota) {
                 Envio::where('nota',$nota)->update(['inventariado' => 1]);
             }
+            return redirect()->route('inventario.index');
             return redirect()->route('inventario.mostra', ['ano' => $ano, 'mes' => $mes, 'congregacao_id' => $congregacao_id]);
         }
     }

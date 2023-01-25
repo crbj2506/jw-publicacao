@@ -8,7 +8,7 @@
                 <div class="card-header fs-5">{{ __('Fazer o Inventário') }}</div>
 
                 <div class="card-body">
-                    <form method="POST" action="{{ route('inventario.inventariar') }}" enctype="multipart/form-data">
+                    <form method="POST" action="{{ route('inventario.inventariar.post') }}" enctype="multipart/form-data">
                         @csrf
 
                         <div class="input-group mb-3">
