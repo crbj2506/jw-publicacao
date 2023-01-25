@@ -49,6 +49,11 @@
                         </div>
                         
                         <div class="input-group mb-3">
+                            <span class="input-group-text">{{ __('Observação') }}</span>
+                            <input id="observacao" type="text" class="form-control text-end" value="{{ $estoque->publicacao->observacao }}" disabled>
+                        </div>
+
+                        <div class="input-group mb-3">
                             <span class="input-group-text">{{ __('Quantidade') }}</span>
                             <input id="quantidade" type="number" class="form-control @error('quantidade') is-invalid @enderror text-end" name="quantidade" value="{{ $estoque->quantidade ?? old('quantidade') }}" disabled autocomplete="quantidade" >
                             @error('quantidade')
@@ -60,10 +65,20 @@
 
                         <div class="row mb-0">
                             <div class="col-md-8">
-                                <a href="{{ route('estoque.edit',['estoque' => $estoque->id])}}" class="btn btn-sm btn-outline-primary">Editar</a>
                             </div>
                         </div>
                     </form>
+                </div>           
+                <div class="card-footer container">
+                    <div class="row">
+                        <div class="col">
+                            <a href="{{ route('estoque.edit',['estoque' => $estoque->id])}}" class="btn btn-sm btn-outline-primary">Editar</a>
+                        </div>
+                        <div class="col text-end">
+                            <a href="{{ $estoque->estoqueAnterior ? route('estoque.show',['estoque' => $estoque->estoqueAnterior]) : '' }}" class="btn btn-sm btn-outline-secondary @if(!$estoque->estoqueAnterior) disabled @endif me-2">Anterior</a>
+                            <a href="{{ $estoque->estoquePosterior ? route('estoque.show',['estoque' => $estoque->estoquePosterior]) : '' }}" class="btn btn-sm btn-outline-secondary @if(!$estoque->estoquePosterior) disabled @endif me-2">Posterior</a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

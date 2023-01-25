@@ -38,6 +38,12 @@
                         @enderror
                         </div>
                         
+                        <div class="input-group mb-0">
+                            <span class="input-group-text">{{ __('Observação') }}</span>
+                            <input id="observacao" name="observacao" type="text" class="form-control text-end" value="{{ $estoque->publicacao->observacao }}" disabled>
+                        </div>
+                        <div class="mb-3 text-end">{{ __('dividir pela escala cm e multiplicar pela escala unidades') }}</div>
+                        
                         <div class="input-group mb-3">
                             <span class="input-group-text">{{ __('Quantidade') }}</span>
                             <input id="quantidade" type="number" class="form-control @error('quantidade') is-invalid @enderror text-end" name="quantidade" value="{{ $estoque->quantidade ?? old('quantidade') }}" required autocomplete="quantidade" >
@@ -49,11 +55,19 @@
                         </div>
                     </form>
                 </div>
-                <div class="card-footer">
-                    <button type="submit" class="btn btn-sm btn-outline-success" form="formUpdate">
-                        {{ __('Salvar') }}
-                    </button>
-                    <a href="{{ route('estoque.show', ['estoque' => $estoque->id]) }}" class="btn btn-sm btn-outline-warning mx-3">Cancelar</a>
+                <div class="card-footer container">
+                    <div class="row">
+                        <div class="col">
+                            <button type="submit" class="btn btn-sm btn-outline-success" form="formUpdate">
+                                {{ __('Salvar') }}
+                            </button>
+                            <a href="{{ route('estoque.show', ['estoque' => $estoque->id]) }}" class="btn btn-sm btn-outline-warning mx-3">Cancelar</a>
+                        </div>
+                        <div class="col text-end">
+                            <a href="{{ $estoque->estoqueAnterior ? route('estoque.edit',['estoque' => $estoque->estoqueAnterior]) : '' }}" class="btn btn-sm btn-outline-secondary @if(!$estoque->estoqueAnterior) disabled @endif me-2">Anterior</a>
+                            <a href="{{ $estoque->estoquePosterior ? route('estoque.edit',['estoque' => $estoque->estoquePosterior]) : '' }}" class="btn btn-sm btn-outline-secondary @if(!$estoque->estoquePosterior) disabled @endif me-2">Posterior</a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
