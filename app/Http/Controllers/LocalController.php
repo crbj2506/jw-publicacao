@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Congregacao;
 use App\Models\Local;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 
 class LocalController extends Controller
 {
@@ -23,7 +24,13 @@ class LocalController extends Controller
     public function index()
     {
         //
-        $locais = $this->local->paginate(10);
+        $locais = $this->local;
+       
+        if(App::environment() == 'local'){
+            $locais = $locais->paginate(10);
+        }else{
+            $locais = $locais->paginate(50);
+        }
         return view('local.index',['locais' => $locais]);
     }
 

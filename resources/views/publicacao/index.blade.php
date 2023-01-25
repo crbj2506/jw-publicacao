@@ -77,31 +77,7 @@
                 </tbody>
             </table>
         </div>
-        <div class="card-footer">
-            {{--$publicacoes->links() BUGADO!!!!!--}}
-            <ul class="pagination pagination-sm justify-content-center">
-                <li class="page-item {{ $publicacoes->currentPage() == 1 ? 'disabled' : ''}}">
-                    <a class="page-link" href="{{ $publicacoes->url(1) }}">Página 1</a>
-                </li>
-                <li class="page-item {{ $publicacoes->currentPage() == 1 ? 'disabled' : '' }}">
-                    <a class="page-link" href="{{ $publicacoes->previousPageUrl() }}" tabindex="-1" aria-disabled="true">Anterior</a>
-                </li>
-
-                @for ($i = 1;  $i <= $publicacoes->lastPage() ; $i++)
-                    <li class="page-item {{ $publicacoes->currentPage() == $i ? 'active' : '' }}
-                                        {{ ($i < $publicacoes->currentPage() - $publicacoes->d1) || ($i > $publicacoes->currentPage() + $publicacoes->d2) ? 'd-none' : '' }}">
-                        <a class="page-link" href="{{ $publicacoes->url($i) }}">{{ $i }}</a>
-                    </li>
-                @endfor
-                <li class="page-item">
-                    <a class="page-link {{ $publicacoes->currentPage() == $publicacoes->lastPage() ? 'disabled' : '' }}" href="{{ $publicacoes->nextPageUrl() }}">Próxima</a>
-                </li>
-                <li class="page-item">
-                    <a class="page-link {{ $publicacoes->currentPage() == $publicacoes->lastPage() ? 'disabled' : '' }}" href="{{ $publicacoes->url($publicacoes->lastPage()) }}">Página {{$publicacoes->lastPage()}}</a>
-                </li>
-            </ul>
-            </ul>
-        </div>
+        <x-paginacao :p="$publicacoes"></x-paginacao>
     </div>
 </div>
 @endsection

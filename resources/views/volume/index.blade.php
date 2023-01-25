@@ -33,27 +33,7 @@
                 </tbody>
             </table>
         </div>
-        <div class="card-footer">
-            {{--$volumes->links() BUGADO!!!!!--}}
-            <ul class="pagination justify-content-center">
-                <li class="page-item">
-                    <a class="page-link" href="{{ $volumes->url(1) }}"><<</a>
-                </li>
-                <li class="page-item">
-                    <a class="page-link" href="{{ $volumes->previousPageUrl() }}" tabindex="-1" aria-disabled="true"><</a>
-                </li>@for ( $i= 1 ; $i <= $volumes->lastPage() ; $i++)
-                    <li class="page-item {{ $volumes->currentPage() == $i ? 'active' : '' }}">
-                        <a class="page-link" href="{{ $volumes->url($i) }}">{{ $i }}</a>
-                    </li>
-                @endfor
-                <li class="page-item">
-                    <a class="page-link" href="{{ $volumes->nextPageUrl() }}">></a>
-                </li>
-                <li class="page-item">
-                    <a class="page-link" href="{{ $volumes->url($volumes->lastPage()) }}">>></a>
-                </li>
-            </ul>
-        </div>
+        <x-paginacao :p="$volumes"></x-paginacao>
     </div>
 </div>
 @endsection

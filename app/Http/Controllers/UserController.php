@@ -7,6 +7,7 @@ use App\Models\PermissaoUser;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\RegistersUsers;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
@@ -21,7 +22,10 @@ class UserController extends Controller
     | provide this functionality without requiring any additional code.
     |
     */
+
     use RegistersUsers;
+
+    public $user;
 
     public function __construct(User $user){
         $this->user = $user;
@@ -35,7 +39,13 @@ class UserController extends Controller
     public function index()
     {
         //
-        $users = $this->user->paginate(10);
+        $users = $this->user;
+       
+        if(App::environment() == 'local'){
+            $users = $users->paginate(10);
+        }else{
+            $users = $users->paginate(50);
+        }
         return view('user.index',['users' => $users]);
     }
 

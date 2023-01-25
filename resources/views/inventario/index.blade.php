@@ -69,30 +69,7 @@
                 </tbody>
             </table>
         </div>
-        <div class="card-footer">
-            {{--$inventarios->links() BUGADO!!!!!--}}
-            <ul class="pagination pagination-sm justify-content-center">
-                <li class="page-item {{ $inventarios->currentPage() == 1 ? 'disabled' : ''}}">
-                    <a class="page-link" href="{{ $inventarios->url(1) }}">Página 1</a>
-                </li>
-                <li class="page-item {{ $inventarios->currentPage() == 1 ? 'disabled' : '' }}">
-                    <a class="page-link" href="{{ $inventarios->previousPageUrl() }}" tabindex="-1" aria-disabled="true">Anterior</a>
-                </li>
-
-                @for ($i = 1;  $i <= $inventarios->lastPage() ; $i++)
-                    <li class="page-item {{ $inventarios->currentPage() == $i ? 'active' : '' }}
-                                        {{ ($i < $inventarios->currentPage() - $inventarios->d1) || ($i > $inventarios->currentPage() + $inventarios->d2) ? 'd-none' : '' }}">
-                        <a class="page-link" href="{{ $inventarios->url($i) }}">{{ $i }}</a>
-                    </li>
-                @endfor
-                <li class="page-item">
-                    <a class="page-link {{ $inventarios->currentPage() == $inventarios->lastPage() ? 'disabled' : '' }}" href="{{ $inventarios->nextPageUrl() }}">Próxima</a>
-                </li>
-                <li class="page-item">
-                    <a class="page-link {{ $inventarios->currentPage() == $inventarios->lastPage() ? 'disabled' : '' }}" href="{{ $inventarios->url($inventarios->lastPage()) }}">Página {{$inventarios->lastPage()}}</a>
-                </li>
-            </ul>
-        </div>
+        <x-paginacao :p="$inventarios"></x-paginacao>
     </div>
 </div>
 @endsection

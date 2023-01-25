@@ -45,17 +45,7 @@ class PublicacaoController extends Controller
         $publicacoes->filtros = $request->all('filtro');
         $publicacoes->nomeFiltro = $nomeFiltro;
 
-        // Dinamismo na paginação
-        if($publicacoes->currentPage() == 1 || $publicacoes->currentPage() == 2){
-            $publicacoes->d1 = $publicacoes->currentPage() - 1;
-            $publicacoes->d2 = 4 - $publicacoes->d1;
-        }elseif($publicacoes->currentPage() == $publicacoes->lastPage() || $publicacoes->currentPage() == $publicacoes->lastPage() -1){
-            $publicacoes->d2 = $publicacoes->lastPage() - $publicacoes->currentPage();
-            $publicacoes->d1 = 4 - $publicacoes->d2 ; 
-        }else{
-            $publicacoes->d1 = $publicacoes->d2 = 2;
-        }
-        return view('publicacao.index',['publicacoes' => $publicacoes, 'filtro' => $request->all('filtro')['filtro']]);
+        return view('publicacao.index',['publicacoes' => $publicacoes]);
     }
 
     /**

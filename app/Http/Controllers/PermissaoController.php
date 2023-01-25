@@ -4,9 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Permissao;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 
 class PermissaoController extends Controller
 {
+
+    public $permissao;
     public function __construct(Permissao $permissao){
         $this->permissao = $permissao;
     }
@@ -19,7 +22,13 @@ class PermissaoController extends Controller
     public function index()
     {
         //
-        $permissoes = $this->permissao->paginate(10);
+        $permissoes = $this->permissao;
+       
+        if(App::environment() == 'local'){
+            $permissoes = $permissoes->paginate(10);
+        }else{
+            $permissoes = $permissoes->paginate(50);
+        }
         return view('permissao.index',['permissoes' => $permissoes]);
     }
 

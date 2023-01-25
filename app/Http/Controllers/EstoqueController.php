@@ -6,6 +6,7 @@ use App\Models\Estoque;
 use App\Models\Publicacao;
 use App\Models\Local;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 
 class EstoqueController extends Controller
 {
@@ -24,7 +25,13 @@ class EstoqueController extends Controller
         $estoques = $this->estoque->select('*')
             ->orderBy(Local::select('sigla')
                 ->whereColumn('locais.id', 'estoques.local_id')
-            )->paginate(50);
+        );
+       
+        if(App::environment() == 'local'){
+            $estoques = $estoques->paginate(10);
+        }else{
+            $estoques = $estoques->paginate(50);
+        }
         return view('estoque.index',['estoques' => $estoques]);
     }
 

@@ -4,9 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Congregacao;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 
 class CongregacaoController extends Controller
 {
+
+    public $congregacao;
     public function __construct(Congregacao $congregacao){
         $this->congregacao = $congregacao;
     }
@@ -20,7 +23,13 @@ class CongregacaoController extends Controller
     public function index()
     {
         //
-        $congregacoes = $this->congregacao->paginate(10);
+        $congregacoes = $this->congregacao;
+       
+        if(App::environment() == 'local'){
+            $congregacoes = $congregacoes->paginate(10);
+        }else{
+            $congregacoes = $congregacoes->paginate(50);
+        }
         return view('congregacao.index',['congregacoes' => $congregacoes]);
     }
 

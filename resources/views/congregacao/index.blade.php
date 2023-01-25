@@ -27,27 +27,7 @@
                 </tbody>
             </table>
         </div>
-        <div class="card-footer">
-            {{--$congregacoes->links() BUGADO!!!!!--}}
-            <ul class="pagination justify-content-center">
-                <li class="page-item">
-                    <a class="page-link" href="{{ $congregacoes->url(1) }}"><<</a>
-                </li>
-                <li class="page-item">
-                    <a class="page-link" href="{{ $congregacoes->previousPageUrl() }}" tabindex="-1" aria-disabled="true"><</a>
-                </li>@for ( $i= 1 ; $i <= $congregacoes->lastPage() ; $i++)
-                    <li class="page-item {{ $congregacoes->currentPage() == $i ? 'active' : '' }}">
-                        <a class="page-link" href="{{ $congregacoes->url($i) }}">{{ $i }}</a>
-                    </li>
-                @endfor
-                <li class="page-item">
-                    <a class="page-link" href="{{ $congregacoes->nextPageUrl() }}">></a>
-                </li>
-                <li class="page-item">
-                    <a class="page-link" href="{{ $congregacoes->url($congregacoes->lastPage()) }}">>></a>
-                </li>
-            </ul>
-        </div>
+        <x-paginacao :p="$congregacoes"></x-paginacao>
     </div>
 </div>
 @endsection

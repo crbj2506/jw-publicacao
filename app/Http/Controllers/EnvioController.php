@@ -5,9 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\Congregacao;
 use App\Models\Envio;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 
 class EnvioController extends Controller
 {
+    public $envio;
+
     public function __construct(Envio $envio){
         $this->envio = $envio;
     }
@@ -21,7 +24,13 @@ class EnvioController extends Controller
     public function index()
     {
         //
-        $envios = $this->envio->paginate(10);
+        $envios = $this->envio;
+       
+        if(App::environment() == 'local'){
+            $envios = $envios->paginate(10);
+        }else{
+            $envios = $envios->paginate(50);
+        }
         return view('envio.index',['envios' => $envios]);
     }
 

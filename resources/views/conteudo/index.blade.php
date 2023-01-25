@@ -40,27 +40,7 @@
                 </tbody>
             </table>
         </div>
-        <div class="card-footer">
-            {{--$conteudos->links() BUGADO!!!!!--}}
-            <ul class="pagination justify-content-center">
-                <li class="page-item">
-                    <a class="page-link" href="{{ $conteudos->url(1) }}"><<</a>
-                </li>
-                <li class="page-item">
-                    <a class="page-link" href="{{ $conteudos->previousPageUrl() }}" tabindex="-1" aria-disabled="true"><</a>
-                </li>@for ( $i= 1 ; $i <= $conteudos->lastPage() ; $i++)
-                    <li class="page-item {{ $conteudos->currentPage() == $i ? 'active' : '' }}">
-                        <a class="page-link" href="{{ $conteudos->url($i) }}">{{ $i }}</a>
-                    </li>
-                @endfor
-                <li class="page-item">
-                    <a class="page-link" href="{{ $conteudos->nextPageUrl() }}">></a>
-                </li>
-                <li class="page-item">
-                    <a class="page-link" href="{{ $conteudos->url($conteudos->lastPage()) }}">>></a>
-                </li>
-            </ul>
-        </div>
+        <x-paginacao :p="$conteudos"></x-paginacao>
     </div>
 </div>
 @endsection

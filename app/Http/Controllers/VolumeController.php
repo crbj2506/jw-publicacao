@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Envio;
 use App\Models\Volume;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 
 class VolumeController extends Controller
 {
+    public $volume;
     public function __construct(Volume $volume){
         $this->volume = $volume;
     }
@@ -19,7 +21,12 @@ class VolumeController extends Controller
     public function index()
     {
         //
-        $volumes = $this->volume->paginate(10);
+        $volumes = $this->volume;
+        if(App::environment() == 'local'){
+            $volumes = $volumes->paginate(10);
+        }else{
+            $volumes = $volumes->paginate(50);
+        }
         return view('volume.index',['volumes' => $volumes]);
     }
 

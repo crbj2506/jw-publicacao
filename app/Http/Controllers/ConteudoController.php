@@ -6,6 +6,7 @@ use App\Models\Conteudo;
 use App\Models\Publicacao;
 use App\Models\Volume;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 
 class ConteudoController extends Controller
 {
@@ -21,7 +22,13 @@ class ConteudoController extends Controller
     public function index()
     {
         //
-        $conteudos = $this->conteudo->orderByDesc('id')->paginate(50);
+        $conteudos = $this->conteudo->orderByDesc('id');
+       
+        if(App::environment() == 'local'){
+            $conteudos = $conteudos->paginate(10);
+        }else{
+            $conteudos = $conteudos->paginate(50);
+        }
         return view('conteudo.index',['conteudos' => $conteudos]);
     }
 
