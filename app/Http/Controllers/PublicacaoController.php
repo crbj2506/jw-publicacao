@@ -75,6 +75,8 @@ class PublicacaoController extends Controller
             $publicacao = $this->publicacao->create([
                 'nome' => $request->nome,
                 'observacao' => $request->observacao,
+                'proporcao_cm' => $request->proporcao_cm,
+                'proporcao_unidade' => $request->proporcao_unidade,
                 'imagem' => $imagem_urn,
                 'codigo' => $request->codigo,
                 'item' => $request->item
@@ -83,6 +85,8 @@ class PublicacaoController extends Controller
             $publicacao = $this->publicacao->create([
                 'nome' => $request->nome,
                 'observacao' => $request->observacao,
+                'proporcao_cm' => $request->proporcao_cm,
+                'proporcao_unidade' => $request->proporcao_unidade,
                 'codigo' => $request->codigo,
                 'item' => $request->item
             ]);

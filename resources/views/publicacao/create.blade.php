@@ -42,6 +42,35 @@
 
 
                         <div class="row mb-3">
+                            <label for="proporcao" class="col-md-4 col-form-label text-md-end">{{ __('Proporção Centímetros') }}</label>
+
+                            <div class="col-md-6">
+                                <input id="proporcao_cm" type="number" step="0.5" class="form-control @error('proporcao_cm') is-invalid @enderror" name="proporcao_cm" value="{{ old('proporcao_cm') }}" autocomplete="proporcao_cm" autofocus>
+
+                                @error('proporcao_cm')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label for="codigo" class="col-md-4 col-form-label text-md-end">{{ __('Proporção Unidades') }}</label>
+                            <div class="col-md-6">
+
+                                <input id="proporcao_unidade" type="number" class="form-control @error('proporcao_unidade') is-invalid @enderror" name="proporcao_unidade" value="{{ old('proporcao_unidade') }}" autocomplete="proporcao_unidade" autofocus>
+
+                                @error('proporcao_unidade')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+                        </div>
+
+
+                        <div class="row mb-3">
                             <label for="codigo" class="col-md-4 col-form-label text-md-end">{{ __('Código') }}</label>
 
                             <div class="col-md-6">

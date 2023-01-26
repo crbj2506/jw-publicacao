@@ -38,11 +38,15 @@
                         @enderror
                         </div>
                         
-                        <div class="input-group mb-0">
+                        <div class="input-group mb-3">
                             <span class="input-group-text">{{ __('Observação') }}</span>
                             <input id="observacao" name="observacao" type="text" class="form-control text-end" value="{{ $estoque->publicacao->observacao }}" disabled>
                         </div>
-                        <div class="mb-3 text-end">{{ __('dividir pela escala cm e multiplicar pela escala unidades') }}</div>
+                        
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">{{ __('Proporção') }}</span>
+                            <input id="proporcao" type="text" class="form-control text-end" value="{{$estoque->publicacao->proporcao_cm ? $estoque->publicacao->proporcao_cm . ' cm' : ''}}{{$estoque->publicacao->proporcao_cm && $estoque->publicacao->proporcao_unidade ? ' = ' : ''}}{{$estoque->publicacao->proporcao_unidade ? $estoque->publicacao->proporcao_unidade : ''}}" disabled>
+                        </div>
                         
                         <div class="input-group mb-3">
                             <span class="input-group-text">{{ __('Quantidade') }}</span>

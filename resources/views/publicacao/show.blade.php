@@ -40,6 +40,24 @@
 
 
                         <div class="row mb-3">
+                            <label for="proporcao_cm" class="col-md-4 col-form-label text-md-end">{{ __('Proporção em Centímetros') }}</label>
+
+                            <div class="col-md-6">
+                                <input id="proporcao_cm" type="text" class="form-control" name="proporcao_cm" value="{{ $publicacao->proporcao_cm }}" disabled>
+                            </div>
+                        </div>
+
+
+                        <div class="row mb-3">
+                            <label for="proporcao_unidade" class="col-md-4 col-form-label text-md-end">{{ __('Proporção em Unidades') }}</label>
+
+                            <div class="col-md-6">
+                                <input id="proporcao_unidade" type="text" class="form-control" name="proporcao_unidade" value="{{ $publicacao->proporcao_unidade }}" disabled>
+                            </div>
+                        </div>
+
+
+                        <div class="row mb-3">
                             <label for="codigo" class="col-md-4 col-form-label text-md-end">{{ __('Código') }}</label>
 
                             <div class="col-md-6">

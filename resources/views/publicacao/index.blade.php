@@ -29,6 +29,7 @@
                         <th class="text-center" scope="col">Código</th>
                         <th class="text-center" scope="col">Nome</th>
                         <th class="text-center" scope="col">Observação</th>
+                        <th class="text-center" scope="col">Proporção</th>
                         <th class="text-center" scope="col">Item</th>
                         <th class="text-center" scope="col">Imagem</th>
                         <th class="text-center" scope="col">Ver</th>
@@ -42,6 +43,11 @@
                     <td class="py-0 text-end" scope="row">{{$p['codigo']}}</td>
                     <td class="py-0" scope="row">{{$p['nome']}}</td>
                     <td class="py-0 text-center" scope="row">{{$p['observacao']}}</td>
+                    <td class="py-0 text-center" scope="row">
+                        {{$p->proporcao_cm ? $p->proporcao_cm . ' cm' : ''}}
+                        {{$p->proporcao_cm && $p->proporcao_unidade ? ' = ' : ''}}
+                        {{$p->proporcao_unidade ? $p->proporcao_unidade : ''}}
+                    </td>
                     <td class="py-0 text-center" scope="row">{{$p['item']}}</td>
                     <td class="py-0 text-center" scope="row"> 
                         @if ($p['imagem'])
