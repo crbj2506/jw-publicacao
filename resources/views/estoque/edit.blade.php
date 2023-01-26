@@ -62,10 +62,19 @@
                 <div class="card-footer container">
                     <div class="row">
                         <div class="col">
-                            <button type="submit" class="btn btn-sm btn-outline-success" form="formUpdate">
+                            <button type="submit" class="btn btn-sm btn-outline-success me-2" form="formUpdate">
                                 {{ __('Salvar') }}
                             </button>
-                            <a href="{{ route('estoque.show', ['estoque' => $estoque->id]) }}" class="btn btn-sm btn-outline-warning mx-3">Cancelar</a>
+                            <a href="{{ route('estoque.show', ['estoque' => $estoque->id]) }}" class="btn btn-sm btn-outline-warning me-2">Cancelar</a>
+                            @if($estoque->quantidade == 0)
+                                <button type="submit" class="me-2 btn btn-sm btn-outline-danger" form="formDelete">
+                                    {{ __('Excluir') }}
+                                </button>
+                                <form method="POST" action="{{ route('estoque.destroy', ['estoque' => $estoque]) }}" id="formDelete">
+                                    @csrf
+                                    @method('DELETE')
+                                </form>
+                            @endif
                         </div>
                         <div class="col text-end">
                             <a href="{{ $estoque->estoqueAnterior ? route('estoque.edit',['estoque' => $estoque->estoqueAnterior]) : '' }}" class="btn btn-sm btn-outline-secondary @if(!$estoque->estoqueAnterior) disabled @endif me-2">Anterior</a>

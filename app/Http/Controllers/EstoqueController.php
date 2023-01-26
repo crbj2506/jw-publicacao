@@ -141,8 +141,11 @@ class EstoqueController extends Controller
      * @param  \App\Models\Estoque  $estoque
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Estoque $estoque)
+    public function destroy($estoque)
     {
         //
+        $estoque = $this->estoque->find($estoque);
+        $estoque->delete();
+        return redirect()->route('estoque.index');
     }
 }

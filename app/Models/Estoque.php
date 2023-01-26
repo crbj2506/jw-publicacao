@@ -38,7 +38,7 @@ class Estoque extends Model
                 }),
 
             ],
-            'quantidade' => 'required|numeric|min:1|max:9999',
+            'quantidade' => 'required|numeric|min:0|max:9999',
         ];
     }
     public function feedback(){
