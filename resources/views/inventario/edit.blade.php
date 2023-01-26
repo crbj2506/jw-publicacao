@@ -14,7 +14,7 @@
 
                         <div class="input-group mb-3">
                             <span class="input-group-text" id="selectLabelCongregacao">Congregação</span>
-                            <select class="form-select @error('congregacao_id') is-invalid @enderror" id="selectCongregacao" name="congregacao_id" required>
+                            <select class="form-select @error('congregacao_id') is-invalid @enderror" id="selectCongregacao" name="congregacao_id" disabled required>
                                 <option  value="" selected>Selecione a Congregação...</option>
                                 @foreach ( $congregacoes as $key => $c)
                                     <option value="{{$c->id}}" {{(@old('congregacao_id') == $c->id) || ($inventario->congregacao_id == $c->id) ? 'selected': ''}}>{{ $c->nome }}</option>
@@ -27,7 +27,7 @@
                         
                         <div class="input-group mb-3">
                             <span class="input-group-text" id="selectLabelCongregacao">Publicação</span>
-                            <select class="form-select @error('publicacao_id') is-invalid @enderror" id="selectCongregacao" name="publicacao_id" required>
+                            <select class="form-select @error('publicacao_id') is-invalid @enderror" id="selectCongregacao" name="publicacao_id" disabled required>
                                 <option  value="" selected>Selecione a Publicação...</option>
                                 @foreach ( $publicacoes as $key => $p)
                                     <option value="{{$p->id}}" {{(@old('publicacao_id') == $p->id) || ($inventario->publicacao_id == $p->id) ? 'selected': ''}}>{{ $p->nome }}</option>
@@ -40,7 +40,7 @@
                         
                         <div class="input-group mb-3">
                             <span class="input-group-text">{{ __('Ano') }}</span>
-                            <input id="ano" type="text" class="form-control @error('ano') is-invalid @enderror text-end" name="ano" value="{{ $inventario->ano ?? old('ano') }}" required autocomplete="ano" >
+                            <input id="ano" type="text" class="form-control @error('ano') is-invalid @enderror text-end" name="ano" value="{{ $inventario->ano ?? old('ano') }}" disabled required autocomplete="ano" >
                             @error('ano')
                                 <span class="invalid-feedback" role="alert">
                                     <strong>{{ $message }}</strong>
@@ -50,7 +50,7 @@
                         
                         <div class="input-group mb-3">
                             <span class="input-group-text">{{ __('Mês') }}</span>
-                            <input id="mes" type="text" class="form-control @error('mes') is-invalid @enderror text-end" name="mes" value="{{ $inventario->mes ?? old('mes') }}" required autocomplete="mes" >
+                            <input id="mes" type="text" class="form-control @error('mes') is-invalid @enderror text-end" name="mes" value="{{ $inventario->mes ?? old('mes') }}" disabled required autocomplete="mes" >
                             @error('mes')
                                 <span class="invalid-feedback" role="alert">
                                     <strong>{{ $message }}</strong>

@@ -227,7 +227,6 @@ class InventarioController extends Controller
                 Envio::where('nota',$nota)->update(['inventariado' => 1]);
             }
             return redirect()->route('inventario.index');
-            return redirect()->route('inventario.mostra', ['ano' => $ano, 'mes' => $mes, 'congregacao_id' => $congregacao_id]);
         }
     }
 
@@ -290,7 +289,10 @@ class InventarioController extends Controller
     public function update(Request $request, $id)
     {
         //
-        $request->validate($this->inventario->rulesUpdate(),$this->inventario->feedback());
+        $ano = $request->all('ano')['ano'] ? $request->all('ano')['ano'] : null;
+        $mes = $request->all('mes')['mes'] ? $request->all('mes')['mes'] : null;
+        $congregacao_id = $request->all('congregacao_id')['congregacao_id'] ? $request->all('congregacao_id')['congregacao_id'] : null;
+        $request->validate($this->inventario->rulesUpdate($ano,$mes,$congregacao_id,$id),$this->inventario->feedback());
         $inventario = $this->inventario->find($id);
         $inventario->update($request->all());
         return redirect()->route('inventario.show', ['inventario' => $inventario->id]);

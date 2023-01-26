@@ -19,6 +19,79 @@ class Inventario extends Model
         'saida',
     ];
     public function rulesInventariar($ano,$mes,$congregacao_id,$id){
+        $this->defineAnoMesUltimoInventariado($congregacao_id);
+        return [
+            'ano' => [
+                'required',
+                'min:4',
+                'max:4',
+                Rule::unique('inventarios')->where(function ($query) use($ano,$mes,$congregacao_id) {
+                    return $query
+                        ->where('ano', $ano)
+                        ->where('mes', $mes)
+                        ->where('congregacao_id', $congregacao_id);
+                }),
+                Rule::in(["$this->anoAnteriorAInventariar","$this->anoAInventariar"]),
+
+            ],
+            'mes' => [
+                'required',
+                'min:2',
+                'max:2',
+                Rule::unique('inventarios')->where(function ($query) use($ano,$mes,$congregacao_id) {
+                    return $query
+                        ->where('ano', $ano)
+                        ->where('mes', $mes)
+                        ->where('congregacao_id', $congregacao_id);
+                }),
+                Rule::in(["$this->mesAnteriorAInventariar","$this->mesAInventariar"]),
+
+            ],
+            'congregacao_id' => [
+                'required',
+                'exists:congregacoes,id',
+                Rule::unique('inventarios')->where(function ($query) use($ano,$mes,$congregacao_id) {
+                    return $query
+                        ->where('ano', $ano)
+                        ->where('mes', $mes)
+                        ->where('congregacao_id', $congregacao_id);
+                }),
+
+            ],
+        ];
+    }
+
+    public function rulesUpdate(){
+        return [
+            'recebido' => 'required|numeric|min:0|max:9999',
+            'estoque' => 'required|numeric|min:0|max:9999',
+            'saida' => 'required|numeric|min:0|max:9999',
+        ];
+    }
+    public function feedback(){
+        if(($this->anoAnteriorAInventariar == $this->anoAInventariar) || empty($this->anoAnteriorAInventariar)){
+            $ano = $this->anoAInventariar;
+        }else{
+            $ano = $this->anoAnteriorAInventariar . ' ou ' . $this->anoAInventariar;
+        }
+        if($this->mesAnteriorAInventariar == $this->mesAInventariar || empty($this->mesAnteriorAInventariar)){
+            $mes = $this->mesAInventariar;
+        }else{
+            $mes = $this->mesAnteriorAInventariar . ' ou ' . $this->mesAInventariar;
+        }
+
+        return [
+            'required' => 'O campo :attribute é obrigatório',
+            'ano.in' => "O campo Ano deve ser $ano",
+            'mes.in' => "O campo Mês deve ser $mes",
+        ];
+    }
+
+    ######################################################
+    # Funções de Internas
+
+    public function defineAnoMesUltimoInventariado($congregacao_id){
+
         $anomesUltimoInventariado = $this->select('ano','mes')->where('congregacao_id', $congregacao_id)->orderBy('ano')->orderBy('mes')->get()->last();
         if($anomesUltimoInventariado){
             $anomesUltimoInventariado = $anomesUltimoInventariado->getAttributes();
@@ -27,7 +100,7 @@ class Inventario extends Model
             if($mesUltimoInventariado == '12'){
                 $this->anoAInventariar = (string) ((int) $anoUltimoInventariado +1);
                 $this->mesAInventariar = '01';
-            }elseif($mesUltimoInventariado == '10' || $mesUltimoInventariado == '11'){
+            }elseif($mesUltimoInventariado == '09' || $mesUltimoInventariado == '10' || $mesUltimoInventariado == '11'){
                 $this->anoAInventariar = $anoUltimoInventariado;
                 $this->mesAInventariar = (string) ((int) $mesUltimoInventariado +1);
             }else{
@@ -42,135 +115,18 @@ class Inventario extends Model
                 $this->mesAnteriorAInventariar = '12';
             }elseif($this->mesAInventariar == '11' || $this->mesAInventariar == '12'){
                 $this->anoAnteriorAInventariar = $this->anoAInventariar;
-                $this->mesAnteriorAInventariar = '0'.(string) ((int) $this->mesAInventariar -1);
+                $this->mesAnteriorAInventariar = (string) ((int) $this->mesAInventariar -1);
             }else{
                 $this->anoAnteriorAInventariar = $this->anoAInventariar;
-                $this->mesAnteriorAInventariar = (string) ((int) $this->mesAInventariar -1);
+                $this->mesAnteriorAInventariar = '0'.(string) ((int) $this->mesAInventariar -1);
             }
         }
-        
-        return [
-            'ano' => [
-                'required',
-                'min:4',
-                'max:4',
-                Rule::unique('inventarios')->where(function ($query) use($ano,$mes,$congregacao_id,$id) {
-                    return $query
-                        ->where('ano', $ano)
-                        ->where('mes', $mes)
-                        ->where('congregacao_id', $congregacao_id)
-                        ->where('id', '!=', $id);
-                }),
-                Rule::in(["$this->anoAnteriorAInventariar","$this->anoAInventariar"]),
 
-            ],
-            'mes' => [
-                'required',
-                'min:2',
-                'max:2',
-                Rule::unique('inventarios')->where(function ($query) use($ano,$mes,$congregacao_id,$id) {
-                    return $query
-                        ->where('ano', $ano)
-                        ->where('mes', $mes)
-                        ->where('congregacao_id', $congregacao_id)
-                        ->where('id', '!=', $id);
-                }),
-                Rule::in(["$this->mesAnteriorAInventariar","$this->mesAInventariar"]),
-
-            ],
-            'congregacao_id' => [
-                'required',
-                'exists:congregacoes,id',
-                Rule::unique('inventarios')->where(function ($query) use($ano,$mes,$congregacao_id,$id) {
-                    return $query
-                        ->where('ano', $ano)
-                        ->where('mes', $mes)
-                        ->where('congregacao_id', $congregacao_id)
-                        ->where('id', '!=', $id);
-                }),
-
-            ],
-        ];
     }
-    public function rules($ano,$mes,$congregacao_id,$id){
-        return [
-            'ano' => [
-                'required',
-                'min:4',
-                'max:4',
-                Rule::unique('inventarios')->where(function ($query) use($ano,$mes,$congregacao_id,$id) {
-                    return $query
-                        ->where('ano', $ano)
-                        ->where('mes', $mes)
-                        ->where('congregacao_id', $congregacao_id)
-                        ->where('id', '!=', $id);
-                }),
+    
 
-            ],
-            'mes' => [
-                'required',
-                'min:2',
-                'max:2',
-                Rule::unique('inventarios')->where(function ($query) use($ano,$mes,$congregacao_id,$id) {
-                    return $query
-                        ->where('ano', $ano)
-                        ->where('mes', $mes)
-                        ->where('congregacao_id', $congregacao_id)
-                        ->where('id', '!=', $id);
-                }),
-
-            ],
-            'congregacao_id' => [
-                'required',
-                'exists:congregacoes,id',
-                Rule::unique('inventarios')->where(function ($query) use($ano,$mes,$congregacao_id,$id) {
-                    return $query
-                        ->where('ano', $ano)
-                        ->where('mes', $mes)
-                        ->where('congregacao_id', $congregacao_id)
-                        ->where('id', '!=', $id);
-                }),
-
-            ],
-        ];
-    }
-
-    public function rulesUpdate(){
-        return [
-            'ano' => [
-                'required',
-                'min:4',
-                'max:4',
-            ],
-            'mes' => [
-                'required',
-                'min:2',
-                'max:2',
-            ],
-            'congregacao_id' => [
-                'required',
-                'exists:congregacoes,id',
-            ],
-        ];
-    }
-    public function feedback(){
-        if($this->anoAnteriorAInventariar == $this->anoAInventariar){
-            $ano = $this->anoAInventariar;
-        }else{
-            $ano = $this->anoAnteriorAInventariar . ' ou ' . $this->anoAInventariar;
-        }
-        if($this->mesAnteriorAInventariar == $this->mesAInventariar){
-            $mes = $this->mesAInventariar;
-        }else{
-            $mes = $this->mesAnteriorAInventariar . ' ou ' . $this->mesAInventariar;
-        }
-
-        return [
-            'required' => 'O campo :attribute é obrigatório',
-            'ano.in' => "O campo Ano deve ser $ano",
-            'mes.in' => "O campo Mês deve ser $mes",
-        ];
-    }
+    ######################################################
+    # Funções de Relacionamento
     
     public function congregacao(){
         //Um inventário pertence a uma Conngregação
