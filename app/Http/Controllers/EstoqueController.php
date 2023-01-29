@@ -30,7 +30,7 @@ class EstoqueController extends Controller
         if(App::environment() == 'local'){
             $estoques = $estoques->paginate(10);
         }else{
-            $estoques = $estoques->paginate(50);
+            $estoques = $estoques->paginate(100);
         }
         return view('estoque.index',['estoques' => $estoques]);
     }
