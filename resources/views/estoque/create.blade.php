@@ -8,7 +8,7 @@
                 <div class="card-header fs-5">{{ __('Adicionar Estoque') }}</div>
 
                 <div class="card-body">
-                    <form method="POST" action="{{ route('estoque.store') }}" enctype="multipart/form-data">
+                    <form method="POST" action="{{ route('estoque.store') }}" enctype="multipart/form-data" class="needs-validation">
                         @csrf
 
                         <div class="input-group mb-3">
@@ -24,25 +24,30 @@
                         @enderror
                         </div>
 
-                        <div class="input-group mb-3">
-                            <span class="input-group-text" id="selectLabelPublicacao">Publicação</span>
-                            <select class="form-select @error('publicacao_id') is-invalid @enderror" id="selectPublicacao" name="publicacao_id" required>
-                                <option  value="" selected>Selecione a Publicação...</option>
-                                @foreach ( $publicacoes as $key => $p)
-                                    <option value="{{$p->id}}" {{@old('publicacao_id') == $p->id ? 'selected': ''}}>{{ $p->nome }}</option>
-                                @endforeach
-                            </select>
-                        @error('publicacao_id')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                        </div>
-                        
+                        @foreach ($publicacoes as $key => $p)
+                            @php($options[$key]['value'] = $p->id)
+                            @php($options[$key]['texto'] = $p->nome)
+                        @endforeach
+                        <select-filter-component
+                            class="@error('publicacao_id') is-invalid @enderror "
+                            @error('publicacao_id') classinputgroup="has-validation" @enderror
+                            classmessage="valid-feedback @error('publicacao_id') invalid-feedback @enderror"
+                            id="publicacao_id"
+                            label="Publicação"
+                            @error('publicacao_id') message="{{$message}}" @enderror
+                            name="publicacao_id"
+                            option="Selecione a Publicação..."
+                            options="{{json_encode($options)}}"
+                            publicacao_id="{{@old('publicacao_id')}}"
+                            required="required"
+                        ></select-filter-component>
+                    
                         <div class="input-group mb-3">
                             <span class="input-group-text">{{ __('Quantidade') }}</span>
                             <input id="quantidade" type="number" class="form-control @error('quantidade') is-invalid @enderror text-end" name="quantidade" value="{{ $quantidade ?? old('quantidade') }}" required autocomplete="quantidade" >
                             @error('quantidade')
                                 <span class="invalid-feedback" role="alert">
-                                    <strong>{{ $message }}</strong>
+                                    {{ $message }}
                                 </span>
                             @enderror
                         </div>
