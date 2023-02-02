@@ -36,7 +36,7 @@
             
                 <div class="row">
                     <div class="col">
-                        @if(isset($congregacao->edit)) Altera Pessoa @elseif(!isset($congregacao->show)) Nova Pessoa @elseif(isset($congregacao->show)) Mostra Congregação @endif
+                        @if(isset($congregacao->edit)) Altera Congregação @elseif(!isset($congregacao->show)) Nova Congregação @elseif(isset($congregacao->show)) Mostra Congregação @endif
                     </div>
                     <div class="col-3 text-end text-center">
                         <a href="{{ route('congregacao.index')}}" class="btn btn-sm btn-outline-primary py-0">Listar</a>
