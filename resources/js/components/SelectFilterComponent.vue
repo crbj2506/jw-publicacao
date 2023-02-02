@@ -2,44 +2,50 @@
     <div class="input-group mb-3"
         :class="classinputgroup"
         >
-        <span class="input-group-text">Filtro:</span>
-        <input type="text" class="form-control" v-model="filtro">
+        <span v-if="disabled != ''" class="input-group-text">Filtro:</span>
+        <input v-if="disabled != ''" type="text" class="form-control" v-model="filtro">
         <span class="input-group-text">{{label}}</span>
-        <select 
-            class="form-select w-50"
+        <select v-if="disabled != ''"
+            class="form-select w-50 rounded-end"
             :class="class"
+            :disabled="disabled"
             :id="id" 
             :name="name" 
             :required="required" 
             >
-            <option value="">{{option}}</option>
-            <option v-for="opcao in listafiltrada" :value="opcao.value" :selected="opcao.value == publicacao_id">{{opcao.texto}}</option>
+            <option v-for="opcao in listafiltrada" :value="opcao.value" :selected="opcao.value == old_id">{{opcao.texto}}</option>
         </select>
-        <div 
+        <input v-if="disabled == ''" :value="value" 
+            class="form-control w-50 rounded-end" disabled>
+        <span v-if="message != ''"
             class="text-start"
             :class="classmessage"
-            >{{ message }}</div>
+            >{{ message }}
+        </span>
     </div>
 </template>
 
 <script>
     export default {
         mounted() { 
-            this.opcoes = this.listafiltrada = JSON.parse(this.options)
-            console.log(this.opcoes)
+            this.listafiltrada[0] = this.opcoes[0] = {'value' : '', 'texto' : this.option};
+            this.listafiltrada.push.apply(this.listafiltrada,JSON.parse(this.options))
+            this.opcoes.push.apply(this.opcoes,JSON.parse(this.options))
         },
         props: [
             'class',
             'classinputgroup',
             'classmessage',
+            'disabled',
             'id',
             'label',
             'message',
             'name',
             'option',
             'options',
-            'publicacao_id',
+            'old_id',
             'required',
+            'value',
         ],
         data(){
             return{

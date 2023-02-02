@@ -27,17 +27,19 @@
                         @php($options[$key]['texto'] = $p->nome)
                     @endforeach
                     <select-filter-component
-                        class="@error('publicacao_id') is-invalid @enderror "
+                        class="@error('publicacao_id') is-invalid @enderror {{old('publicacao_id') ? 'is-valid' : ''}}"
                         @error('publicacao_id') classinputgroup="has-validation" @enderror
                         classmessage="valid-feedback @error('publicacao_id') invalid-feedback @enderror"
                         id="publicacao_id"
-                        label="Publicação"
+                        label="Publicação:"
                         @error('publicacao_id') message="{{$message}}" @enderror
                         name="publicacao_id"
                         option="Selecione a Publicação..."
                         options="{{json_encode($options)}}"
-                        publicacao_id="{{@old('publicacao_id')}}"
+                        old_id="{{ isset($estoque) ? $estoque->publicacao_id : @old('publicacao_id') }}"
                         required="required"
+                        value="{{ isset($estoque) ? $estoque->publicacao->nome : @old('publicacao_id') }}"
+                        {{isset($estoque->show) ? 'disabled' : ''}}
                     ></select-filter-component>
                 
                     <div class="input-group mb-3">
