@@ -5,105 +5,103 @@ namespace App\Http\Controllers;
 use App\Models\Congregacao;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Route;
 
 class CongregacaoController extends Controller
 {
-
-    public $congregacao;
-    public function __construct(Congregacao $congregacao){
-        $this->congregacao = $congregacao;
-    }
-    
-
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\View\View
      */
     public function index()
     {
         //
-        $congregacoes = $this->congregacao;
-       
         if(App::environment() == 'local'){
-            $congregacoes = $congregacoes->paginate(10);
+            $congregacoes = Congregacao::paginate(10);
         }else{
-            $congregacoes = $congregacoes->paginate(50);
+            $congregacoes = Congregacao::paginate(50);
         }
-        return view('congregacao.index',['congregacoes' => $congregacoes]);
+        return view('congregacao.crud',['congregacoes' => $congregacoes]);
     }
 
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\View\View
      */
     public function create()
     {
         //
-        return view('congregacao.create');
+        return view('congregacao.crud');
     }
 
     /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function store(Request $request)
     {
         //
-        $request->validate($this->congregacao->rules($id = null),$this->congregacao->feedback());
-        $congregacao = $this->congregacao->create($request->all());
-        return redirect()->route('congregacao.show', ['congregacao' => $congregacao->id]);
+        $request->validate(Congregacao::rules($id = null),Congregacao::feedback());
+        $congregacao = Congregacao::create($request->all());
+        return redirect()->route('congregacao.show', ['congregacao' => $congregacao]);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  Integer $id
-     * @return \Illuminate\Http\Response
+     * @param  \App\Models\Congregacao  $congregacao
+     * @return \Illuminate\Contracts\View\View
      */
-    public function show($id)
+    public function show($congregacao)
     {
         //
-        $congregacao = $this->congregacao->find($id);
-        return view('congregacao.show', ['congregacao' => $congregacao]);
+        $congregacao = Congregacao::find($congregacao);
+        if(Route::current()->action['as'] == "congregacao.show"){
+            $congregacao->show = true;
+        };
+        return view('congregacao.crud', ['congregacao' => $congregacao]);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
      * @param  \App\Models\Congregacao  $congregacao
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\View\View
      */
     public function edit(Congregacao $congregacao)
     {
         //
-        return view('congregacao.edit', ['congregacao' => $congregacao]);
+        if(Route::current()->action['as'] == "congregacao.edit"){
+            $congregacao->edit = true;
+        };
+        return view('congregacao.crud', ['congregacao' => $congregacao]);
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  Integer $id
-     * @return \Illuminate\Http\Response
+     * @param  \App\Models\Congregacao  $congregacao
+     * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $congregacao)
     {
         //
-        $request->validate($this->congregacao->rules($id),$this->congregacao->feedback());
-        $congregacao = $this->congregacao->find($id);
+        $request->validate(Congregacao::rules($congregacao ),Congregacao::feedback());
+        $congregacao = Congregacao::find($congregacao);
         $congregacao->update($request->all());
-        return redirect()->route('congregacao.show', ['congregacao' => $congregacao->id]);
+        return redirect()->route('congregacao.show', ['congregacao' => $congregacao]);
     }
 
     /**
      * Remove the specified resource from storage.
      *
      * @param  \App\Models\Congregacao  $congregacao
-     * @return \Illuminate\Http\Response
+     * @return null
      */
     public function destroy(Congregacao $congregacao)
     {

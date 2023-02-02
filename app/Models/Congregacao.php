@@ -12,22 +12,17 @@ class Congregacao extends Model
     protected $fillable = [
         'nome'
     ];
-    public function rules($id){
+    public static function rules($id){
         return [
             'nome' => 'required|unique:congregacoes,nome,'.$id.'|min:3'
         ];
     }
-    public function feedback(){
+    public static function feedback(){
         return [
             'required' => 'O campo :attribute é obrigatório',
             'nome.min' => 'O campo :attribute deve ter no mínimo 3 caracteres'
         ];
     }
-    // Várias Congregações podem ter várias Publicações (tabela auxiliar)
-    //public function publicacoes(){
-        //Publicações pertencem a muitas Conngregações (tabela auxiliar)
-        //return $this->belongsToMany('App\Models\Publicacao', 'inventarios')->withPivot('quantidade','local','updated_at');
-    //}
 
     public function envios(){
         return $this->hasMany('App\Models\Envio');
