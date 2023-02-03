@@ -39,7 +39,7 @@
             <x-slot:lista>
             </x-slot>
             <div class="container-fluid d-flex flex-wrap">
-                <div class="col-12 col-sm-8 col-md-7 col-lg-6 col-xl-5 col-xxl-4 p-2">
+                <div class="col-12 col-sm-10 col-md-9 col-lg-8 col-xl-7 col-xxl-6 p-2">
                     <select-filter-component
                         class="@error('congregacao_id') is-invalid @enderror {{old('congregacao_id') ? 'is-valid' : ''}}"
                         @error('congregacao_id') classinputgroup="has-validation" @enderror

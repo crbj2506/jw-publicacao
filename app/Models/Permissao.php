@@ -12,12 +12,12 @@ class Permissao extends Model
     protected $fillable = [
         'permissao'
     ];
-    public function rules($id){
+    public static function rules($id){
         return [
             'permissao' => 'required|unique:permissoes,permissao,'.$id.'|min:3'
         ];
     }
-    public function feedback(){
+    public static function feedback(){
         return [
             'required' => 'O campo :attribute é obrigatório',
             'permissao.min' => 'O campo :attribute deve ter no mínimo 3 caracteres'

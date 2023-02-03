@@ -14,7 +14,7 @@ class Estoque extends Model
         'publicacao_id',
         'quantidade',
     ];
-    public function rules($local_id,$publicacao_id,$id){
+    public static function rules($local_id,$publicacao_id,$id){
         return [
             'local_id' => [
                 'required',
@@ -41,7 +41,7 @@ class Estoque extends Model
             'quantidade' => 'required|numeric|min:0|max:9999',
         ];
     }
-    public function feedback(){
+    public static function feedback(){
         return [
             'required' => 'O campo :attribute é obrigatório'
         ];

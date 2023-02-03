@@ -7,22 +7,19 @@ use App\Models\Publicacao;
 use App\Models\Local;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Route;
 
 class EstoqueController extends Controller
 {
-    public $estoque;
-    public function __construct(Estoque $estoque){
-        $this->estoque = $estoque;
-    }
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\View\View
      */
     public function index()
     {
         //
-        $estoques = $this->estoque->select('*')
+        $estoques = Estoque::select('*')
             ->orderBy(Local::select('sigla')
                 ->whereColumn('locais.id', 'estoques.local_id')
         );
@@ -32,35 +29,39 @@ class EstoqueController extends Controller
         }else{
             $estoques = $estoques->paginate(100);
         }
-        return view('estoque.index',['estoques' => $estoques]);
+        return view('estoque.crud',['estoques' => $estoques]);
     }
 
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\View\View
      */
     public function create()
     {
         //
-        $locais = Local::orderBy('sigla')->get();
-        $publicacoes = Publicacao::orderBy('nome')->get();
-        return view('estoque.create',['locais' => $locais,'publicacoes' => $publicacoes]);
+        $locais = Local::orderBy('id')->get();
+        foreach ($locais as $key => $l) {
+            $locais[$key]->text = $l->sigla . ' - ' . $l->nome ;
+            $locais[$key]->value = $l->id;
+        }
+        $publicacoes = Publicacao::orderBy('nome')->select('id as value', 'nome as text')->get();
+        return view('estoque.crud',['locais' => $locais,'publicacoes' => $publicacoes]);
     }
 
     /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function store(Request $request)
     {
         //
         $local_id = $request->all('local_id');
         $publicacao_id = $request->all('publicacao_id');
-        $request->validate($this->estoque->rules($local_id, $publicacao_id, $id = null), $this->estoque->feedback());
-        $estoque = $this->estoque->create($request->all());
+        $request->validate(Estoque::rules($local_id, $publicacao_id, $id = null), Estoque::feedback());
+        $estoque = Estoque::create($request->all());
         return redirect()->route('estoque.show', ['estoque' => $estoque->id]);
     }
 
@@ -68,16 +69,16 @@ class EstoqueController extends Controller
      * Display the specified resource.
      *
      * @param  \App\Models\Estoque  $estoque
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\View\View
      */
-    public function show($id)
+    public function show($estoque)
     {
         //
-        $estoque = $this->estoque->find($id);
+        $estoque = Estoque::find($estoque);
         $locais = Local::orderBy('sigla')->get();
         $publicacoes = Publicacao::orderBy('nome')->get();
 
-        $estoques = $this->estoque->select('*')
+        $estoques = Estoque::select('*')
             ->orderBy(Local::select('sigla')
                 ->whereColumn('locais.id', 'estoques.local_id')
         )->get();
@@ -86,24 +87,31 @@ class EstoqueController extends Controller
         $indiceEstoquePosterior = array_search($estoque, $estoques->all()) + 1;
         $estoqueAnterior = $estoques->get($indiceEstoqueAnterior);
         $estoquePosterior = $estoques->get($indiceEstoquePosterior);
-        $estoque->estoqueAnterior = $estoqueAnterior ? $estoqueAnterior->id : null;
-        $estoque->estoquePosterior = $estoquePosterior ? $estoquePosterior->id : null;
-        return view('estoque.show', ['estoque' => $estoque, 'locais' => $locais, 'publicacoes' => $publicacoes]);
+        $estoque->objetoAnterior = $estoqueAnterior ? $estoqueAnterior->id : null;
+        $estoque->objetoPosterior = $estoquePosterior ? $estoquePosterior->id : null;
+        if(Route::current()->action['as'] == "estoque.show"){
+            $estoque->show = true;
+        };
+        return view('estoque.crud', ['estoque' => $estoque, 'locais' => $locais, 'publicacoes' => $publicacoes]);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
      * @param  \App\Models\Estoque  $estoque
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\View\View
      */
     public function edit(Estoque $estoque)
     {
         //
-        $locais = Local::orderBy('sigla')->get();
-        $publicacoes = Publicacao::orderBy('nome')->get();
+        $locais = Local::orderBy('id')->get();
+        foreach ($locais as $key => $l) {
+            $locais[$key]->text = $l->sigla . ' - ' . $l->nome ;
+            $locais[$key]->value = $l->id;
+        }
+        $publicacoes = Publicacao::orderBy('nome')->select('id as value', 'nome as text')->get();
 
-        $estoques = $this->estoque->select('*')
+        $estoques = Estoque::select('*')
             ->orderBy(Local::select('sigla')
                 ->whereColumn('locais.id', 'estoques.local_id')
         )->get();
@@ -112,9 +120,12 @@ class EstoqueController extends Controller
         $indiceEstoquePosterior = array_search($estoque, $estoques->all()) + 1;
         $estoqueAnterior = $estoques->get($indiceEstoqueAnterior);
         $estoquePosterior = $estoques->get($indiceEstoquePosterior);
-        $estoque->estoqueAnterior = $estoqueAnterior ? $estoqueAnterior : null;
-        $estoque->estoquePosterior = $estoquePosterior ? $estoquePosterior : null;
-        return view('estoque.edit', ['estoque' => $estoque, 'locais' => $locais, 'publicacoes' => $publicacoes]);
+        $estoque->objetoAnterior = $estoqueAnterior ? $estoqueAnterior : null;
+        $estoque->objetoPosterior = $estoquePosterior ? $estoquePosterior : null;
+        if(Route::current()->action['as'] == "estoque.edit"){
+            $estoque->edit = true;
+        };
+        return view('estoque.crud', ['estoque' => $estoque, 'locais' => $locais, 'publicacoes' => $publicacoes]);
     }
 
     /**
@@ -122,15 +133,15 @@ class EstoqueController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \App\Models\Estoque  $estoque
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $estoque)
     {
         //
         $local_id = $request->all('local_id');
         $publicacao_id = $request->all('publicacao_id');
-        $request->validate($this->estoque->rules($local_id, $publicacao_id, $id), $this->estoque->feedback());
-        $estoque = $this->estoque->find($id);
+        $request->validate(Estoque::rules($local_id, $publicacao_id, $estoque), Estoque::feedback());
+        $estoque = Estoque::find($estoque);
         $estoque->update($request->all());
         return redirect()->route('estoque.show', ['estoque' => $estoque->id]);
     }
@@ -144,7 +155,7 @@ class EstoqueController extends Controller
     public function destroy($estoque)
     {
         //
-        $estoque = $this->estoque->find($estoque);
+        $estoque = Estoque::find($estoque);
         $estoque->delete();
         return redirect()->route('estoque.index');
     }

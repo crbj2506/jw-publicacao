@@ -6,81 +6,91 @@ use App\Models\Envio;
 use App\Models\Volume;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Route;
 
 class VolumeController extends Controller
 {
-    public $volume;
-    public function __construct(Volume $volume){
-        $this->volume = $volume;
-    }
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\View\View
      */
     public function index()
     {
         //
-        $volumes = $this->volume;
         if(App::environment() == 'local'){
-            $volumes = $volumes->paginate(10);
+            $volumes = Volume::paginate(10);
         }else{
-            $volumes = $volumes->paginate(100);
+            $volumes = Volume::paginate(100);
         }
-        return view('volume.index',['volumes' => $volumes]);
+        return view('volume.crud',['volumes' => $volumes]);
     }
 
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\View\View
      */
     public function create()
     {
         //
-        $envios = Envio::all();
-        return view('volume.create',['envios' => $envios]);
+        $envios = Envio::orderByDesc('data')->get();
+        foreach ($envios as $key => $e) {
+            $envios[$key]->text = $e->nota . ($e->data ? ' de '. $e->data : null);
+            $envios[$key]->value = $e->id;
+        }
+        return view('volume.crud',['envios' => $envios]);
     }
 
     /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function store(Request $request)
     {
         //
-        $request->validate($this->volume->rules($id = null),$this->volume->feedback());
-        $volume = $this->volume->create($request->all());
-        return redirect()->route('volume.show', ['volume' => $volume->id]);
+        $request->validate(Volume::rules($id = null),Volume::feedback());
+        $volume = Volume::create($request->all());
+        return redirect()->route('volume.show', ['volume' => $volume]);
     }
 
     /**
      * Display the specified resource.
      *
      * @param  \App\Models\Volume  $volume
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\View\View
      */
-    public function show($id)
+    public function show($volume)
     {
         //
-        $volume = $this->volume->find($id);
+        $volume = Volume::find($volume);
+        if(Route::current()->action['as'] == "volume.show"){
+            $volume->show = true;
+        };
         $envios = Envio::all();
-        return view('volume.show', ['volume' => $volume, 'envios' => $envios]);
+        return view('volume.crud', ['volume' => $volume, 'envios' => $envios]);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
      * @param  \App\Models\Volume  $volume
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\View\View
      */
     public function edit(Volume $volume)
     {
         //
-        $envios = Envio::all();
-        return view('volume.edit', ['volume' => $volume, 'envios' => $envios]);
+        if(Route::current()->action['as'] == "volume.edit"){
+            $volume->edit = true;
+        };
+        $envios = Envio::orderByDesc('data')->get();
+        foreach ($envios as $key => $e) {
+            $envios[$key]->text = $e->nota . ($e->data ? ' de '. $e->data : null);
+            $envios[$key]->value = $e->id;
+        }
+        return view('volume.crud', ['volume' => $volume, 'envios' => $envios]);
     }
 
     /**
@@ -88,15 +98,15 @@ class VolumeController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \App\Models\Volume  $volume
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $volume)
     {
         //
-        $request->validate($this->volume->rules($id),$this->volume->feedback());
-        $volume = $this->volume->find($id);
+        $request->validate(Volume::rules($volume),Volume::feedback());
+        $volume = Volume::find($volume);
         $volume->update($request->all());
-        return redirect()->route('volume.show', ['volume' => $volume->id]);
+        return redirect()->route('volume.show', ['volume' => $volume]);
     }
 
     /**

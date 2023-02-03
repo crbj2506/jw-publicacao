@@ -12,13 +12,13 @@ class Volume extends Model
         'volume',
         'envio_id',
     ];
-    public function rules($id){
+    public static function rules($id){
         return [
             'volume' => 'required',
             'envio_id' => 'required|exists:envios,id',
         ];
     }
-    public function feedback(){
+    public static function feedback(){
         return [
             'required' => 'O campo :attribute é obrigatório'
         ];

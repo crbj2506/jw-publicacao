@@ -55,17 +55,25 @@
                 </form>
                 @endif                   
             </div>
-            <div class="card-footer">
-                @if(isset($o->show))
-                    <a href='{{ isset($o) ? route("$r.edit",["$r" => $o]) : null}}' class="btn btn-sm btn-outline-warning">{{ __('Editar') }}</a>
-                @else
-                    <button 
-                        type="submit" 
-                        form="form{{$r}}" 
-                        class="btn btn-sm btn-outline-success {{isset($o->show) ? 'd-none' : ''}}">
-                        {{ isset($o->edit) ? 'Salvar' : 'Cadastrar' }}
-                    </button>
-                @endif
+            <div class="card-footer container-fluid">
+                <div class="row">
+                    <div class="col">
+                        @if(isset($o->show))
+                            <a href='{{ isset($o) ? route("$r.edit",["$r" => $o]) : null}}' class="btn btn-sm btn-outline-warning">{{ __('Editar') }}</a>
+                        @else
+                            <button 
+                                type="submit" 
+                                form="form{{$r}}" 
+                                class="btn btn-sm btn-outline-success {{isset($o->show) ? 'd-none' : ''}}">
+                                {{ isset($o->edit) ? 'Salvar' : 'Cadastrar' }}
+                            </button>
+                        @endif
+                    </div>
+                    <div class="col text-end">
+                        <a href='{{ $o->objetoAnterior ? route("$r.show",["$r" => $o->objetoAnterior]) : "" }}' class="btn btn-sm btn-outline-secondary @if(!$o->objetoAnterior) disabled @endif me-2">Anterior</a>
+                        <a href='{{ $o->objetoPosterior ? route("$r.show",["$r" => $o->objetoPosterior]) : "" }}' class="btn btn-sm btn-outline-secondary @if(!$o->objetoPosterior) disabled @endif me-2">Posterior</a>
+                    </div>
+                </div>
             </div>
         </div>
     @endif

@@ -5,97 +5,96 @@ namespace App\Http\Controllers;
 use App\Models\Permissao;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Route;
 
 class PermissaoController extends Controller
-{
-
-    public $permissao;
-    public function __construct(Permissao $permissao){
-        $this->permissao = $permissao;
-    }
-    
+{ 
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\View\View
      */
     public function index()
     {
-        //
-        $permissoes = $this->permissao;
-       
+        //       
         if(App::environment() == 'local'){
-            $permissoes = $permissoes->paginate(10);
+            $permissoes = Permissao::paginate(10);
         }else{
-            $permissoes = $permissoes->paginate(50);
+            $permissoes = Permissao::paginate(50);
         }
-        return view('permissao.index',['permissoes' => $permissoes]);
+        return view('permissao.crud',['permissoes' => $permissoes]);
     }
 
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\View\View
      */
     public function create()
     {
         //
-        return view('permissao.create');
+        return view('permissao.crud');
     }
 
     /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function store(Request $request)
     {
         //
-        $request->validate($this->permissao->rules($id = null),$this->permissao->feedback());
-        $permissao = $this->permissao->create($request->all());
-        return redirect()->route('permissao.show', ['permissao' => $permissao->id]);
+        $request->validate(Permissao::rules($permissao = null),Permissao::feedback());
+        $permissao = Permissao::create($request->all());
+        return redirect()->route('permissao.show', ['permissao' => $permissao]);
     }
     
     /**
      * Display the specified resource.
      *
-     * @param  Integer $id
-     * @return \Illuminate\Http\Response
+     * @param  \App\Models\Permissao
+     * @return \Illuminate\Contracts\View\View
      */
-    public function show($id)
+    public function show($permissao)
     {
         //
-        $permissao = $this->permissao->find($id);
-        return view('permissao.show', ['permissao' => $permissao]);
+        $permissao = Permissao::find($permissao);
+        if(Route::current()->action['as'] == "permissao.show"){
+            $permissao->show = true;
+        };
+        return view('permissao.crud', ['permissao' => $permissao]);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
      * @param  \App\Models\Permissao  $permissao
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\View\View
      */
     public function edit(Permissao $permissao)
     {
         //
-        return view('permissao.edit', ['permissao' => $permissao]);
+        if(Route::current()->action['as'] == "permissao.edit"){
+            $permissao->edit = true;
+        };
+        return view('permissao.crud', ['permissao' => $permissao]);
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  Integer $id
-     * @return \Illuminate\Http\Response
+     * @param  \App\Models\Permissao
+     * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $permissao)
     {
         //
-        $request->validate($this->permissao->rules($id),$this->permissao->feedback());
-        $permissao = $this->permissao->find($id);
+        $request->validate(Permissao::rules($permissao),Permissao::feedback());
+        $permissao = Permissao::find($permissao);
         $permissao->update($request->all());
-        return redirect()->route('permissao.show', ['permissao' => $permissao->id]);
+        return redirect()->route('permissao.show', ['permissao' => $permissao]);
     }
 
     /**

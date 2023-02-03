@@ -40,6 +40,7 @@ class ConteudoController extends Controller
         $volumes = Volume::orderByDesc('id')->get();
         foreach ($volumes as $key => $v) {
             $volumes[$key]->text = $v->volume . ' Nota: ' . $v->envio->nota . ($v->envio->data ? ' de '. $v->envio->data : null);
+            $volumes[$key]->value = $v->id;
         }
         $publicacoes = Publicacao::orderBy('nome')->select('id as value', 'nome as text')->get();
         return view('conteudo.crud',['volumes' => $volumes,'publicacoes' => $publicacoes]);
@@ -91,8 +92,8 @@ class ConteudoController extends Controller
         };
         $volumes = Volume::orderByDesc('id')->get();
         foreach ($volumes as $key => $v) {
-            $volumes[$key]->value = $v->id;
             $volumes[$key]->text = $v->volume . ' Nota: ' . $v->envio->nota . ($v->envio->data ? ' de '. $v->envio->data : null);
+            $volumes[$key]->value = $v->id;
         }
         $publicacoes = Publicacao::orderBy('nome')->select('id as value', 'nome as text')->get();
         return view('conteudo.crud', ['conteudo' => $conteudo, 'volumes' => $volumes, 'publicacoes' => $publicacoes]);

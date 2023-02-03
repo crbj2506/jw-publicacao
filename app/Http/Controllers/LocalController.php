@@ -47,9 +47,9 @@ class LocalController extends Controller
     public function store(Request $request)
     {
         //
-        $request->validate(Local::rules($id = null),Local::feedback());
+        $request->validate(Local::rules($local = null),Local::feedback());
         $local = Local::create($request->all());
-        return redirect()->route('local.show', ['local' => $local->id]);
+        return redirect()->route('local.show', ['local' => $local]);
     }
 
     /**
