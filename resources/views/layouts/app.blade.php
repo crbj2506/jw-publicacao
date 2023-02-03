@@ -304,6 +304,52 @@
                         <div class="">
                             <ul class="navbar-nav me-auto">
                                 @auth
+                                    @if(auth()->user()->permissoes->contains('permissao', '=', 'Administrador'))
+                                    
+                                        <li class="nav-item dropdown">
+                                            <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                                            {{ __('Pessoas') }}
+                                            </a>
+
+                                            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                                <a class="dropdown-item" href="{{ route('pessoa.index') }}">
+                                                    {{ __('Lista') }}
+                                                </a>
+                                                <a class="dropdown-item" href="{{ route('pessoa.create') }}">
+                                                    {{ __('Adicionar') }}
+                                                </a>
+                                            </div>
+                                        </li>
+                                    @endif
+                                @endauth
+                            </ul>
+                        </div>
+                        <div class="">
+                            <ul class="navbar-nav me-auto">
+                                @auth
+                                    @if(auth()->user()->permissoes->contains('permissao', '=', 'Administrador'))
+                                    
+                                        <li class="nav-item dropdown">
+                                            <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                                            {{ __('Pedidos') }}
+                                            </a>
+
+                                            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                                <a class="dropdown-item" href="{{ route('pedido.index') }}">
+                                                    {{ __('Lista') }}
+                                                </a>
+                                                <a class="dropdown-item" href="{{ route('pedido.create') }}">
+                                                    {{ __('Adicionar') }}
+                                                </a>
+                                            </div>
+                                        </li>
+                                    @endif
+                                @endauth
+                            </ul>
+                        </div>
+                        <div class="">
+                            <ul class="navbar-nav me-auto">
+                                @auth
                             <li class="nav-item dropdown">
                                 <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                                     {{ Auth::user()->name }}

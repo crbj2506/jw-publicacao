@@ -93,6 +93,18 @@ Route::middleware('verified', 'permissao:,,Administrador')
 Route::middleware('verified', 'permissao:,,Administrador')
     ->resource('inventario', 'App\Http\Controllers\InventarioController');
 
+// ###########################
+// ##  CONJUNTO PESSOA
+// ###########################
+Route::middleware('verified', 'permissao:,,Administrador')
+    ->resource('pessoa', 'App\Http\Controllers\PessoaController');
+
+// ###########################
+// ##  CONJUNTO PEDIDO
+// ###########################
+Route::middleware('verified', 'permissao:,,Administrador')
+    ->resource('pedido', 'App\Http\Controllers\PedidoController');
+    
 Route::middleware('verified', 'permissao:,Servo,Administrador')
     ->name('inventario.filtrado.post')
     ->post('inventarioFiltrado', [App\Http\Controllers\InventarioController::class, 'index']);

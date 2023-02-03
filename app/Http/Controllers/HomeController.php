@@ -49,9 +49,13 @@ class HomeController extends Controller
                 }
             }
             $congregacoes[$i1]->totalPublicacoes = $totalPublicacoes;
-            $publicacoes_id = array_unique($publicacoes_id);
-            $congregacoes[$i1]->totalItens = count($publicacoes_id);
-            $congregacoes[$i1]->totalLocais = count($local_id);
+            if(isset($publicacoes_id)){ 
+                $publicacoes_id = array_unique($publicacoes_id);
+                $congregacoes[$i1]->totalItens = count($publicacoes_id);
+            }
+            if (isset($local_id)) {
+                $congregacoes[$i1]->totalLocais = count($local_id);
+            }
             $congregacoes[$i1]->dataAlteracaoEstoque = $dataAlteracaoEstoque;
             $congregacoes[$i1]->ultimoInventario = $ultimoInventario;
             $congregacoes[$i1]->enviosQuantidade = $congregacao->envios->count();
