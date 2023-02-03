@@ -14,7 +14,7 @@ class Envio extends Model
         'retirada',
         'congregacao_id',
     ];
-    public function rules($id){
+    public static function rules($id){
         return [
             'nota' => 'required|unique:envios,nota,'.$id.'|min:7|max:10',
             'data' => 'nullable|date',
@@ -22,7 +22,7 @@ class Envio extends Model
             'congregacao_id' => 'exists:congregacoes,id',
         ];
     }
-    public function feedback(){
+    public static function feedback(){
         return [
             'required' => 'O campo :attribute é obrigatório',
             'nota.min' => 'O campo :attribute deve ter no mínimo 7 caracteres',

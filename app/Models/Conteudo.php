@@ -13,14 +13,14 @@ class Conteudo extends Model
         'publicacao_id',
         'quantidade',
     ];
-    public function rules(){
+    public static function rules(){
         return [
             'volume_id' => 'required|exists:volumes,id',
             'publicacao_id' => 'required|exists:publicacoes,id',
             'quantidade' => 'required|min:1|max:9999',
         ];
     }
-    public function feedback(){
+    public static function feedback(){
         return [
             'required' => 'O campo :attribute é obrigatório'
         ];

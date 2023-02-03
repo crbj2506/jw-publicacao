@@ -7,85 +7,95 @@ use App\Models\Publicacao;
 use App\Models\Volume;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Route;
 
 class ConteudoController extends Controller
 {
-    public $conteudo;
-    public function __construct(Conteudo $conteudo){
-        $this->conteudo = $conteudo;
-    }
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\View\View
      */
     public function index()
     {
         //
-        $conteudos = $this->conteudo->orderByDesc('id');
+        $conteudos = Conteudo::orderByDesc('id');
        
         if(App::environment() == 'local'){
             $conteudos = $conteudos->paginate(10);
         }else{
             $conteudos = $conteudos->paginate(50);
         }
-        return view('conteudo.index',['conteudos' => $conteudos]);
+        return view('conteudo.crud',['conteudos' => $conteudos]);
     }
 
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\View\View
      */
     public function create()
     {
         //
         $volumes = Volume::orderByDesc('id')->get();
-        $publicacoes = Publicacao::orderBy('nome')->get();
-        return view('conteudo.create',['volumes' => $volumes,'publicacoes' => $publicacoes]);
+        foreach ($volumes as $key => $v) {
+            $volumes[$key]->text = $v->volume . ' Nota: ' . $v->envio->nota . ($v->envio->data ? ' de '. $v->envio->data : null);
+        }
+        $publicacoes = Publicacao::orderBy('nome')->select('id as value', 'nome as text')->get();
+        return view('conteudo.crud',['volumes' => $volumes,'publicacoes' => $publicacoes]);
     }
 
     /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function store(Request $request)
     {
         //
-        $request->validate($this->conteudo->rules(), $this->conteudo->feedback());
-        $conteudo = $this->conteudo->create($request->all());
-        return redirect()->route('conteudo.show', ['conteudo' => $conteudo->id]);
+        $request->validate(Conteudo::rules(), Conteudo::feedback());
+        $conteudo = Conteudo::create($request->all());
+        return redirect()->route('conteudo.show', ['conteudo' => $conteudo]);
     }
 
     /**
      * Display the specified resource.
      *
      * @param  \App\Models\Conteudo  $conteudo
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\View\View
      */
-    public function show($id)
+    public function show($conteudo)
     {
         //
-        $conteudo = $this->conteudo->find($id);
+        $conteudo = Conteudo::find($conteudo);
         $volumes = Volume::orderByDesc('id')->get();
         $publicacoes = Publicacao::orderBy('nome')->get();
-        return view('conteudo.show', ['conteudo' => $conteudo, 'volumes' => $volumes, 'publicacoes' => $publicacoes]);
+        if(Route::current()->action['as'] == "conteudo.show"){
+            $conteudo->show = true;
+        };
+        return view('conteudo.crud', ['conteudo' => $conteudo, 'volumes' => $volumes, 'publicacoes' => $publicacoes]);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
      * @param  \App\Models\Conteudo  $conteudo
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\View\View
      */
     public function edit(Conteudo $conteudo)
     {
         //
+        if(Route::current()->action['as'] == "conteudo.edit"){
+            $conteudo->edit = true;
+        };
         $volumes = Volume::orderByDesc('id')->get();
-        $publicacoes = Publicacao::orderBy('nome')->get();
-        return view('conteudo.edit', ['conteudo' => $conteudo, 'volumes' => $volumes, 'publicacoes' => $publicacoes]);
+        foreach ($volumes as $key => $v) {
+            $volumes[$key]->value = $v->id;
+            $volumes[$key]->text = $v->volume . ' Nota: ' . $v->envio->nota . ($v->envio->data ? ' de '. $v->envio->data : null);
+        }
+        $publicacoes = Publicacao::orderBy('nome')->select('id as value', 'nome as text')->get();
+        return view('conteudo.crud', ['conteudo' => $conteudo, 'volumes' => $volumes, 'publicacoes' => $publicacoes]);
     }
 
     /**
@@ -93,22 +103,22 @@ class ConteudoController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \App\Models\Conteudo  $conteudo
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $conteudo)
     {
         //
-        $request->validate($this->conteudo->rules(),$this->conteudo->feedback());
-        $conteudo = $this->conteudo->find($id);
+        $request->validate(Conteudo::rules(), Conteudo::feedback());
+        $conteudo = Conteudo::find($conteudo);
         $conteudo->update($request->all());
-        return redirect()->route('conteudo.show', ['conteudo' => $conteudo->id]);
+        return redirect()->route('conteudo.show', ['conteudo' => $conteudo]);
     }
 
     /**
      * Remove the specified resource from storage.
      *
      * @param  \App\Models\Conteudo  $conteudo
-     * @return \Illuminate\Http\Response
+     * @return null
      */
     public function destroy(Conteudo $conteudo)
     {

@@ -8,7 +8,7 @@
                     <div class="col">{{ $ti }}
                     </div>
                     <div class="col-4 container-fluid d-flex-inline text-end p-0">
-                            <a href='{{ isset($r) ? route("$r.create") : null}}' class="btn btn-sm btn-outline-success py-0 ">Nova</a>
+                            <a href='{{ isset($r) ? route("$r.create") : null}}' class="btn btn-sm btn-outline-success py-0 ">Cadastrar</a>
                     </div>  
                 </div>
             </div>
@@ -29,10 +29,10 @@
                     <div class="col-5 container-fluid d-flex-inline text-end p-0">
                             <a href='{{ route("$r.index") }}' class="btn btn-sm btn-outline-primary me-2 py-0">Listar</a>
                             @if(isset($o->edit)) 
-                                <a href='{{ route("$r.create")}}' class="btn btn-sm btn-outline-success py-0 ">Nova</a>
+                                <a href='{{ route("$r.create")}}' class="btn btn-sm btn-outline-success py-0 ">Cadastrar</a>
                             @elseif(!isset($o->show))
                             @elseif(isset($o->show))
-                                <a href='{{ route("$r.create")}}' class="btn btn-sm btn-outline-success py-0 ">Nova</a>
+                                <a href='{{ route("$r.create")}}' class="btn btn-sm btn-outline-success py-0 ">Cadastrar</a>
                             @endif
                     </div>
                 </div>
