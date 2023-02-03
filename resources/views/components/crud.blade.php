@@ -70,8 +70,13 @@
                         @endif
                     </div>
                     <div class="col text-end">
-                        <a href='{{ $o->objetoAnterior ? route("$r.show",["$r" => $o->objetoAnterior]) : "" }}' class="btn btn-sm btn-outline-secondary @if(!$o->objetoAnterior) disabled @endif me-2">Anterior</a>
-                        <a href='{{ $o->objetoPosterior ? route("$r.show",["$r" => $o->objetoPosterior]) : "" }}' class="btn btn-sm btn-outline-secondary @if(!$o->objetoPosterior) disabled @endif me-2">Posterior</a>
+                        @if(isset($o->show))
+                            <a href='{{ $o->objetoAnterior ? route("$r.show",["$r" => $o->objetoAnterior]) : "" }}' class="btn btn-sm btn-outline-secondary @if(!$o->objetoAnterior) disabled @endif me-2">Anterior</a>
+                            <a href='{{ $o->objetoPosterior ? route("$r.show",["$r" => $o->objetoPosterior]) : "" }}' class="btn btn-sm btn-outline-secondary @if(!$o->objetoPosterior) disabled @endif me-2">Posterior</a>
+                        @elseif(isset($o->edit))
+                            <a href='{{ $o->objetoAnterior ? route("$r.edit",["$r" => $o->objetoAnterior]) : "" }}' class="btn btn-sm btn-outline-secondary @if(!$o->objetoAnterior) disabled @endif me-2">Anterior</a>
+                            <a href='{{ $o->objetoPosterior ? route("$r.edit",["$r" => $o->objetoPosterior]) : "" }}' class="btn btn-sm btn-outline-secondary @if(!$o->objetoPosterior) disabled @endif me-2">Posterior</a>
+                        @endif
                     </div>
                 </div>
             </div>
