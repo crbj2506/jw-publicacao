@@ -35,9 +35,9 @@
                                 <th class="text-center py-0" scope="row">{{$p->id}}</th>
                                 <td class=" py-0" scope="row">{{$p->pessoa->nome}}</td>
                                 <td class=" py-0" scope="row">{{$p->publicacao->nome}}</td>
-                                <th class="text-center py-0" scope="row">{{$p->quantidade}}</th>
-                                <th class="text-center py-0" scope="row">{{$p->solicitado}}</th>
-                                <th class="text-center py-0" scope="row">{{$p->entregue}}</th>
+                                <td class="text-center py-0" scope="row">{{$p->quantidade}}</td>
+                                <td class="text-center py-0" scope="row">{{$p->solicitado}}</td>
+                                <td class="text-center py-0" scope="row">{{$p->entregue}}</td>
                                 <td class="text-center py-0" scope="row"><a href="{{ route('pedido.show',['pedido' => $p])}}" class="btn btn-sm btn-outline-primary py-0">Ver</a></td>
                                 <td class="text-center py-0" scope="row"><a href="{{ route('pedido.edit',['pedido' => $p])}}" class="btn btn-sm btn-outline-warning py-0">Editar</a></td>
                             </tr>
@@ -52,11 +52,16 @@
             <div class="card-header fw-bold container-fluid">
                 <div class="row align-items-center">
                     <div class="col">
-                        @if(isset($pedido->edit)) Altera Pessoa @elseif(!isset($pedido->show)) Nova Pessoa @elseif(isset($pedido->show)) Mostra Pessoa @endif
+                        @if(isset($pedido->edit)) Altera Pedido @elseif(!isset($pedido->show)) Novo Pedido @elseif(isset($pedido->show)) Mostra Pedido @endif
                     </div>
                     <div class="col-5 container-fluid d-flex-inline text-end p-0">
                             <a href="{{ route('pedido.index')}}" class="btn btn-sm btn-outline-primary me-2 py-0">Listar</a>
-                            <a href="{{ route('pedido.create')}}" class="btn btn-sm btn-outline-success py-0 ">Novo</a>
+                            @if(isset($pedido->edit)) 
+                                <a href="{{ route('pedido.create')}}" class="btn btn-sm btn-outline-success py-0 ">Novo</a>
+                            @elseif(!isset($pedido->show))
+                            @elseif(isset($pedido->show))
+                                <a href="{{ route('pedido.create')}}" class="btn btn-sm btn-outline-success py-0 ">Novo</a>
+                            @endif
                     </div>  
                 </div>
             </div>

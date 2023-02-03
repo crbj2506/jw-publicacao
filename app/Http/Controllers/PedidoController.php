@@ -84,8 +84,8 @@ class PedidoController extends Controller
         if(Route::current()->action['as'] == "pedido.edit"){
             $pedido->edit = true;
         };
-        $pessoas = Pessoa::orderBy('nome')->get();
-        $publicacoes = Publicacao::orderBy('nome')->get();
+        $pessoas = Pessoa::orderBy('nome')->select('id as value', 'nome as text')->get();
+        $publicacoes = Publicacao::orderBy('nome')->select('id as value', 'nome as text')->get();
         return view('pedido.crud', ['pedido' => $pedido,'pessoas'=>$pessoas,'publicacoes'=>$publicacoes]);
     }
 
