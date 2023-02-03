@@ -49,7 +49,7 @@
                     <div class="col-5 container-fluid d-flex-inline text-end p-0">
                             <a href="{{ route('pessoa.index')}}" class="btn btn-sm btn-outline-primary me-2 py-0">Listar</a>
                             @if(isset($pessoa->edit)) 
-                                <a href="{{ route('pedido.create')}}" class="btn btn-sm btn-outline-success py-0 ">Nova</a>
+                                <a href="{{ route('pessoa.create')}}" class="btn btn-sm btn-outline-success py-0 ">Nova</a>
                             @elseif(!isset($pessoa->show))
                             @elseif(isset($pessoa->show))
                                 <a href="{{ route('pessoa.create')}}" class="btn btn-sm btn-outline-success py-0 ">Nova</a>
