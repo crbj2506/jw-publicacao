@@ -14,14 +14,14 @@ class Local extends Model
         'nome',
         'congregacao_id',
     ];
-    public function rules($id){
+    public static function rules($id){
         return [
             'sigla' => 'required|unique:locais,sigla,'.$id,
             'nome' => 'required|unique:locais,nome,'.$id,
             'congregacao_id' => 'required|exists:congregacoes,id',
         ];
     }
-    public function feedback(){
+    public static function feedback(){
         return [
             'required' => 'O campo :attribute é obrigatório'
         ];

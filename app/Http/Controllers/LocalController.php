@@ -6,101 +6,99 @@ use App\Models\Congregacao;
 use App\Models\Local;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Route;
 
 class LocalController extends Controller
 {
-
-    public $local;
-
-    public function __construct(Local $local){
-        $this->local = $local;
-    }
-
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\View\View
      */
     public function index()
     {
-        //
-        $locais = $this->local;
-       
+        //       
         if(App::environment() == 'local'){
-            $locais = $locais->paginate(10);
+            $locais = Local::orderBy('sigla')->paginate(10);
         }else{
-            $locais = $locais->paginate(50);
+            $locais = Local::orderBy('sigla')->paginate(50);
         }
-        return view('local.index',['locais' => $locais]);
+        return view('local.crud',['locais' => $locais]);
     }
 
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\View\View
      */
     public function create()
     {
         //
-        $congregacoes = Congregacao::orderBy('nome')->get();
-        return view('local.create',['congregacoes' => $congregacoes]);
+        $congregacoes = Congregacao::orderBy('nome')->select('id as value', 'nome as text')->get();
+        return view('local.crud',['congregacoes' => $congregacoes]);
     }
 
     /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function store(Request $request)
     {
         //
-        $request->validate($this->local->rules($id = null),$this->local->feedback());
-        $local = $this->local->create($request->all());
+        $request->validate(Local::rules($id = null),Local::feedback());
+        $local = Local::create($request->all());
         return redirect()->route('local.show', ['local' => $local->id]);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  Integer $id
-     * @return \Illuminate\Http\Response
+     * @param  \App\Models\Local  $local
+     * @return \Illuminate\Contracts\View\View
      */
-    public function show($id)
+    public function show($local)
     {
         //
-        $local = $this->local->find($id);
+        $local = Local::find($local);
         $congregacoes = Congregacao::orderBy('nome')->get();
-        return view('local.show', ['local' => $local, 'congregacoes' => $congregacoes]);
+        if(Route::current()->action['as'] == "local.show"){
+            $local->show = true;
+        };
+        return view('local.crud', ['local' => $local, 'congregacoes' => $congregacoes]);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
      * @param  \App\Models\Local  $local
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\View\View
      */
     public function edit(Local $local)
     {
         //
-        $congregacoes = Congregacao::orderBy('nome')->get();
-        return view('local.edit', ['local' => $local, 'congregacoes' => $congregacoes]);
+        if(Route::current()->action['as'] == "local.edit"){
+            $local->edit = true;
+        };
+        $congregacoes = Congregacao::orderBy('nome')->select('id as value', 'nome as text')->get();
+        return view('local.crud', ['local' => $local, 'congregacoes' => $congregacoes]);
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  Integer $id
+     * @param  \App\Models\Local  $local
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $local)
     {
         //
-        $request->validate($this->local->rules($id),$this->local->feedback());
-        $local = $this->local->find($id);
+        $request->validate(Local::rules($local),Local::feedback());
+        $local = Local::find($local);
         $local->update($request->all());
-        return redirect()->route('local.show', ['local' => $local->id]);
+        return redirect()->route('local.show', ['local' => $local]);
     }
 
     /**
