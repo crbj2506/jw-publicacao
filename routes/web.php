@@ -87,6 +87,16 @@ Route::middleware('verified', 'permissao:,,Administrador')
 Route::middleware('verified', 'permissao:,,Administrador')
     ->resource('estoque', 'App\Http\Controllers\EstoqueController');
 
+//Rota para POST do Filtro de Estoque
+Route::middleware('verified', 'permissao:,Servo,Administrador')
+    ->name('estoque.filtrado.post')
+    ->post('estoqueFiltrado', [App\Http\Controllers\EstoqueController::class, 'index']);
+
+//Rota para GET do Filtro de Estoque
+Route::middleware('verified', 'permissao:,Servo,Administrador')
+    ->name('estoque.filtrado.get')
+    ->get('estoqueFiltrado', [App\Http\Controllers\EstoqueController::class, 'index']);
+
 // ###########################
 // ##  CONJUNTO INVENTÁRIO
 // ###########################
@@ -104,21 +114,26 @@ Route::middleware('verified', 'permissao:,,Administrador')
 // ###########################
 Route::middleware('verified', 'permissao:,,Administrador')
     ->resource('pedido', 'App\Http\Controllers\PedidoController');
-    
+
+// ###########################
+// ##  CONJUNTO INVENTARIO
+// ###########################
+// Rota para POST do Filtro de Inventários
 Route::middleware('verified', 'permissao:,Servo,Administrador')
     ->name('inventario.filtrado.post')
     ->post('inventarioFiltrado', [App\Http\Controllers\InventarioController::class, 'index']);
 
-// Rota para POST do Filtro de Inventários
+// Rota para GET do Filtro de Inventários
 Route::middleware('verified', 'permissao:,Servo,Administrador')
     ->name('inventario.filtrado.get')
     ->get('inventarioFiltrado', [App\Http\Controllers\InventarioController::class, 'index']);
 
-// Rota para GET do Filtro de Inventários
+// Rota Fazer Inventário GET (Informar Congregação, Ano e Mês)
 Route::middleware('verified', 'permissao:,Servo,Administrador')
     ->name('inventario.inventariar.get')
     ->get('inventariar', [App\Http\Controllers\InventarioController::class, 'inventariar']);
 
+// Rota Fazer Inventário POST (Faz o Inventário)
 Route::middleware('verified', 'permissao:,Servo,Administrador')
     ->name('inventario.inventariar.post')
     ->post('inventariar', [App\Http\Controllers\InventarioController::class, 'inventariar']);

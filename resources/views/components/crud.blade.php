@@ -12,6 +12,7 @@
                     </div>  
                 </div>
             </div>
+            {{$filtro}}
             <div class="card-body">
                 <table class="table table-striped table-hover">
                     {{$lista}}

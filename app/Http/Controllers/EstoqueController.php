@@ -14,21 +14,38 @@ class EstoqueController extends Controller
     /**
      * Display a listing of the resource.
      *
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Contracts\View\View
      */
-    public function index()
+    public function index(Request  $request)
     {
         //
+        $publicacaoFiltro = null; 
+        if(empty($request->query())){
+            $request->session()->forget('publicacaoFiltro');
+        };
+
         $estoques = Estoque::select('*')
             ->orderBy(Local::select('sigla')
                 ->whereColumn('locais.id', 'estoques.local_id')
         );
-       
+
+        if($request->all('publicacao')['publicacao'] || $request->session()->exists('publicacaoFiltro')){
+            $publicacaoFiltro = $request->session()->exists('publicacaoFiltro') ? $request->session()->get('publicacaoFiltro') : $request->all('publicacao')['publicacao'];
+            if($request->all('publicacao')['publicacao']){
+                $request->session()->put('publicacaoFiltro', $publicacaoFiltro);
+            }
+            $estoques = $estoques->whereRelation('publicacao', 'nome', 'like', '%'. $publicacaoFiltro. '%');
+                
+        }
+
         if(App::environment() == 'local'){
             $estoques = $estoques->paginate(10);
         }else{
             $estoques = $estoques->paginate(100);
         }
+        $estoques->publicacaoFiltro = $publicacaoFiltro;
+
         return view('estoque.crud',['estoques' => $estoques]);
     }
 

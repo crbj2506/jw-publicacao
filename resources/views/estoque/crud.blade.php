@@ -7,12 +7,25 @@
         :l="$estoques"
         :o="$estoque"
         r="estoque"
-        tc="Cadastra Conteúdo"
-        te="Altera Conteúdo"
-        ti="Lista de Conteúdos"
-        ts="Mostra Conteúdo"
+        tc="Cadastra Estoque"
+        te="Altera Estoque"
+        ti="Lista do Estoque"
+        ts="Mostra Estoque"
     >
         @if($estoques)
+            <x-slot:filtro>  
+        <div class="card-header p-1">    
+            <form  id="formFiltro" method="POST" action="{{ route('estoque.filtrado.post')}}" enctype="multipart/form-data">
+                @csrf
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text" id="selectLabelCongregacao">Filtros</span>
+                    <input id="publicacao" name="publicacao" type="text" class="form-control" placeholder="digite parte do nome da Publicação" value="{{ $estoques->publicacaoFiltro ? $estoques->publicacaoFiltro : ''}}">
+                    <button type="submit" class="btn btn-sm btn-outline-primary" form="formFiltro"> Filtrar </button>
+                    <a href="{{ route('estoque.index')}}" class="btn btn-sm btn-outline-success">Limpar</a>
+                </div>
+            </form> 
+        </div>               
+            </x-slot>
             <x-slot:lista>
                 <thead>
                     <tr>
@@ -48,6 +61,8 @@
                 </tbody>
             </x-slot>
         @else
+            <x-slot:filtro>
+            </x-slot>
             <x-slot:lista>
             </x-slot>
             <div class="container-fluid d-flex flex-wrap">

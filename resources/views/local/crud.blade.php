@@ -13,6 +13,8 @@
         ts="Mostra Local"
     >
         @if($locais)
+            <x-slot:filtro>
+            </x-slot>
             <x-slot:lista>
                 <thead>
                     <tr>
@@ -36,6 +38,8 @@
                 </tbody>
             </x-slot>
         @else
+            <x-slot:filtro>
+            </x-slot>
             <x-slot:lista>
             </x-slot>
             <div class="container-fluid d-flex flex-wrap">
