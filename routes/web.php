@@ -60,31 +60,31 @@ Route::middleware('verified', 'permissao:,,Administrador')
 // ###########################
 // ##  CONJUNTO ENVIO
 // ###########################
-Route::middleware('verified', 'permissao:,,Administrador')
+Route::middleware('verified', 'permissao:,Servo,Administrador')
     ->resource('envio', 'App\Http\Controllers\EnvioController');
 
 // ###########################
 // ##  CONJUNTO VOLUME
 // ###########################
-Route::middleware('verified', 'permissao:,,Administrador')
+Route::middleware('verified', 'permissao:,Servo,Administrador')
     ->resource('volume', 'App\Http\Controllers\VolumeController');
 
 // ###########################
 // ##  CONJUNTO CONTEÚDO
 // ###########################
-Route::middleware('verified', 'permissao:,,Administrador')
+Route::middleware('verified', 'permissao:,Servo,Administrador')
     ->resource('conteudo', 'App\Http\Controllers\ConteudoController');
 
 // ###########################
 // ##  CONJUNTO LOCAL
 // ###########################
-Route::middleware('verified', 'permissao:,,Administrador')
+Route::middleware('verified', 'permissao:,Servo,Administrador')
     ->resource('local', 'App\Http\Controllers\LocalController');
 
 // ###########################
 // ##  CONJUNTO ESTOQUE
 // ###########################
-Route::middleware('verified', 'permissao:,,Administrador')
+Route::middleware('verified', 'permissao:,Servo,Administrador')
     ->resource('estoque', 'App\Http\Controllers\EstoqueController');
 
 //Rota para POST do Filtro de Estoque
@@ -100,19 +100,19 @@ Route::middleware('verified', 'permissao:,Servo,Administrador')
 // ###########################
 // ##  CONJUNTO INVENTÁRIO
 // ###########################
-Route::middleware('verified', 'permissao:,,Administrador')
+Route::middleware('verified', 'permissao:,Servo,Administrador')
     ->resource('inventario', 'App\Http\Controllers\InventarioController');
 
 // ###########################
 // ##  CONJUNTO PESSOA
 // ###########################
-Route::middleware('verified', 'permissao:,,Administrador')
+Route::middleware('verified', 'permissao:,Servo,Administrador')
     ->resource('pessoa', 'App\Http\Controllers\PessoaController');
 
 // ###########################
 // ##  CONJUNTO PEDIDO
 // ###########################
-Route::middleware('verified', 'permissao:,,Administrador')
+Route::middleware('verified', 'permissao:,Servo,Administrador')
     ->resource('pedido', 'App\Http\Controllers\PedidoController');
 
 // ###########################
