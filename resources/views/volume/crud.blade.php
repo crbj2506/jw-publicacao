@@ -7,10 +7,10 @@
         :l="$volumes"
         :o="$volume"
         r="volume"
-        tc="Cadastra Conteúdo"
-        te="Altera Conteúdo"
-        ti="Lista de Conteúdos"
-        ts="Mostra Conteúdo"
+        tc="Cadastra Volume"
+        te="Altera Volume"
+        ti="Lista de Volumes"
+        ts="Mostra Volume"
     >
         @if($volumes)
             <x-slot:filtro>

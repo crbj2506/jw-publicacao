@@ -65,6 +65,12 @@
                                                 <a class="dropdown-item" href="{{ route('estoque.index') }}">
                                                     {{ __('Estoque') }}
                                                 </a>
+                                                <a class="dropdown-item" href="{{ route('inventariar.get') }}">
+                                                    {{ __('Inventáriar') }}
+                                                </a>
+                                                <a class="dropdown-item" href="{{ route('inventario.index') }}">
+                                                    {{ __('Inventário') }}
+                                                </a>
                                                 <a class="dropdown-item" href="{{ route('pessoa.index') }}">
                                                     {{ __('Irmãos') }}
                                                 </a>
@@ -76,6 +82,9 @@
                                                 </a>
                                                 <a class="dropdown-item" href="{{ route('pedido.index') }}">
                                                     {{ __('Pedidos dos Irmãos') }}
+                                                </a>
+                                                <a class="dropdown-item" href="{{ route('publicacao.index') }}">
+                                                    {{ __('Publicações') }}
                                                 </a>
                                                 <a class="dropdown-item" href="{{ route('volume.index') }}">
                                                     {{ __('Volumes dos Envios') }}
@@ -90,48 +99,7 @@
                             <ul class="navbar-nav me-auto">
                                 @auth
                                     @if(auth()->user()->permissoes->contains('permissao', '=', 'Servo') || auth()->user()->permissoes->contains('permissao', '=', 'Administrador'))
-                                        <li class="nav-item dropdown">
-                                            <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                                            {{ __('Inventários') }}
-                                            </a>
 
-                                            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                                <a class="dropdown-item" href="{{ route('inventario.index') }}">
-                                                    {{ __('Listar') }}
-                                                </a>
-                                            </div>
-                                        </li>
-                                    @endif
-                                @endauth
-                            </ul>
-                        </div>
-                        <div class="">
-                            <ul class="navbar-nav me-auto">
-                                @auth
-                                    @if(auth()->user()->permissoes->contains('permissao', '=', 'Servo') || auth()->user()->permissoes->contains('permissao', '=', 'Administrador'))
-
-                                    @endif
-                                @endauth
-                            </ul>
-                        </div>
-                        <div class="">
-                            <ul class="navbar-nav me-auto">
-                                @auth
-                                    @if(auth()->user()->permissoes->contains('permissao', '=', 'Servo') || auth()->user()->permissoes->contains('permissao', '=', 'Administrador'))
-                                <li class="nav-item dropdown">
-                                    <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                                    {{ __('Publicações') }}
-                                    </a>
-
-                                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                        <a class="dropdown-item" href="{{ route('publicacao.index') }}">
-                                            {{ __('Listar') }}
-                                        </a>
-                                        <a class="dropdown-item" href="{{ route('publicacao.create') }}">
-                                            {{ __('Adicionar') }}
-                                        </a>
-                                    </div>
-                                </li>
                                     @endif
                                 @endauth
                             </ul>

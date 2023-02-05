@@ -11,20 +11,15 @@ use App\Models\Publicacao;
 use DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Validation\Rule;
 
 class InventarioController extends Controller
 {
-    public $inventario;
-
-    public function __construct(Inventario $inventario){
-        $this->inventario = $inventario;
-    }
-
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\View\View
      */
     public function index(Request $request)
     {
@@ -42,8 +37,7 @@ class InventarioController extends Controller
             $request->session()->forget('publicacaoFiltro');
         };
 
-        $inventarios = $this->inventario
-        ->orderByDesc('ano')
+        $inventarios = Inventario::orderByDesc('ano')
         ->orderByDesc('mes')
         ->orderBy(Publicacao::select('nome')
         ->whereColumn('publicacoes.id', 'inventarios.publicacao_id'));
@@ -93,20 +87,28 @@ class InventarioController extends Controller
         $inventarios->mesFiltro = $mesFiltro;
         $inventarios->publicacaoFiltro = $publicacaoFiltro;
 
-        return view('inventario.index',['inventarios' => $inventarios]);
+        return view('inventario.crud',['inventarios' => $inventarios]);
     }
 
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\View\View
      */
     public function create()
     {
         //
-        $congregacoes = Congregacao::orderBy('nome')->get();
-        $publicacoes = Publicacao::orderBy('nome')->get();
-        return view('inventario.create',['congregacoes' => $congregacoes,'publicacoes' => $publicacoes]);
+        $congregacoes = Congregacao::orderBy('nome')->select('id as value', 'nome as text')->get();
+        $publicacoes = Publicacao::orderBy('nome')->select('id as value', 'nome as text')->get();
+        $anos = Inventario::select('ano as value', 'ano as text')->orderBy('ano')->distinct()->get();
+        for ($i=1; $i <= 12; $i++) { 
+            if($i<10){
+                $meses[] = ['value' => "0$i", 'text' => "0$i"];
+            }else{
+                $meses[] = ['value' => "$i", 'text' => "$i"];
+            }
+        }
+        return view('inventario.crud',['congregacoes' => $congregacoes,'publicacoes' => $publicacoes,'anos' => $anos,'meses' => $meses]);
     }
 
     /**
@@ -121,7 +123,7 @@ class InventarioController extends Controller
         // Se não existe REQUEST mostra View inventariar
         if(!$request->all()){
             $congregacoes = Congregacao::orderBy('nome')->get();
-            $publicacoes = Publicacao::orderBy('nome')->get();
+            $publicacoes = Publicacao::orderBy('nome')->select('id as value', 'nome as text')->get();
             return view('inventario.inventariar',['congregacoes' => $congregacoes,'publicacoes' => $publicacoes]);
         }else{
             $ano = $request->all('ano')['ano'];
@@ -130,7 +132,7 @@ class InventarioController extends Controller
             $inventario['ano'] = $ano;
             $inventario['mes'] = $mes;
             $inventario['congregacao_id'] = $congregacao_id;
-            $request->validate($this->inventario->rulesInventariar($ano,$mes,$congregacao_id,$id = null), $this->inventario->feedback());
+            $request->validate(Inventario::rulesInventariar($ano,$mes,$congregacao_id,$id = null), Inventario::feedback($congregacao_id));
 
             // Ver se tem Envios não Inventáriados e com data de retirada
             $enviosNaoInventariados = Conteudo::select('*')
@@ -219,7 +221,7 @@ class InventarioController extends Controller
                     'estoque' => $estoque,
                     'saida' => $saida,
                 ];
-                $this->inventario->create($itemInventario);
+                Inventario::create($itemInventario);
     
                 $publicacoes[] = Publicacao::find($publicacao_id)->get();
             }
@@ -234,12 +236,12 @@ class InventarioController extends Controller
      * Display the specified resource.
      *
      * @param  \App\Models\Inventario  $inventario
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\View\View
      */
     public function mostra($ano,$mes,$congregacao_id)
     {
         //
-        $inventarios = $this->inventario->where('ano', $ano)->where('mes', $mes)->where('congregacao_id', $congregacao_id)
+        $inventarios = Inventario::where('ano', $ano)->where('mes', $mes)->where('congregacao_id', $congregacao_id)
         ->orderByDesc('ano')
         ->orderByDesc('mes')
         ->orderBy(Publicacao::select('nome')
@@ -254,29 +256,39 @@ class InventarioController extends Controller
      * Display the specified resource.
      *
      * @param  \App\Models\Inventario  $inventario
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\View\View
      */
     public function show($id)
     {
         //
-        $inventario = $this->inventario->find($id);
+        $inventario = Inventario::find($id);
         $congregacoes = Congregacao::orderBy('nome')->get();
-        $publicacoes = Publicacao::orderBy('nome')->get();
-        return view('inventario.show', ['inventario' => $inventario, 'congregacoes' => $congregacoes, 'publicacoes' => $publicacoes]);
+        $publicacoes = Publicacao::orderBy('nome')->select('id as value', 'nome as text')->get();
+        $anos = Inventario::select('ano')->orderBy('ano')->distinct()->get();
+        $meses = Inventario::select('mes')->orderBy('mes')->distinct()->get();
+        if(Route::current()->action['as'] == "inventario.show"){
+            $inventario->show = true;
+        };
+        return view('inventario.crud', ['inventario' => $inventario, 'congregacoes' => $congregacoes, 'publicacoes' => $publicacoes,'anos' => $anos,'meses' => $meses]);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
      * @param  \App\Models\Inventario  $inventario
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\View\View
      */
     public function edit(Inventario $inventario)
     {
         //
-        $congregacoes = Congregacao::orderBy('nome')->get();
-        $publicacoes = Publicacao::orderBy('nome')->get();
-        return view('inventario.edit', ['inventario' => $inventario, 'congregacoes' => $congregacoes, 'publicacoes' => $publicacoes]);
+        $congregacoes = Congregacao::orderBy('nome')->select('id as value', 'nome as text')->get();
+        $publicacoes = Publicacao::orderBy('nome')->select('id as value', 'nome as text')->get();
+        $anos = Inventario::select('ano as value','ano as text')->orderBy('ano')->distinct()->get();
+        $meses = Inventario::select('mes as value','mes as text')->orderBy('mes')->distinct()->get();
+        if(Route::current()->action['as'] == "inventario.edit"){
+            $inventario->edit = true;
+        };
+        return view('inventario.crud', ['inventario' => $inventario, 'congregacoes' => $congregacoes, 'publicacoes' => $publicacoes,'anos' => $anos,'meses' => $meses]);
     }
 
     /**
@@ -292,8 +304,8 @@ class InventarioController extends Controller
         $ano = $request->all('ano')['ano'] ? $request->all('ano')['ano'] : null;
         $mes = $request->all('mes')['mes'] ? $request->all('mes')['mes'] : null;
         $congregacao_id = $request->all('congregacao_id')['congregacao_id'] ? $request->all('congregacao_id')['congregacao_id'] : null;
-        $request->validate($this->inventario->rulesUpdate($ano,$mes,$congregacao_id,$id),$this->inventario->feedback());
-        $inventario = $this->inventario->find($id);
+        $request->validate(Inventario::rulesUpdate($ano,$mes,$congregacao_id,$id),Inventario::feedback($congregacao_id));
+        $inventario = Inventario::find($id);
         $inventario->update($request->all());
         return redirect()->route('inventario.show', ['inventario' => $inventario->id]);
     }
@@ -373,7 +385,7 @@ class InventarioController extends Controller
             'quantidade.integer' => 'A quantidade informada deve ser um número inteiro',
         ];
         $request->validate($rules,$feedback);
-        $this->inventario->create([
+        Inventario::create([
             'congregacao_id' => $congregacao->id, 
             'publicacao_id' => $request->all('publicacao_id')['publicacao_id'], 
             'quantidade' => $request->all('quantidade')['quantidade'], 

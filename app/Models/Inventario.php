@@ -18,8 +18,12 @@ class Inventario extends Model
         'estoque',
         'saida',
     ];
-    public function rulesInventariar($ano,$mes,$congregacao_id,$id){
-        $this->defineAnoMesUltimoInventariado($congregacao_id);
+    public static function rulesInventariar($ano,$mes,$congregacao_id,$id){
+        $anoMesUltimoInventariado  = self::defineAnoMesUltimoInventariado($congregacao_id);
+        $anoAnteriorAInventariar = $anoMesUltimoInventariado['anoAnteriorAInventariar'];
+        $anoAInventariar = $anoMesUltimoInventariado['anoAInventariar'];
+        $mesAnteriorAInventariar = $anoMesUltimoInventariado['mesAnteriorAInventariar'];
+        $mesAInventariar = $anoMesUltimoInventariado['mesAInventariar'];
         return [
             'ano' => [
                 'required',
@@ -31,7 +35,7 @@ class Inventario extends Model
                         ->where('mes', $mes)
                         ->where('congregacao_id', $congregacao_id);
                 }),
-                Rule::in(["$this->anoAnteriorAInventariar","$this->anoAInventariar"]),
+                Rule::in(["$anoAnteriorAInventariar","$anoAInventariar"]),
 
             ],
             'mes' => [
@@ -44,7 +48,7 @@ class Inventario extends Model
                         ->where('mes', $mes)
                         ->where('congregacao_id', $congregacao_id);
                 }),
-                Rule::in(["$this->mesAnteriorAInventariar","$this->mesAInventariar"]),
+                Rule::in(["$mesAnteriorAInventariar","$mesAInventariar"]),
 
             ],
             'congregacao_id' => [
@@ -61,23 +65,29 @@ class Inventario extends Model
         ];
     }
 
-    public function rulesUpdate(){
+    public static function rulesUpdate(){
         return [
             'recebido' => 'required|numeric|min:0|max:9999',
             'estoque' => 'required|numeric|min:0|max:9999',
             'saida' => 'required|numeric|min:0|max:9999',
         ];
     }
-    public function feedback(){
-        if(($this->anoAnteriorAInventariar == $this->anoAInventariar) || empty($this->anoAnteriorAInventariar)){
-            $ano = $this->anoAInventariar;
+    public static function feedback($congregacao_id){
+        $anoMesUltimoInventariado  = self::defineAnoMesUltimoInventariado($congregacao_id);
+        $anoAnteriorAInventariar = $anoMesUltimoInventariado['anoAnteriorAInventariar'];
+        $anoAInventariar = $anoMesUltimoInventariado['anoAInventariar'];
+        $mesAnteriorAInventariar = $anoMesUltimoInventariado['mesAnteriorAInventariar'];
+        $mesAInventariar = $anoMesUltimoInventariado['mesAInventariar'];
+
+        if(($anoAnteriorAInventariar == $anoAInventariar) || empty($anoAnteriorAInventariar)){
+            $ano = $anoAInventariar;
         }else{
-            $ano = $this->anoAnteriorAInventariar . ' ou ' . $this->anoAInventariar;
+            $ano = $anoAnteriorAInventariar . ' ou ' . $anoAInventariar;
         }
-        if($this->mesAnteriorAInventariar == $this->mesAInventariar || empty($this->mesAnteriorAInventariar)){
-            $mes = $this->mesAInventariar;
+        if($mesAnteriorAInventariar == $mesAInventariar || empty($mesAnteriorAInventariar)){
+            $mes = $mesAInventariar;
         }else{
-            $mes = $this->mesAnteriorAInventariar . ' ou ' . $this->mesAInventariar;
+            $mes = $mesAnteriorAInventariar . ' ou ' . $mesAInventariar;
         }
 
         return [
@@ -90,37 +100,38 @@ class Inventario extends Model
     ######################################################
     # Funções de Internas
 
-    public function defineAnoMesUltimoInventariado($congregacao_id){
+    public static function defineAnoMesUltimoInventariado($congregacao_id){
 
-        $anomesUltimoInventariado = $this->select('ano','mes')->where('congregacao_id', $congregacao_id)->orderBy('ano')->orderBy('mes')->get()->last();
+        $anomesUltimoInventariado = self::select('ano','mes')->where('congregacao_id', $congregacao_id)->orderBy('ano')->orderBy('mes')->get()->last();
         if($anomesUltimoInventariado){
             $anomesUltimoInventariado = $anomesUltimoInventariado->getAttributes();
             $anoUltimoInventariado = $anomesUltimoInventariado['ano'];
             $mesUltimoInventariado = $anomesUltimoInventariado['mes'];
             if($mesUltimoInventariado == '12'){
-                $this->anoAInventariar = (string) ((int) $anoUltimoInventariado +1);
-                $this->mesAInventariar = '01';
+                $anoAInventariar = (string) ((int) $anoUltimoInventariado +1);
+                $mesAInventariar = '01';
             }elseif($mesUltimoInventariado == '09' || $mesUltimoInventariado == '10' || $mesUltimoInventariado == '11'){
-                $this->anoAInventariar = $anoUltimoInventariado;
-                $this->mesAInventariar = (string) ((int) $mesUltimoInventariado +1);
+                $anoAInventariar = $anoUltimoInventariado;
+                $mesAInventariar = (string) ((int) $mesUltimoInventariado +1);
             }else{
-                $this->anoAInventariar = $anoUltimoInventariado;
-                $this->mesAInventariar = '0'.(string) ((int) $mesUltimoInventariado +1);
+                $anoAInventariar = $anoUltimoInventariado;
+                $mesAInventariar = '0'.(string) ((int) $mesUltimoInventariado +1);
             }
         }else{
-            $this->anoAInventariar = date("Y");
-            $this->mesAInventariar = date("m");
-            if($this->mesAInventariar == '01'){
-                $this->anoAnteriorAInventariar = (string) ((int) $this->anoAInventariar -1);
-                $this->mesAnteriorAInventariar = '12';
-            }elseif($this->mesAInventariar == '11' || $this->mesAInventariar == '12'){
-                $this->anoAnteriorAInventariar = $this->anoAInventariar;
-                $this->mesAnteriorAInventariar = (string) ((int) $this->mesAInventariar -1);
+            $anoAInventariar = date("Y");
+            $mesAInventariar = date("m");
+            if($mesAInventariar == '01'){
+                $anoAnteriorAInventariar = (string) ((int) $anoAInventariar -1);
+                $mesAnteriorAInventariar = '12';
+            }elseif($mesAInventariar == '11' || $mesAInventariar == '12'){
+                $anoAnteriorAInventariar = $anoAInventariar;
+                $mesAnteriorAInventariar = (string) ((int) $mesAInventariar -1);
             }else{
-                $this->anoAnteriorAInventariar = $this->anoAInventariar;
-                $this->mesAnteriorAInventariar = '0'.(string) ((int) $this->mesAInventariar -1);
+                $anoAnteriorAInventariar = $anoAInventariar;
+                $mesAnteriorAInventariar = '0'.(string) ((int) $mesAInventariar -1);
             }
         }
+        return ['anoAInventariar' => isset($anoAInventariar)?$anoAInventariar:null, 'mesAInventariar' => isset($mesAInventariar)?$mesAInventariar:null, 'anoAnteriorAInventariar' => isset($anoAnteriorAInventariar)?$anoAnteriorAInventariar:null, 'mesAnteriorAInventariar' => isset($mesAnteriorAInventariar)?$mesAnteriorAInventariar:null];
 
     }
     
