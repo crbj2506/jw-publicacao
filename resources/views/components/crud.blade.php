@@ -71,10 +71,10 @@
                         @endif
                     </div>
                     <div class="col text-end">
-                        @if(isset($o->show))
+                        @if(isset($o->show) && ($o->objetoAnterior || $o->objetoPosterior))
                             <a href='{{ $o->objetoAnterior ? route("$r.show",["$r" => $o->objetoAnterior]) : "" }}' class="btn btn-sm btn-outline-secondary @if(!$o->objetoAnterior) disabled @endif me-2">Anterior</a>
                             <a href='{{ $o->objetoPosterior ? route("$r.show",["$r" => $o->objetoPosterior]) : "" }}' class="btn btn-sm btn-outline-secondary @if(!$o->objetoPosterior) disabled @endif me-2">Posterior</a>
-                        @elseif(isset($o->edit))
+                        @elseif(isset($o->edit) && ($o->objetoAnterior || $o->objetoPosterior))
                             <a href='{{ $o->objetoAnterior ? route("$r.edit",["$r" => $o->objetoAnterior]) : "" }}' class="btn btn-sm btn-outline-secondary @if(!$o->objetoAnterior) disabled @endif me-2">Anterior</a>
                             <a href='{{ $o->objetoPosterior ? route("$r.edit",["$r" => $o->objetoPosterior]) : "" }}' class="btn btn-sm btn-outline-secondary @if(!$o->objetoPosterior) disabled @endif me-2">Posterior</a>
                         @endif

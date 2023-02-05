@@ -20,7 +20,7 @@
                     <tr>
                         <th class="text-center" scope="col">#</th>
                         <th class="text-center" scope="col">Pedido</th>
-                        <th class="text-center" scope="col">Publicacao</th>
+                        <th class="text-center" scope="col">Publicação</th>
                         <th class="text-center" scope="col">Quantidade</th>
                         <th class="text-center" scope="col">Solicitado</th>
                         <th class="text-center" scope="col">Entregue</th>

@@ -10,7 +10,7 @@
         tc="Cadastra Pessoa"
         te="Altera Pessoa"
         ti="Lista de Pessoas"
-        ts="Mostra Pessoas"
+        ts="Mostra Pessoa"
     >
         @if($pessoas)
             <x-slot:filtro>

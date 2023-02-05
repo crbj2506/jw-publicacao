@@ -32,7 +32,7 @@
                         <th class="text-center" scope="col">#</th>
                         <th class="text-center" scope="col">Local</th>
                         <th class="text-center" scope="col">Código</th>
-                        <th class="text-center" scope="col">Publicacao</th>
+                        <th class="text-center" scope="col">Publicação</th>
                         <th class="text-center" scope="col">Observação</th>
                         <th class="text-center" scope="col">Proporção</th>
                         <th class="text-center" scope="col">Quantidade</th>

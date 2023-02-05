@@ -43,7 +43,7 @@ class User extends Authenticatable implements MustVerifyEmail
     ];
 
 
-    public function rules($id){
+    public static function rules($id){
         return [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,'.$id],
@@ -52,14 +52,14 @@ class User extends Authenticatable implements MustVerifyEmail
         ];
     }
 
-    public function rules_update($id){
+    public static function rules_update($id){
         return [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,'.$id],
             //'permissao' => 'required|unique:permissoes,permissao,'.$id.'|min:3'
         ];
     }
-    public function feedback(){
+    public static function feedback(){
         return [
             'required' => 'O campo :attribute é obrigatório',
         ];

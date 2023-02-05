@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Route;
 
 class UserController extends Controller
 {
@@ -25,55 +26,47 @@ class UserController extends Controller
 
     use RegistersUsers;
 
-    public $user;
-
-    public function __construct(User $user){
-        $this->user = $user;
-    }
-
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\View\View
      */
     public function index()
     {
-        //
-        $users = $this->user;
-       
+        //       
         if(App::environment() == 'local'){
-            $users = $users->paginate(10);
+            $users = User::paginate(10);
         }else{
-            $users = $users->paginate(50);
+            $users = User::paginate(50);
         }
-        return view('user.index',['users' => $users]);
+        return view('user.crud',['users' => $users]);
     }
 
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\View\View
      */
     public function create()
     {
         //
         $permissoes = Permissao::get();
-        return view('user.create',[ 'permissoes' => $permissoes]);
+        return view('user.crud',[ 'permissoes' => $permissoes]);
     }
 
     /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function store(Request $request)
     {
         //
-        $request->validate($this->user->rules($id = null),$this->user->feedback());
+        $request->validate(User::rules($id = null),User::feedback());
         $dados = $request->all('name','email','password');
         $dados['password'] = Hash::make($dados['password']);
-        $user = $this->user->create($dados);
+        $user = User::create($dados);
         // Percorre as permissoes disponíveis e compara com o valor do check (on) do request
         // ID nome do check correponde ao ID da permissão no Banco
         $permissoes = Permissao::get();
@@ -90,27 +83,33 @@ class UserController extends Controller
      * Display the specified resource.
      *
      * @param  Integer $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\View\View
      */
     public function show($id)
     {
         //
-        $user = $this->user->find($id);
+        $user = User::find($id);
+        if(Route::current()->action['as'] == "user.show"){
+            $user->show = true;
+        };
         $permissoes = Permissao::get();
-        return view('user.show', ['user' => $user, 'permissoes' => $permissoes]);
+        return view('user.crud', ['user' => $user, 'permissoes' => $permissoes]);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
      * @param  \App\Models\User  $user
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\View\View
      */
     public function edit(User $user)
     {
         //
+        if(Route::current()->action['as'] == "user.edit"){
+            $user->edit = true;
+        };
         $permissoes = Permissao::get();
-        return view('user.edit', ['user' => $user, 'permissoes' => $permissoes]);
+        return view('user.crud', ['user' => $user, 'permissoes' => $permissoes]);
     }
 
     /**
@@ -118,13 +117,13 @@ class UserController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  Integer $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function update(Request $request, $id)
     {
         //
-        $request->validate($this->user->rules_update($id),$this->user->feedback());
-        $user = $this->user->find($id);
+        $request->validate(User::rules_update($id),User::feedback());
+        $user = User::find($id);
         $user->update($request->all());
         //Pega todas as permissões cadastradas no banco de dados
         $permissoes = Permissao::get();
