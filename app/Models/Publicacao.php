@@ -22,7 +22,7 @@ class Publicacao extends Model
 
     ];
 
-    public function rules($id){
+    public static function rules($id){
         return [
             'nome' => 'required|unique:publicacoes,nome,'.$id.'|min:5',
             'codigo' => 'unique:publicacoes,codigo,'.$id.'|min:2|max:10',
@@ -32,7 +32,7 @@ class Publicacao extends Model
             //'imagem' => 'file|mimes:jpg',
         ];
     }
-    public function feedback(){
+    public static function feedback(){
         return [
             'required' => 'O campo :attribute é obrigatório',
             'nome.unique' => 'O nome da publicação já existe',

@@ -4,19 +4,15 @@ namespace App\Http\Controllers;
 use App\Models\Publicacao;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 
 class PublicacaoController extends Controller
 {
-    public $publicacao;
-    public function __construct(Publicacao $publicacao){
-        $this->publicacao = $publicacao;
-    }
-
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\View\View
      */
     public function index(Request $request)
     {
@@ -27,14 +23,14 @@ class PublicacaoController extends Controller
             $request->session()->forget('nomeFiltro');
         };
 
-        $publicacoes = $this->publicacao;
-
         if($request->all('filtro')['filtro'] || $request->session()->exists('nomeFiltro')){
             $nomeFiltro = $request->session()->exists('nomeFiltro') ? $request->session()->get('nomeFiltro') : $request->all('filtro')['filtro'];
             if($request->all('filtro')['filtro']){
                 $request->session()->put('nomeFiltro', $nomeFiltro);
             }
-            $publicacoes = $publicacoes->where('nome', 'like', '%'. $nomeFiltro. '%');
+            $publicacoes = Publicacao::where('nome', 'like', '%'. $nomeFiltro. '%')->orderBy('nome');
+        }else{
+            $publicacoes = Publicacao::orderBy('nome');
         }
         if(App::environment() == 'local'){
             $publicacoes = $publicacoes->paginate(10);
@@ -45,34 +41,34 @@ class PublicacaoController extends Controller
         $publicacoes->filtros = $request->all('filtro');
         $publicacoes->nomeFiltro = $nomeFiltro;
 
-        return view('publicacao.index',['publicacoes' => $publicacoes]);
+        return view('publicacao.crud',['publicacoes' => $publicacoes]);
     }
 
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\View\View
      */
     public function create()
     {
         //
-        return view('publicacao.create');
+        return view('publicacao.crud');
     }
 
     /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function store(Request $request)
     {
         //
-        $request->validate($this->publicacao->rules($id = null),$this->publicacao->feedback());
+        $request->validate(Publicacao::rules($id = null),Publicacao::feedback());
         $imagem = $request->file('imagem');
         if($imagem){
             $imagem_urn = $imagem->store('imagens', 'public');
-            $publicacao = $this->publicacao->create([
+            $publicacao = Publicacao::create([
                 'nome' => $request->nome,
                 'observacao' => $request->observacao,
                 'proporcao_cm' => $request->proporcao_cm,
@@ -82,7 +78,7 @@ class PublicacaoController extends Controller
                 'item' => $request->item
             ]);
         }else{
-            $publicacao = $this->publicacao->create([
+            $publicacao = Publicacao::create([
                 'nome' => $request->nome,
                 'observacao' => $request->observacao,
                 'proporcao_cm' => $request->proporcao_cm,
@@ -98,29 +94,48 @@ class PublicacaoController extends Controller
      * Display the specified resource.
      *
      * @param  Integer $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\View\View
      */
     public function show($id)
     {
         //
-        $publicacao = $this->publicacao->find($id);
-        $idPublicacaoAnterior = $this->publicacao->where('id', '<', $id)->max('id');
-        $idPublicacaoPosterior = $this->publicacao->where('id', '>', $id)->min('id');
-        return view('publicacao.show', ['publicacao' => $publicacao, 'idPublicacaoAnterior' => $idPublicacaoAnterior, 'idPublicacaoPosterior' => $idPublicacaoPosterior]);
+        $publicacao = Publicacao::find($id);
+        $publicacoes = Publicacao::orderBy('nome')->get();
+        $indicePublicacaoAnterior = array_search($publicacao, $publicacoes->all()) - 1;
+        $indicePublicacaoPosterior = array_search($publicacao, $publicacoes->all()) + 1;
+        $publicacaoAnterior = $publicacoes->get($indicePublicacaoAnterior);
+        $publicacaoPosterior = $publicacoes->get($indicePublicacaoPosterior);
+        $publicacao->objetoAnterior = $publicacaoAnterior ? $publicacaoAnterior->id : null;
+        $publicacao->objetoPosterior = $publicacaoPosterior ? $publicacaoPosterior->id : null;
+
+        if(Route::current()->action['as'] == "publicacao.show"){
+            $publicacao->show = true;
+        };
+        return view('publicacao.crud', ['publicacao' => $publicacao]);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
      * @param  \App\Models\Publicacao  $publicacao
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\View\View
      */
     public function edit(Publicacao $publicacao)
     {
         //
-        $publicacaoAnterior = $this->publicacao->where('id', '<', $publicacao->id)->get()->last();
-        $publicacaoPosterior = $this->publicacao->where('id', '>', $publicacao->id)->get()->first();
-        return view('publicacao.edit', ['publicacao' => $publicacao, 'publicacaoAnterior' => $publicacaoAnterior, 'publicacaoPosterior' => $publicacaoPosterior]);
+        $publicacao = Publicacao::find($publicacao->id);
+        $publicacoes = Publicacao::orderBy('nome')->get();
+        $indicePublicacaoAnterior = array_search($publicacao, $publicacoes->all()) - 1;
+        $indicePublicacaoPosterior = array_search($publicacao, $publicacoes->all()) + 1;
+        $publicacaoAnterior = $publicacoes->get($indicePublicacaoAnterior);
+        $publicacaoPosterior = $publicacoes->get($indicePublicacaoPosterior);
+        $publicacao->objetoAnterior = $publicacaoAnterior ? $publicacaoAnterior->id : null;
+        $publicacao->objetoPosterior = $publicacaoPosterior ? $publicacaoPosterior->id : null;
+
+        if(Route::current()->action['as'] == "publicacao.edit"){
+            $publicacao->edit = true;
+        };
+        return view('publicacao.crud', ['publicacao' => $publicacao]);
     }
 
     /**
@@ -128,13 +143,13 @@ class PublicacaoController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  Integer $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function update(Request $request, $id)
     {
         //
-        $publicacao = $this->publicacao->find($id);
-        $request->validate($this->publicacao->rules($id),$this->publicacao->feedback());
+        $publicacao = Publicacao::find($id);
+        $request->validate(Publicacao::rules($id),Publicacao::feedback());
         $imagem = $request->file('imagem');
         // Se existe imagem nova informada para atualizar
         if($imagem){
@@ -157,12 +172,12 @@ class PublicacaoController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  Integer $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function destroy($id)
     {
         //
-        $publicacao = $this->publicacao->find($id);
+        $publicacao = Publicacao::find($id);
         $publicacao->delete();
         return redirect()->route('publicacao.index');
     }
