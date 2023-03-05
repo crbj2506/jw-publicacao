@@ -79,7 +79,7 @@
                         options="{{json_encode($locais)}}"
                         old_id="{{ isset($estoque) ? $estoque->local_id : @old('local_id') }}"
                         required="required"
-                        value="{{ isset($estoque) ? $estoque->publicacao->nome : @old('local_id') }}"
+                        value="{{ isset($estoque) ? $estoque->local->nome : @old('local_id') }}"
                         {{isset($estoque->show) ? 'disabled' : ''}}
                     ></select-filter-component>
                 </div>
