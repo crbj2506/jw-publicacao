@@ -83,7 +83,6 @@
                         type="date"
                         name="data" 
                         id="data" 
-                        required="required"
                         value="{{isset($envio) ? $envio->data : (old('data')?old('data'):'')}}"
                         {{isset($envio->show) ? 'disabled' : ''}} 
                         class="@error('data') is-invalid @enderror {{old('data') ? 'is-valid' : ''}}"
@@ -96,7 +95,6 @@
                         type="date"
                         name="retirada" 
                         id="retirada" 
-                        required="required"
                         value="{{isset($envio) ? $envio->retirada : (old('retirada')?old('retirada'):'')}}"
                         {{isset($envio->show) ? 'disabled' : ''}} 
                         class="@error('retirada') is-invalid @enderror {{old('retirada') ? 'is-valid' : ''}}"
