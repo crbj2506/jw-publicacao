@@ -123,6 +123,16 @@
                         @error('quantidade') message="{{$message}}" @enderror>
                     </input-group-component>
                 </div>
+                <div class="col-12 col-sm-6 col-md-4 p-2">
+                    <input-group-component
+                        label="Proporção:" 
+                        type="text"
+                        name="proporcao" 
+                        id="proporcao" 
+                        disabled="disabled"
+                        value=" {{$estoque->publicacao->proporcao_cm ? $estoque->publicacao->proporcao_cm . ' cm' : ''}}{{$estoque->publicacao->proporcao_cm && $estoque->publicacao->proporcao_unidade ? ' = ' : ''}}{{$estoque->publicacao->proporcao_unidade ? $estoque->publicacao->proporcao_unidade : ''}}">
+                    </input-group-component>
+                </div>
             </div>
         @endif
     </x-crud>
