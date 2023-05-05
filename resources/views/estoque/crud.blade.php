@@ -38,6 +38,7 @@
                         <th class="text-center" scope="col">Quantidade</th>
                         <th class="text-center" scope="col">Ver</th>
                         <th class="text-center" scope="col">Editar</th>
+                        <th class="text-center" scope="col">Excluir</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -56,6 +57,15 @@
                             <td class="py-0 text-center" scope="row">{{$e->quantidade}}</td>
                             <td class="py-0 text-center" scope="row"><a href="{{ route('estoque.show',['estoque' => $e->id])}}" class="btn btn-sm btn-outline-primary py-0">Ver</a></td>
                             <td class="py-0 text-center" scope="row"><a href="{{ route('estoque.edit',['estoque' => $e->id])}}" class="btn btn-sm btn-outline-warning py-0">Editar</a></td>
+                            <td class="py-0 text-center" scope="row">
+                                @if($e->quantidade == 0)
+                                    <form  id="formExcluir_{{$e->id}}" method="POST" action="{{ route('estoque.destroy',['estoque' => $e->id])}}" enctype="multipart/form-data">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-outline-danger py-0" form="formExcluir_{{$e->id}}"> Excluir </button>
+                                    </form>
+                                @endif
+                            </td>
                         </tr>
                     @endforeach
                 </tbody>
