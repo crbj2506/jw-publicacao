@@ -49,11 +49,7 @@
                             <td class="py-0 text-end" scope="row">{{$e->publicacao->codigo}}</td>
                             <td class="py-0" scope="row">{{$e->publicacao->nome}}</td>
                             <td class="py-0 text-center" scope="row">{{$e->publicacao->observacao}}</td>
-                            <td class="py-0 text-center" scope="row">
-                                {{$e->publicacao->proporcao_cm ? $e->publicacao->proporcao_cm . ' cm' : ''}}
-                                {{$e->publicacao->proporcao_cm && $e->publicacao->proporcao_unidade ? ' = ' : ''}}
-                                {{$e->publicacao->proporcao_unidade ? $e->publicacao->proporcao_unidade : ''}}
-                            </td>
+                            <td class="py-0 text-center" scope="row">{{$e->publicacao->proporcao()}}</td>
                             <td class="py-0 text-center" scope="row">{{$e->quantidade}}</td>
                             <td class="py-0 text-center" scope="row"><a href="{{ route('estoque.show',['estoque' => $e->id])}}" class="btn btn-sm btn-outline-primary py-0">Ver</a></td>
                             <td class="py-0 text-center" scope="row"><a href="{{ route('estoque.edit',['estoque' => $e->id])}}" class="btn btn-sm btn-outline-warning py-0">Editar</a></td>
@@ -130,7 +126,7 @@
                         name="proporcao" 
                         id="proporcao" 
                         disabled="disabled"
-                        value=" {{$estoque->publicacao->proporcao_cm ? $estoque->publicacao->proporcao_cm . ' cm' : ''}}{{$estoque->publicacao->proporcao_cm && $estoque->publicacao->proporcao_unidade ? ' = ' : ''}}{{$estoque->publicacao->proporcao_unidade ? $estoque->publicacao->proporcao_unidade : ''}}">
+                        value="{{isset($estoque) ? $estoque->publicacao->proporcao() : ''}}">
                     </input-group-component>
                 </div>
             </div>

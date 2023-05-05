@@ -39,4 +39,12 @@ class Publicacao extends Model
             'nome.min' => 'O nome deve ter no mínimo 3 caracteres'
         ];
     }
+
+    public function proporcao(){
+        $proporcao = null;
+        $proporcao .= $this->proporcao_cm ? $this->proporcao_cm . ' cm' : '';
+        $proporcao .= $this->proporcao_cm && $this->proporcao_unidade ? ' = ' : '';
+        $proporcao .= $this->proporcao_unidade ? $this->proporcao_unidade . ' cm' : '';
+        return $proporcao;
+    }
 }
