@@ -72,6 +72,7 @@
                         {{isset($conteudo->show) ? 'disabled' : ''}}
                     ></select-filter-component>
                 </div>
+
                 <div class="col-12 col-xl-6 p-2">
                     <select-filter-component
                         class="@error('volume_id') is-invalid @enderror {{old('volume_id') ? 'is-valid' : ''}}"
@@ -85,7 +86,7 @@
                         options="{{json_encode($volumes)}}"
                         old_id="{{ isset($conteudo) ? $conteudo->volume_id : @old('volume_id') }}"
                         required="required"
-                        value="{{ isset($conteudo) ? $conteudo->publicacao->nome : @old('volume_id') }}"
+                        value="{{ isset($conteudo) ? $conteudo->volume->volume . ' envio: ' . $conteudo->volume->envio->nota  . ' de ' . $conteudo->volume->envio->data: @old('volume_id') }}"
                         {{isset($conteudo->show) ? 'disabled' : ''}}
                     ></select-filter-component>
                 </div>
