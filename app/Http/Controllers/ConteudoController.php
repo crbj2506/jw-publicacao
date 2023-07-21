@@ -42,7 +42,8 @@ class ConteudoController extends Controller
             $volumes[$key]->text = $v->volume . ' Nota: ' . $v->envio->nota . ($v->envio->data ? ' de '. $v->envio->data : null);
             $volumes[$key]->value = $v->id;
         }
-        $publicacoes = Publicacao::orderBy('nome')->select('id as value', 'nome as text')->get();
+        //$publicacoes = Publicacao::orderBy('nome')->select('id as value', 'nome as text')->get(); //DB::raw('SUM(price) as total_sales')
+        $publicacoes = Publicacao::orderBy('nome')->select('id as value', Publicacao::raw('CONCAT(nome, " (",codigo,") ") as text'))->get();
         return view('conteudo.crud',['volumes' => $volumes,'publicacoes' => $publicacoes]);
     }
 
