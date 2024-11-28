@@ -44,7 +44,7 @@ class Publicacao extends Model
         $proporcao = null;
         $proporcao .= $this->proporcao_cm ? $this->proporcao_cm . ' cm' : '';
         $proporcao .= $this->proporcao_cm && $this->proporcao_unidade ? ' = ' : '';
-        $proporcao .= $this->proporcao_unidade ? $this->proporcao_unidade . ' cm' : '';
+        $proporcao .= $this->proporcao_unidade ? $this->proporcao_unidade : '';
         return $proporcao;
     }
 }
