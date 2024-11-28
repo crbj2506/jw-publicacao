@@ -64,3 +64,32 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+
+PHP 8.2
+Clone o Diretório
+
+Extensões PHP
+extension=openssl
+extension=fileinfo
+extension=curl
+extension=pdo_mysql
+extension=mbstring
+
+COMPOSER
+composer install
+
+cp .env.example .env
+php artisan key:generate
+php artisan storage:link
+
+CRIAR SCHEMA BD: jw-publicacao
+
+NODE.JS
+npm install
+npm run dev
+
+php .\artisan migrate
+
+Habilitar Registro no Laravel
+Inseria no BD Perfis e Permissões
