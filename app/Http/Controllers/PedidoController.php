@@ -20,9 +20,9 @@ class PedidoController extends Controller
     {
         //
         if(App::environment() == 'local'){
-            $pedidos = Pedido::paginate(10);
+            $pedidos = Pedido::orderByDesc('solicitado')->paginate(10);
         }else{
-            $pedidos = Pedido::paginate(50);
+            $pedidos = Pedido::orderByDesc('solicitado')->paginate(50);
         }
         return view('pedido.crud',['pedidos' => $pedidos]);
     }
