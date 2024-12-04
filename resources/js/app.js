@@ -24,6 +24,9 @@ app.component('select-filter-component', SelectFilterComponent);
 import InputGroupComponent from './components/InputGroupComponent.vue';
 app.component('input-group-component', InputGroupComponent);
 
+import InputGroupQuantidadeEstoqueComponent from './components/InputGroupQuantidadeEstoqueComponent.vue';
+app.component('input-group-quantidade-estoque-component', InputGroupQuantidadeEstoqueComponent)
+
 /**
  * The following block of code may be used to automatically register your
  * Vue components. It will recursively scan this directory for the Vue

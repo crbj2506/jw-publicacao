@@ -126,8 +126,17 @@
                         name="proporcao" 
                         id="proporcao" 
                         disabled="disabled"
-                        value="{{isset($estoque) ? $estoque->publicacao->proporcao() : ''}}">
+                        value="{{isset($estoque) ? $estoque->publicacao->proporcao() : ''}}"
+                    >
                     </input-group-component>
+                </div>
+                <div class="col-12 col-sm-6 col-md-4 p-2">
+                    <input-group-quantidade-estoque-component
+                        proporcao="{{isset($estoque) ? $estoque->publicacao->proporcao() : ''}}"
+                        quantidade="{{isset($estoque) ? $estoque->quantidade : (old('quantidade')?old('quantidade'):'')}}"
+                        {{isset($estoque->edit) ? 'disabled' : ''}}
+                    >
+                    </input-group-quantidade-estoque-component>
                 </div>
             </div>
         @endif

@@ -41,10 +41,16 @@ class Publicacao extends Model
     }
 
     public function proporcao(){
-        $proporcao = null;
-        $proporcao .= $this->proporcao_cm ? $this->proporcao_cm . ' cm' : '';
-        $proporcao .= $this->proporcao_cm && $this->proporcao_unidade ? ' = ' : '';
-        $proporcao .= $this->proporcao_unidade ? $this->proporcao_unidade : '';
-        return $proporcao;
+        // $proporcao = null;
+        // $proporcao .= $this->proporcao_cm ? $this->proporcao_cm . ' cm' : '';
+        // $proporcao .= $this->proporcao_cm && $this->proporcao_unidade ? ' = ' : '';
+        // $proporcao .= $this->proporcao_unidade ? $this->proporcao_unidade : '';
+        // return $proporcao;
+        if ($this->proporcao_unidade != 0) {
+            $proporcao = $this->proporcao_cm / $this->proporcao_unidade;
+        } else {
+            $proporcao = 0; 
+        }
+        return $proporcao;        
     }
 }
