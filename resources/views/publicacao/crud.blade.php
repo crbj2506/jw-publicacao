@@ -13,7 +13,18 @@
         ts="Mostra Publicação"
     >
         @if($publicacoes)
-            <x-slot:filtro>
+            <x-slot:filtro>     
+            <div class="card-header p-1">    
+            <form  id="formFiltro" method="POST" action="{{ route('publicacao.filtrada.post')}}" enctype="multipart/form-data">
+                @csrf
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text">Filtros</span>
+                    <input id="filtro" name="filtro" type="text" class="form-control" placeholder="digite parte do nome da Publicação" value="{{ $publicacoes->nomeFiltro ? $publicacoes->nomeFiltro : ''}}">
+                    <button type="submit" class="btn btn-sm btn-outline-primary" form="formFiltro"> Filtrar </button>
+                    <a href="{{ route('publicacao.index')}}" class="btn btn-sm btn-outline-success">Limpar</a>
+                </div>
+            </form> 
+        </div> 
             </x-slot>
             <x-slot:lista>
                 <thead>
