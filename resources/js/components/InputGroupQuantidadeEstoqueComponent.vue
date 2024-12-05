@@ -5,7 +5,7 @@
             class="form-control"
             :disabled="disabled"
             type="number"
-            v-model.number="quantidade" 
+            v-model.number="quantidade_int" 
             @input="updateCentimetros"
             min="0" step="1"
             >
@@ -31,17 +31,17 @@
         ],
     data() {
       return {
-        quantidade: this.quantidade,
+        quantidade_int: this.quantidade,
         centimetros: this.quantidade * this.proporcao,
         proporcao: this.proporcao,
       }
     },
     methods: {
       updateCentimetros() {
-        this.centimetros = this.quantidade * this.proporcao;
+        this.centimetros = this.quantidade_int * this.proporcao;
       },
       updateQuantidade() {
-        this.quantidade = Math.floor(this.centimetros / this.proporcao)
+        this.quantidade_int = Math.floor(this.centimetros / this.proporcao)
         //this.quantidade = this.centimetros / this.proporcao;
       }
     }
