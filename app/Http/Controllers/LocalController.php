@@ -18,11 +18,8 @@ class LocalController extends Controller
     public function index()
     {
         //       
-        if(App::environment() == 'local'){
-            $locais = Local::orderBy('sigla')->paginate(10);
-        }else{
-            $locais = Local::orderBy('sigla')->paginate(50);
-        }
+        $locais = Local::orderBy('sigla')->paginate(50);
+
         return view('local.crud',['locais' => $locais]);
     }
 

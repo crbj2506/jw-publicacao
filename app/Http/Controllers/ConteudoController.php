@@ -20,12 +20,7 @@ class ConteudoController extends Controller
     {
         //
         $conteudos = Conteudo::orderByDesc('id');
-       
-        if(App::environment() == 'local'){
-            $conteudos = $conteudos->paginate(10);
-        }else{
-            $conteudos = $conteudos->paginate(50);
-        }
+        $conteudos = $conteudos->paginate(50);
         return view('conteudo.crud',['conteudos' => $conteudos]);
     }
 

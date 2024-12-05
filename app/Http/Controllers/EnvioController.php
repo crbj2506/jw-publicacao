@@ -18,11 +18,7 @@ class EnvioController extends Controller
     public function index()
     {
         //       
-        if(App::environment() == 'local'){
-            $envios = Envio::orderByDesc('data')->paginate(10);
-        }else{
-            $envios = Envio::orderByDesc('data')->paginate(50);
-        }
+        $envios = Envio::orderByDesc('data')->paginate(50);
         return view('envio.crud',['envios' => $envios]);
     }
 

@@ -17,11 +17,7 @@ class PermissaoController extends Controller
     public function index()
     {
         //       
-        if(App::environment() == 'local'){
-            $permissoes = Permissao::paginate(10);
-        }else{
-            $permissoes = Permissao::paginate(50);
-        }
+        $permissoes = Permissao::paginate(50);
         return view('permissao.crud',['permissoes' => $permissoes]);
     }
 

@@ -17,11 +17,7 @@ class PessoaController extends Controller
     public function index()
     {
         //
-        if(App::environment() == 'local'){
-            $pessoas = Pessoa::paginate(10);
-        }else{
-            $pessoas = Pessoa::paginate(50);
-        }
+        $pessoas = Pessoa::paginate(50);
         return view('pessoa.crud',['pessoas' => $pessoas]);
     }
 

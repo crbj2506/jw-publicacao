@@ -32,11 +32,8 @@ class PublicacaoController extends Controller
         }else{
             $publicacoes = Publicacao::orderBy('nome');
         }
-        if(App::environment() == 'local'){
-            $publicacoes = $publicacoes->paginate(10);
-        }else{
-            $publicacoes = $publicacoes->paginate(100);
-        }
+        
+        $publicacoes = $publicacoes->paginate(100);
 
         $publicacoes->filtros = $request->all('filtro');
         $publicacoes->nomeFiltro = $nomeFiltro;

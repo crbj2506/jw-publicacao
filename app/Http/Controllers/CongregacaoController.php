@@ -17,11 +17,7 @@ class CongregacaoController extends Controller
     public function index()
     {
         //
-        if(App::environment() == 'local'){
-            $congregacoes = Congregacao::paginate(10);
-        }else{
-            $congregacoes = Congregacao::paginate(50);
-        }
+        $congregacoes = Congregacao::paginate(50);
         return view('congregacao.crud',['congregacoes' => $congregacoes]);
     }
 

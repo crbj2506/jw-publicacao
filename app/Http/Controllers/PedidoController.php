@@ -19,11 +19,7 @@ class PedidoController extends Controller
     public function index()
     {
         //
-        if(App::environment() == 'local'){
-            $pedidos = Pedido::orderByDesc('solicitado')->paginate(10);
-        }else{
-            $pedidos = Pedido::orderByDesc('solicitado')->paginate(50);
-        }
+        $pedidos = Pedido::orderByDesc('solicitado')->paginate(50);
         return view('pedido.crud',['pedidos' => $pedidos]);
     }
 

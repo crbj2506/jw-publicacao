@@ -34,11 +34,7 @@ class UserController extends Controller
     public function index()
     {
         //       
-        if(App::environment() == 'local'){
-            $users = User::paginate(10);
-        }else{
-            $users = User::paginate(50);
-        }
+        $users = User::paginate(50);
         return view('user.crud',['users' => $users]);
     }
 

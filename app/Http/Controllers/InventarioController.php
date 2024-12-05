@@ -73,11 +73,8 @@ class InventarioController extends Controller
             }
             $inventarios = $inventarios->where('mes', $mesFiltro);
         }
-        if(App::environment() == 'local'){
-            $inventarios = $inventarios->paginate(10);
-        }else{
-            $inventarios = $inventarios->paginate(100);
-        }
+        $inventarios = $inventarios->paginate(100);
+
         $inventarios->filtros = $request->all('congregacao_id', 'ano', 'mes');
         $inventarios->congregacoesFiltro = Congregacao::select('id','nome')->orderBy('nome')->distinct()->get();
         $inventarios->anosFiltro = Inventario::select('ano')->orderBy('ano')->distinct()->get();

@@ -18,11 +18,7 @@ class VolumeController extends Controller
     public function index()
     {
         //
-        if(App::environment() == 'local'){
-            $volumes = Volume::paginate(10);
-        }else{
-            $volumes = Volume::paginate(100);
-        }
+        $volumes = Volume::paginate(100);
         return view('volume.crud',['volumes' => $volumes]);
     }
 
