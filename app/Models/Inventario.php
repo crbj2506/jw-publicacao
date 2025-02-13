@@ -67,9 +67,9 @@ class Inventario extends Model
 
     public static function rulesUpdate(){
         return [
-            'recebido' => 'required|numeric|min:0|max:9999',
-            'estoque' => 'required|numeric|min:0|max:9999',
-            'saida' => 'required|numeric|min:0|max:9999',
+            'recebido' => 'required|numeric|min:0|max:19999',
+            'estoque' => 'required|numeric|min:0|max:19999',
+            'saida' => 'required|numeric|min:0|max:19999',
         ];
     }
     public static function feedback($congregacao_id){
