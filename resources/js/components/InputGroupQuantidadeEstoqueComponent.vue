@@ -1,5 +1,5 @@
 <template>
-    <div class="input-group has-validation">
+    <div class="input-group">
         <span class="input-group-text">Quantidade</span>
         <input 
             class="form-control"
@@ -9,7 +9,6 @@
             @input="updateCentimetros"
             min="0" step="1"
             >
-        <span class="input-group-text">Centímetros</span>
         <input 
             class="form-control"
             :disabled="disabled"
