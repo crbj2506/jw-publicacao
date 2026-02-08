@@ -47,7 +47,11 @@ class UserController extends Controller
     {
         //
         $permissoes = Permissao::get();
-        return view('user.crud',[ 'permissoes' => $permissoes]);
+        $user = new User();
+        return view('user.crud',[ 
+            'user' => $user,
+            'permissoes' => $permissoes
+        ]);
     }
 
     /**

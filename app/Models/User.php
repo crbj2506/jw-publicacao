@@ -47,7 +47,7 @@ class User extends Authenticatable implements MustVerifyEmail
         return [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,'.$id],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'password' => ['required', 'string', 'min:8', 'confirmed']
             //'permissao' => 'required|unique:permissoes,permissao,'.$id.'|min:3'
         ];
     }
@@ -55,13 +55,17 @@ class User extends Authenticatable implements MustVerifyEmail
     public static function rules_update($id){
         return [
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,'.$id],
+            //'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,'.$id],
             //'permissao' => 'required|unique:permissoes,permissao,'.$id.'|min:3'
         ];
     }
     public static function feedback(){
         return [
             'required' => 'O campo :attribute é obrigatório',
+            'email' => 'Informe um e-mail válido', 
+            'unique' => 'Este :attribute já está em uso', 
+            'min' => 'O campo :attribute deve ter pelo menos :min caracteres', 
+            'confirmed' => 'As senhas não conferem',
         ];
     }
 

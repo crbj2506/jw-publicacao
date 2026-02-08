@@ -54,7 +54,7 @@
                         name="name" 
                         id="name" 
                         required="required"
-                        value="{{isset($user) ? $user->name : (old('name')?old('name'):'')}}"
+                        value="{{ old('name', $user->name ?? '') }}"
                         {{!isset($user->show) ? '' : 'disabled' }} 
                         class="@error('name') is-invalid @enderror {{old('name') ? 'is-valid' : ''}}"
                         @error('name') message="{{$message}}" @enderror>
@@ -67,12 +67,34 @@
                         name="email" 
                         id="email" 
                         required="required"
-                        value="{{isset($user) ? $user->email : (old('email')?old('email'):'')}}"
-                        {{!isset($user->show) ? '' : 'disabled' }} 
+                        value="{{ old('email', $user->email ?? '') }}"
+                        {{ isset($user->show) || isset($user->edit) ? 'disabled' : '' }}
                         class="@error('email') is-invalid @enderror {{old('email') ? 'is-valid' : ''}}"
                         @error('email') message="{{$message}}" @enderror>
                     </input-group-component>
                 </div>
+@if(!isset($user->show) && !isset($user->edit))
+                <div class="col-12 p-2">
+                    <input-group-component
+                        label="Senha:" 
+                        type="password"
+                        name="password" 
+                        id="password" 
+                        required="required"
+                        class="@error('password') is-invalid @enderror"
+                        @error('password') message="{{ $message }}" @enderror>
+                    </input-group-component>
+                </div>
+                <div class="col-12 p-2">
+                    <input-group-component
+                        label="Confirme a senha:" 
+                        type="password"
+                        name="password_confirmation" 
+                        id="password_confirmation" 
+                        required="required">
+                    </input-group-component>
+                </div>
+@endif
                 <div class="col-12 p-2">
                     <div class="border rounded p-2 m-3">
                         @foreach ($permissoes as $key => $p)
