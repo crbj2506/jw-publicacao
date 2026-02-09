@@ -76,7 +76,12 @@ class UserController extends Controller
                 PermissaoUser::create($permissao_user);
             }
         }
-        return redirect()->route('user.show', ['user' => $user->id]);
+
+        $user->sendEmailVerificationNotification();
+
+        return redirect()
+            ->route('user.show', ['user' => $user->id])
+            ->with('status', 'Usuário criado! Verifique seu e-mail para confirmar a conta.');
     }
 
     /**

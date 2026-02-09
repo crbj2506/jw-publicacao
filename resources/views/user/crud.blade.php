@@ -1,6 +1,11 @@
 @extends('layouts.app')
 
 @section('content')
+    @if (session('status'))
+        <div class="alert alert-success">
+            {{ session('status') }}
+        </div>
+    @endif
     @php($users = isset($users) ? $users : null)
     @php($user = isset($user) ? $user : null)
     <x-crud
