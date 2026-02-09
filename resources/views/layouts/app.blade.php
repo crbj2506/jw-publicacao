@@ -56,38 +56,9 @@
                                             </a>
 
                                             <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                                <a class="dropdown-item" href="{{ route('congregacao.index') }}">
-                                                    {{ __('Congregações') }}
-                                                </a>
-                                                <a class="dropdown-item" href="{{ route('conteudo.index') }}">
-                                                    {{ __('Conteúdos dos Volumes') }}
-                                                </a>
+
                                                 <a class="dropdown-item" href="{{ route('estoque.index') }}">
                                                     {{ __('Estoque') }}
-                                                </a>
-                                                <a class="dropdown-item" href="{{ route('inventariar.get') }}">
-                                                    {{ __('Inventáriar') }}
-                                                </a>
-                                                <a class="dropdown-item" href="{{ route('inventario.index') }}">
-                                                    {{ __('Inventário') }}
-                                                </a>
-                                                <a class="dropdown-item" href="{{ route('pessoa.index') }}">
-                                                    {{ __('Irmãos') }}
-                                                </a>
-                                                <a class="dropdown-item" href="{{ route('local.index') }}">
-                                                    {{ __('Locais de Publicações') }}
-                                                </a>
-                                                <a class="dropdown-item" href="{{ route('envio.index') }}">
-                                                    {{ __('Envios de Publicações') }}
-                                                </a>
-                                                <a class="dropdown-item" href="{{ route('pedido.index') }}">
-                                                    {{ __('Pedidos dos Irmãos') }}
-                                                </a>
-                                                <a class="dropdown-item" href="{{ route('publicacao.index') }}">
-                                                    {{ __('Publicações') }}
-                                                </a>
-                                                <a class="dropdown-item" href="{{ route('volume.index') }}">
-                                                    {{ __('Volumes dos Envios') }}
                                                 </a>
                                             </div>
                                         </li>
@@ -123,7 +94,36 @@
                                             {{ __('Menu de Administrador') }}
                                             </a>
 
-                                            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">                                                <a class="dropdown-item" href="{{ route('congregacao.index') }}">
+                                                    {{ __('Congregações') }}
+                                                </a>
+                                                <a class="dropdown-item" href="{{ route('conteudo.index') }}">
+                                                    {{ __('Conteúdos dos Volumes') }}
+                                                </a>                                                
+                                                <a class="dropdown-item" href="{{ route('inventariar.get') }}">
+                                                    {{ __('Inventáriar') }}
+                                                </a>
+                                                <a class="dropdown-item" href="{{ route('inventario.index') }}">
+                                                    {{ __('Inventário') }}
+                                                </a>
+                                                <a class="dropdown-item" href="{{ route('pessoa.index') }}">
+                                                    {{ __('Irmãos') }}
+                                                </a>
+                                                <a class="dropdown-item" href="{{ route('local.index') }}">
+                                                    {{ __('Locais de Publicações') }}
+                                                </a>
+                                                <a class="dropdown-item" href="{{ route('envio.index') }}">
+                                                    {{ __('Envios de Publicações') }}
+                                                </a>
+                                                <a class="dropdown-item" href="{{ route('pedido.index') }}">
+                                                    {{ __('Pedidos dos Irmãos') }}
+                                                </a>
+                                                <a class="dropdown-item" href="{{ route('publicacao.index') }}">
+                                                    {{ __('Publicações') }}
+                                                </a>
+                                                <a class="dropdown-item" href="{{ route('volume.index') }}">
+                                                    {{ __('Volumes dos Envios') }}
+                                                </a>
                                                 <a class="dropdown-item" href="{{ route('log.index') }}">
                                                     {{ __('Logs de Acesso') }}
                                                 </a>
