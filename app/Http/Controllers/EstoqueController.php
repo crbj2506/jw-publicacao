@@ -20,9 +20,13 @@ class EstoqueController extends Controller
     public function index(Request  $request)
     {
         //
-        $publicacaoFiltro = null; 
+        $publicacaoFiltro = null;
+        $localFiltro = null;
+        $codigoFiltro = null;
         if(empty($request->query())){
             $request->session()->forget('publicacaoFiltro');
+            $request->session()->forget('localFiltro');
+            $request->session()->forget('codigoFiltro');
         };
 
         $estoques = Estoque::select('*')
@@ -36,11 +40,31 @@ class EstoqueController extends Controller
                 $request->session()->put('publicacaoFiltro', $publicacaoFiltro);
             }
             $estoques = $estoques->whereRelation('publicacao', 'nome', 'like', '%'. $publicacaoFiltro. '%');
-                
+        }
+
+        if($request->all('local')['local'] || $request->session()->exists('localFiltro')){
+            $localFiltro = $request->session()->exists('localFiltro') ? $request->session()->get('localFiltro') : $request->all('local')['local'];
+            if($request->all('local')['local']){
+                $request->session()->put('localFiltro', $localFiltro);
+            }
+            $estoques = $estoques->whereRelation('local', function($query) use($localFiltro) {
+                $query->where('nome', 'like', '%'. $localFiltro. '%')
+                      ->orWhere('sigla', 'like', '%'. $localFiltro. '%');
+            });
+        }
+
+        if($request->all('codigo')['codigo'] || $request->session()->exists('codigoFiltro')){
+            $codigoFiltro = $request->session()->exists('codigoFiltro') ? $request->session()->get('codigoFiltro') : $request->all('codigo')['codigo'];
+            if($request->all('codigo')['codigo']){
+                $request->session()->put('codigoFiltro', $codigoFiltro);
+            }
+            $estoques = $estoques->whereRelation('publicacao', 'codigo', 'like', '%'. $codigoFiltro. '%');
         }
 
         $estoques = $estoques->paginate(100);
         $estoques->publicacaoFiltro = $publicacaoFiltro;
+        $estoques->localFiltro = $localFiltro;
+        $estoques->codigoFiltro = $codigoFiltro;
 
         return view('estoque.crud',['estoques' => $estoques]);
     }
