@@ -18,25 +18,36 @@ class PublicacaoController extends Controller
     {
         //
         $nomeFiltro = null;
+        $codigoFiltro = null;
 
         if(empty($request->query())){
             $request->session()->forget('nomeFiltro');
+            $request->session()->forget('codigoFiltro');
         };
+
+        $publicacoes = Publicacao::orderBy('nome');
 
         if($request->all('filtro')['filtro'] || $request->session()->exists('nomeFiltro')){
             $nomeFiltro = $request->session()->exists('nomeFiltro') ? $request->session()->get('nomeFiltro') : $request->all('filtro')['filtro'];
             if($request->all('filtro')['filtro']){
                 $request->session()->put('nomeFiltro', $nomeFiltro);
             }
-            $publicacoes = Publicacao::where('nome', 'like', '%'. $nomeFiltro. '%')->orderBy('nome');
-        }else{
-            $publicacoes = Publicacao::orderBy('nome');
+            $publicacoes = $publicacoes->where('nome', 'like', '%'. $nomeFiltro. '%');
         }
-        
+
+        if($request->all('codigo')['codigo'] || $request->session()->exists('codigoFiltro')){
+            $codigoFiltro = $request->session()->exists('codigoFiltro') ? $request->session()->get('codigoFiltro') : $request->all('codigo')['codigo'];
+            if($request->all('codigo')['codigo']){
+                $request->session()->put('codigoFiltro', $codigoFiltro);
+            }
+            $publicacoes = $publicacoes->where('codigo', 'like', '%'. $codigoFiltro. '%');
+        }
+
         $publicacoes = $publicacoes->paginate(100);
 
-        $publicacoes->filtros = $request->all('filtro');
+        $publicacoes->filtros = $request->all('filtro','codigo');
         $publicacoes->nomeFiltro = $nomeFiltro;
+        $publicacoes->codigoFiltro = $codigoFiltro;
 
         return view('publicacao.crud',['publicacoes' => $publicacoes]);
     }
