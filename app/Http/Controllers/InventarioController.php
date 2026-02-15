@@ -73,9 +73,18 @@ class InventarioController extends Controller
             }
             $inventarios = $inventarios->where('mes', $mesFiltro);
         }
-        $inventarios = $inventarios->paginate(100);
+        $perpage = 10;
+        if($request->input('perpage')){
+            $perpage = $request->input('perpage');
+            $request->session()->put('perpage', $perpage);
+        } elseif ($request->session()->exists('perpage')){
+            $perpage = $request->session()->get('perpage');
+        }
+
+        $inventarios = $inventarios->paginate($perpage);
 
         $inventarios->filtros = $request->all('congregacao_id', 'ano', 'mes');
+        $inventarios->perpage = $perpage;
         $inventarios->congregacoesFiltro = Congregacao::select('id','nome')->orderBy('nome')->distinct()->get();
         $inventarios->anosFiltro = Inventario::select('ano')->orderBy('ano')->distinct()->get();
         $inventarios->mesesFiltro = Inventario::select('mes')->orderBy('mes')->distinct()->get();

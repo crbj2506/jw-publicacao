@@ -19,6 +19,7 @@ class PublicacaoController extends Controller
         //
         $nomeFiltro = null;
         $codigoFiltro = null;
+        $perpage = 10;
 
         if(empty($request->query())){
             $request->session()->forget('nomeFiltro');
@@ -27,27 +28,43 @@ class PublicacaoController extends Controller
 
         $publicacoes = Publicacao::orderBy('nome');
 
-        if($request->all('filtro')['filtro'] || $request->session()->exists('nomeFiltro')){
-            $nomeFiltro = $request->session()->exists('nomeFiltro') ? $request->session()->get('nomeFiltro') : $request->all('filtro')['filtro'];
-            if($request->all('filtro')['filtro']){
+        if ($request->has('filtro') || $request->session()->exists('nomeFiltro')) {
+            if ($request->has('filtro')) {
+                $nomeFiltro = $request->input('filtro');
                 $request->session()->put('nomeFiltro', $nomeFiltro);
+            } else {
+                $nomeFiltro = $request->session()->get('nomeFiltro');
             }
-            $publicacoes = $publicacoes->where('nome', 'like', '%'. $nomeFiltro. '%');
+            if (!empty($nomeFiltro)) {
+                $publicacoes = $publicacoes->where('nome', 'like', '%'. $nomeFiltro. '%');
+            }
         }
 
-        if($request->all('codigo')['codigo'] || $request->session()->exists('codigoFiltro')){
-            $codigoFiltro = $request->session()->exists('codigoFiltro') ? $request->session()->get('codigoFiltro') : $request->all('codigo')['codigo'];
-            if($request->all('codigo')['codigo']){
+        if ($request->has('codigo') || $request->session()->exists('codigoFiltro')) {
+            if ($request->has('codigo')) {
+                $codigoFiltro = $request->input('codigo');
                 $request->session()->put('codigoFiltro', $codigoFiltro);
+            } else {
+                $codigoFiltro = $request->session()->get('codigoFiltro');
             }
-            $publicacoes = $publicacoes->where('codigo', 'like', '%'. $codigoFiltro. '%');
+            if (!empty($codigoFiltro)) {
+                $publicacoes = $publicacoes->where('codigo', 'like', '%'. $codigoFiltro. '%');
+            }
         }
 
-        $publicacoes = $publicacoes->paginate(100);
+        if($request->input('perpage')){
+            $perpage = $request->input('perpage');
+            $request->session()->put('perpage', $perpage);
+        } elseif ($request->session()->exists('perpage')){
+            $perpage = $request->session()->get('perpage');
+        }
 
-        $publicacoes->filtros = $request->all('filtro','codigo');
+        $publicacoes = $publicacoes->paginate($perpage);
+
+        $publicacoes->filtros = $request->all('filtro','codigo','perpage');
         $publicacoes->nomeFiltro = $nomeFiltro;
         $publicacoes->codigoFiltro = $codigoFiltro;
+        $publicacoes->perpage = $perpage;
 
         return view('publicacao.crud',['publicacoes' => $publicacoes]);
     }

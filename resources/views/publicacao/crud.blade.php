@@ -19,6 +19,7 @@
                 @csrf
                 <div class="input-group input-group-sm">
                     <span class="input-group-text">Filtros</span>
+                    
                     <input id="codigo" name="codigo" type="text" class="form-control" placeholder="digite o Código" value="{{ $publicacoes->codigoFiltro ? $publicacoes->codigoFiltro : ''}}">
                     <input id="filtro" name="filtro" type="text" class="form-control" placeholder="digite parte do nome da Publicação" value="{{ $publicacoes->nomeFiltro ? $publicacoes->nomeFiltro : ''}}">
                     <button type="submit" class="btn btn-sm btn-outline-primary" form="formFiltro"> Filtrar </button>

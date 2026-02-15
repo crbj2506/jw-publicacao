@@ -61,10 +61,19 @@ class EstoqueController extends Controller
             $estoques = $estoques->whereRelation('publicacao', 'codigo', 'like', '%'. $codigoFiltro. '%');
         }
 
-        $estoques = $estoques->paginate(100);
+        $perpage = 10;
+        if($request->input('perpage')){
+            $perpage = $request->input('perpage');
+            $request->session()->put('perpage', $perpage);
+        } elseif ($request->session()->exists('perpage')){
+            $perpage = $request->session()->get('perpage');
+        }
+
+        $estoques = $estoques->paginate($perpage);
         $estoques->publicacaoFiltro = $publicacaoFiltro;
         $estoques->localFiltro = $localFiltro;
         $estoques->codigoFiltro = $codigoFiltro;
+        $estoques->perpage = $perpage;
 
         return view('estoque.crud',['estoques' => $estoques]);
     }

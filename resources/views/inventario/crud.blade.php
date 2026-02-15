@@ -37,6 +37,7 @@
                             <option value="{{$mes->mes}}" {{(@old('mes') == $mes->mes) || ($inventarios->filtros['mes'] == $mes->mes) || ($inventarios->mesFiltro == $mes->mes) ? 'selected': ''}}>{{ $mes->mes }}</option>
                         @endforeach
                     </select>
+                    
                     <input id="publicacao" name="publicacao" type="text" class="form-control" placeholder="digite parte do nome" value="{{ $inventarios->publicacaoFiltro ? $inventarios->publicacaoFiltro : ''}}">
                     <button type="submit" class="btn btn-sm btn-outline-primary" form="formFiltro"> Filtrar </button>
                     <a href="{{ route('inventario.index')}}" class="btn btn-sm btn-outline-success">Limpar</a>

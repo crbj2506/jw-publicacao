@@ -72,8 +72,15 @@ Route::middleware('verified', 'permissao:,,Administrador')
 // ###########################
 // ##  CONJUNTO CONTEÚDO
 // ###########################
+Route::middleware('verified', 'permissao:,,Administrador')->resource('conteudo', 'App\Http\Controllers\ConteudoController');
+//Rota para POST do Filtro de Conteúdo
 Route::middleware('verified', 'permissao:,,Administrador')
-    ->resource('conteudo', 'App\Http\Controllers\ConteudoController');
+    ->name('conteudo.filtrada.post')
+    ->post('conteudoFiltrado', [App\Http\Controllers\ConteudoController::class, 'index']);
+//Rota para GEST do Filtro de Conteúdo
+Route::middleware('verified', 'permissao:,,Administrador')
+    ->name('conteudo.filtrada.get')
+    ->get('conteudoFiltrado', [App\Http\Controllers\ConteudoController::class, 'index']);
 
 // ###########################
 // ##  CONJUNTO LOCAL

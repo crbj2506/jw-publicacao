@@ -14,6 +14,20 @@
     >
         @if($conteudos)
             <x-slot:filtro>
+                <div class="card-header p-1">
+                    <form  id="formFiltro" method="POST" action="{{ route('conteudo.filtrada.post') }}" enctype="multipart/form-data">
+                        @csrf
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text">Filtros</span>
+                            <input id="codigo" name="codigo" type="text" class="form-control" placeholder="Código" value="{{ $conteudos->codigoFiltro ? $conteudos->codigoFiltro : ''}}">
+                            <input id="publicacao" name="publicacao" type="text" class="form-control" placeholder="Publicação" value="{{ $conteudos->publicacaoFiltro ? $conteudos->publicacaoFiltro : ''}}">
+                            <input id="volume" name="volume" type="text" class="form-control" placeholder="Volume" value="{{ $conteudos->volumeFiltro ? $conteudos->volumeFiltro : ''}}">
+                            <input id="envio" name="envio" type="text" class="form-control" placeholder="Envio" value="{{ $conteudos->envioFiltro ? $conteudos->envioFiltro : ''}}">
+                            <button type="submit" class="btn btn-sm btn-outline-primary" form="formFiltro"> Filtrar </button>
+                            <a href="{{ route('conteudo.index')}}" class="btn btn-sm btn-outline-success">Limpar</a>
+                        </div>
+                    </form>
+                </div>
             </x-slot>
             <x-slot:lista>
                 <thead>

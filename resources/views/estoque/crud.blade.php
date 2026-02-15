@@ -19,6 +19,7 @@
                 @csrf
                 <div class="input-group input-group-sm">
                     <span class="input-group-text" id="selectLabelCongregacao">Filtros</span>
+                    
                     <input id="local" name="local" type="text" class="form-control" placeholder="digite parte do nome do Local" value="{{ $estoques->localFiltro ? $estoques->localFiltro : ''}}">
                     <input id="codigo" name="codigo" type="text" class="form-control" placeholder="digite o Código" value="{{ $estoques->codigoFiltro ? $estoques->codigoFiltro : ''}}">
                     <input id="publicacao" name="publicacao" type="text" class="form-control" placeholder="digite parte do nome da Publicação" value="{{ $estoques->publicacaoFiltro ? $estoques->publicacaoFiltro : ''}}">
