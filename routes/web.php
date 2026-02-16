@@ -33,15 +33,15 @@ Route::middleware('verified', 'permissao:,,Administrador')
 // ###########################
 // ##  CONJUNTO PUBLICAÇÃO
 // ###########################
-Route::middleware('verified', 'permissao:,,Administrador')
+Route::middleware('verified', 'permissao:,Servo,Administrador')
     ->resource('publicacao', 'App\Http\Controllers\PublicacaoController');
 
 //Rota para POST do Filtro de Publicações
-Route::middleware('verified', 'permissao:,,Administrador')
+Route::middleware('verified', 'permissao:,Servo,Administrador')
     ->name('publicacao.filtrada.post')
     ->post('publicacaoFiltrada', [App\Http\Controllers\PublicacaoController::class, 'index']);
 //Rota para GET do Filtro de Publicações
-Route::middleware('verified', 'permissao:,,Administrador')
+Route::middleware('verified', 'permissao:,Servo,Administrador')
     ->name('publicacao.filtrada.get')
     ->get('publicacaoFiltrada', [App\Http\Controllers\PublicacaoController::class, 'index']);
 

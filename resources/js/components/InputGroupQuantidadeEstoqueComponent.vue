@@ -16,7 +16,8 @@
             v-model.number="centimetros" 
             @input="updateQuantidade"
             min="0" step="0.1"
-            >         
+            >
+        <slot></slot>
     </div>
   </template>
   

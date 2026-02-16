@@ -13,6 +13,9 @@
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
     <link href="https://fonts.bunny.net/css?family=Nunito" rel="stylesheet">
 
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
     <!-- Scripts -->
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
 </head>
@@ -59,6 +62,9 @@
 
                                                 <a class="dropdown-item" href="{{ route('estoque.index') }}">
                                                     {{ __('Estoque') }}
+                                                </a>
+                                                <a class="dropdown-item" href="{{ route('publicacao.index') }}">
+                                                    {{ __('Publicações') }}
                                                 </a>
                                             </div>
                                         </li>
@@ -117,9 +123,6 @@
                                                 </a>
                                                 <a class="dropdown-item" href="{{ route('pedido.index') }}">
                                                     {{ __('Pedidos dos Irmãos') }}
-                                                </a>
-                                                <a class="dropdown-item" href="{{ route('publicacao.index') }}">
-                                                    {{ __('Publicações') }}
                                                 </a>
                                                 <a class="dropdown-item" href="{{ route('volume.index') }}">
                                                     {{ __('Volumes dos Envios') }}

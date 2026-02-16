@@ -122,26 +122,148 @@
                         @error('quantidade') message="{{$message}}" @enderror>
                     </input-group-component>
                 </div>
-                <div class="col-12 col-sm-6 col-md-4 p-2">
-                    <input-group-component
-                        label="Proporção:" 
-                        type="text"
-                        name="proporcao" 
-                        id="proporcao" 
-                        disabled="disabled"
-                        value="{{isset($estoque) ? $estoque->publicacao->proporcao() : ''}}"
-                    >
-                    </input-group-component>
-                </div>
-                <div class="col-12 col-sm-6 col-md-4 p-2">
-                    <input-group-quantidade-estoque-component
-                        proporcao="{{isset($estoque) ? $estoque->publicacao->proporcao() : ''}}"
-                        quantidade="{{isset($estoque) ? $estoque->quantidade : (old('quantidade')?old('quantidade'):'')}}"
-                        {{isset($estoque->edit) ? 'disabled' : ''}}
-                    >
-                    </input-group-quantidade-estoque-component>
-                </div>
+                @if(isset($estoque))
+                    @if($estoque->publicacao->proporcao() > 0)
+                        <div class="col-12 col-sm-6 col-md-4 p-2">
+                            <input-group-component
+                                label="Proporção:" 
+                                type="text"
+                                name="proporcao" 
+                                id="proporcao_display" 
+                                disabled="disabled"
+                                value="{{$estoque->publicacao->proporcao()}}"
+                            >
+                            </input-group-component>
+                        </div>
+                        <div class="col-12 col-sm-6 col-md-4 p-2">
+                            <input-group-quantidade-estoque-component
+                                proporcao="{{$estoque->publicacao->proporcao()}}"
+                                quantidade="{{$estoque->quantidade}}"
+                                {{isset($estoque->edit) ? 'disabled' : ''}}
+                            >
+                                @if(isset($estoque->edit))
+                                    <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#modalAtualizarProporcao" title="Atualizar Proporção">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                @endif
+                            </input-group-quantidade-estoque-component>
+                        </div>
+                    @else
+                        <div class="col-12 col-sm-12 col-md-8 p-2">
+                            <div class="input-group">
+                                <span class="input-group-text">Proporção:</span>
+                                <input type="text" class="form-control text-muted small" disabled value="Esta publicação não possui proporção cadastrada para auxílio na contagem.">
+                                <button class="btn btn-outline-primary" type="button" data-bs-toggle="modal" data-bs-target="#modalProporcao">
+                                    <i class="bi bi-calculator me-1"></i> Definir Proporção
+                                </button>
+                            </div>
+                        </div>
+                    @endif
+                @endif
             </div>
         @endif
     </x-crud>
+
+    @if(isset($estoque))
+        <!-- Modal para atualizar proporção da publicação -->
+        <div class="modal fade" id="modalProporcao" tabindex="-1" aria-labelledby="modalProporcaoLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form id="formModalProporcao" action="{{ route('publicacao.update', ['publicacao' => $estoque->publicacao->id]) }}" method="POST">
+                        @csrf
+                        @method('PUT')
+                        <input type="hidden" name="redirect_to" value="back">
+                        {{-- Campos ocultos necessários para satisfazer a validação da Publicação --}}
+                        <input type="hidden" name="nome" value="{{ $estoque->publicacao->nome }}">
+                        @if($estoque->publicacao->codigo)
+                            <input type="hidden" name="codigo" value="{{ $estoque->publicacao->codigo }}">
+                        @endif
+                        @if($estoque->publicacao->item)
+                            <input type="hidden" name="item" value="{{ $estoque->publicacao->item }}">
+                        @endif
+                        
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="modalProporcaoLabel">Definir Proporção: {{ $estoque->publicacao->nome }}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            @if ($errors->any())
+                                <div class="alert alert-danger small">
+                                    <ul class="mb-0">
+                                        @foreach ($errors->all() as $error)
+                                            <li>{{ $error }}</li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            @endif
+
+                            <div class="mb-3">
+                                <label class="form-label">Centímetros (cm)</label>
+                                <input type="number" name="proporcao_cm" step="0.1" min="0.1" class="form-control" value="{{ old('proporcao_cm', $estoque->publicacao->proporcao_cm) }}" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Unidades</label>
+                                <input type="number" name="proporcao_unidade" min="1" class="form-control" value="{{ old('proporcao_unidade', $estoque->publicacao->proporcao_unidade) }}" required>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="bi bi-x-circle me-1"></i> Cancelar</button>
+                            <button type="submit" class="btn btn-primary" form="formModalProporcao"><i class="bi bi-check-circle me-1"></i> Salvar e Ativar Calculador</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        @if(isset($estoque->edit) && $estoque->publicacao->proporcao() > 0)
+            <!-- Novo Modal para ATUALIZAR proporção existente -->
+            <div class="modal fade" id="modalAtualizarProporcao" tabindex="-1" aria-labelledby="modalAtualizarProporcaoLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <form id="formModalAtualizarProporcao" action="{{ route('publicacao.update', ['publicacao' => $estoque->publicacao->id]) }}" method="POST">
+                            @csrf
+                            @method('PUT')
+                            <input type="hidden" name="redirect_to" value="back">
+                            <input type="hidden" name="nome" value="{{ $estoque->publicacao->nome }}">
+                            @if($estoque->publicacao->codigo)
+                                <input type="hidden" name="codigo" value="{{ $estoque->publicacao->codigo }}">
+                            @endif
+                            
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="modalAtualizarProporcaoLabel">Atualizar Proporção: {{ $estoque->publicacao->nome }}</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="alert alert-info small">
+                                    Ajuste os valores abaixo para recalcular a proporção desta publicação.
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Centímetros (cm)</label>
+                                    <input type="number" name="proporcao_cm" step="0.1" min="0.1" class="form-control" value="{{ old('proporcao_cm', $estoque->publicacao->proporcao_cm) }}" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Unidades</label>
+                                    <input type="number" name="proporcao_unidade" min="1" class="form-control" value="{{ old('proporcao_unidade', $estoque->publicacao->proporcao_unidade) }}" required>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="bi bi-x-circle me-1"></i> Cancelar</button>
+                                <button type="submit" class="btn btn-primary" form="formModalAtualizarProporcao"><i class="bi bi-arrow-repeat me-1"></i> Atualizar Proporção</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        @endif
+
+        @if ($errors->any())
+            @php($modalId = $estoque->publicacao->proporcao() <= 0 ? 'modalProporcao' : 'modalAtualizarProporcao')
+            <script>
+                window.onload = function() {
+                    var myModal = new bootstrap.Modal(document.getElementById('{{ $modalId }}'));
+                    myModal.show();
+                }
+            </script>
+        @endif
+    @endif
 @endsection

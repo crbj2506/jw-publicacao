@@ -52,9 +52,7 @@
                         >
                     @endif
                     {{$slot}}
-                @if(!isset($o->show))
                 </form>
-                @endif                   
             </div>
             <div class="card-footer container-fluid">
                 <div class="row">

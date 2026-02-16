@@ -190,6 +190,11 @@ class PublicacaoController extends Controller
             $publicacao->imagem = $imagem_urn;
         }
         $publicacao->save();
+
+        if ($request->input('redirect_to') === 'back') {
+            return redirect()->back();
+        }
+
         return redirect()->route('publicacao.show', ['publicacao' => $publicacao->id]);
     }
 
