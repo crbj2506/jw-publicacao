@@ -14,6 +14,17 @@
     >
         @if($pessoas)
             <x-slot:filtro>
+                <div class="card-header p-1">
+                    <form id="formFiltro" method="POST" action="{{ route('pessoa.filtrada.post') }}" enctype="multipart/form-data">
+                        @csrf
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text">Filtros</span>
+                            <input id="nome" name="nome" type="text" class="form-control" placeholder="Digite o nome para buscar" value="{{ $pessoas->nomeFiltro ?? '' }}">
+                            <button type="submit" class="btn btn-sm btn-outline-primary" form="formFiltro"> Filtrar </button>
+                            <a href="{{ route('pessoa.index') }}" class="btn btn-sm btn-outline-success">Limpar</a>
+                        </div>
+                    </form>
+                </div>
             </x-slot>
             <x-slot:lista>
                 <thead>

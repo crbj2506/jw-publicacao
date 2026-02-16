@@ -13,12 +13,49 @@ class LocalController extends Controller
     /**
      * Display a listing of the resource.
      *
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Contracts\View\View
      */
-    public function index()
+    public function index(Request $request)
     {
-        //       
-        $locais = Local::orderBy('sigla')->paginate(50);
+        $nomeFiltro = null;
+        $perpage = 10; // Padrão 10 conforme solicitado
+
+        // Limpa os filtros da sessão se o acesso for direto (GET sem parâmetros)
+        if (empty($request->query()) && $request->method() == 'GET') {
+            $request->session()->forget('nomeFiltro');
+            $request->session()->forget('perpage');
+        }
+
+        // Lógica para o filtro de Nome
+        if ($request->has('nome')) {
+            $nomeFiltro = $request->input('nome');
+            $request->session()->put('nomeFiltro', $nomeFiltro);
+        } elseif ($request->session()->exists('nomeFiltro')) {
+            $nomeFiltro = $request->session()->get('nomeFiltro');
+        }
+
+        // Lógica para o número de itens por página (perpage)
+        if ($request->has('perpage')) {
+            $perpage = $request->input('perpage');
+            $request->session()->put('perpage', $perpage);
+        } elseif ($request->session()->exists('perpage')) {
+            $perpage = $request->session()->get('perpage');
+        }
+
+        // Inicia a query ordenada por Sigla por padrão
+        $locais = Local::orderBy('sigla');
+
+        if (!empty($nomeFiltro)) {
+            $locais->where('nome', 'like', '%' . $nomeFiltro . '%');
+        }
+
+        $locais = $locais->paginate($perpage);
+
+        // Atribui os valores ao objeto para que a View possa recuperar e manter os campos preenchidos
+        $locais->nomeFiltro = $nomeFiltro;
+        $locais->perpage = $perpage;
+        $locais->filtros = $request->all('nome', 'perpage');
 
         return view('local.crud',['locais' => $locais]);
     }

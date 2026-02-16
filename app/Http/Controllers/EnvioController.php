@@ -13,12 +13,58 @@ class EnvioController extends Controller
     /**
      * Display a listing of the resource.
      *
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Contracts\View\View
      */
-    public function index()
+    public function index(Request $request)
     {
-        //       
-        $envios = Envio::orderByDesc('data')->paginate(50);
+        $notaFiltro = null;
+        $congregacaoFiltro = null;
+        $perpage = 10; // Padrão 10 conforme solicitado
+
+        // Limpa os filtros da sessão se o acesso for direto (GET sem parâmetros)
+        if (empty($request->query()) && $request->method() == 'GET') {
+            $request->session()->forget(['notaFiltro', 'congregacaoFiltro', 'perpage']);
+        }
+
+        // Lógica para o filtro de Nota
+        if ($request->has('nota')) {
+            $notaFiltro = $request->input('nota');
+            $request->session()->put('notaFiltro', $notaFiltro);
+        } elseif ($request->session()->exists('notaFiltro')) {
+            $notaFiltro = $request->session()->get('notaFiltro');
+        }
+
+        // Lógica para o filtro de Congregação (Nome)
+        if ($request->has('congregacao')) {
+            $congregacaoFiltro = $request->input('congregacao');
+            $request->session()->put('congregacaoFiltro', $congregacaoFiltro);
+        } elseif ($request->session()->exists('congregacaoFiltro')) {
+            $congregacaoFiltro = $request->session()->get('congregacaoFiltro');
+        }
+
+        // Lógica para o número de itens por página (perpage)
+        if ($request->has('perpage')) {
+            $perpage = $request->input('perpage');
+            $request->session()->put('perpage', $perpage);
+        } elseif ($request->session()->exists('perpage')) {
+            $perpage = $request->session()->get('perpage');
+        }
+
+        $envios = Envio::orderByDesc('id');
+
+        if (!empty($notaFiltro)) $envios->where('nota', 'like', "%$notaFiltro%");
+        if (!empty($congregacaoFiltro)) {
+            $envios->whereRelation('congregacao', 'nome', 'like', "%$congregacaoFiltro%");
+        }
+
+        $envios = $envios->paginate($perpage);
+
+        // Atribui os valores ao objeto para que a View e a Paginação funcionem corretamente
+        $envios->notaFiltro = $notaFiltro;
+        $envios->congregacaoFiltro = $congregacaoFiltro;
+        $envios->perpage = $perpage;
+
         return view('envio.crud',['envios' => $envios]);
     }
 

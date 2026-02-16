@@ -14,6 +14,18 @@
     >
         @if($envios)
             <x-slot:filtro>
+                <div class="card-header p-1">
+                    <form id="formFiltro" method="POST" action="{{ route('envio.filtrada.post') }}" enctype="multipart/form-data">
+                        @csrf
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text">Filtros</span>
+                            <input id="nota" name="nota" type="text" class="form-control" placeholder="Nota" value="{{ $envios->notaFiltro ?? '' }}">
+                            <input id="congregacao" name="congregacao" type="text" class="form-control" placeholder="Congregação" value="{{ $envios->congregacaoFiltro ?? '' }}">
+                            <button type="submit" class="btn btn-sm btn-outline-primary" form="formFiltro">Filtrar</button>
+                            <a href="{{ route('envio.index') }}" class="btn btn-sm btn-outline-success">Limpar</a>
+                        </div>
+                    </form>
+                </div>
             </x-slot>
             <x-slot:lista>
                 <thead>

@@ -13,12 +13,51 @@ class VolumeController extends Controller
     /**
      * Display a listing of the resource.
      *
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Contracts\View\View
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
-        $volumes = Volume::paginate(100);
+        $volumeFiltro = null;
+        $envioFiltro = null;
+        $perpage = 10;
+
+        if (empty($request->query()) && $request->method() == 'GET') {
+            $request->session()->forget(['volumeFiltro', 'envioFiltro', 'perpage']);
+        }
+
+        if ($request->has('volume')) {
+            $volumeFiltro = $request->input('volume');
+            $request->session()->put('volumeFiltro', $volumeFiltro);
+        } elseif ($request->session()->exists('volumeFiltro')) {
+            $volumeFiltro = $request->session()->get('volumeFiltro');
+        }
+
+        if ($request->has('envio')) {
+            $envioFiltro = $request->input('envio');
+            $request->session()->put('envioFiltro', $envioFiltro);
+        } elseif ($request->session()->exists('envioFiltro')) {
+            $envioFiltro = $request->session()->get('envioFiltro');
+        }
+
+        if ($request->has('perpage')) {
+            $perpage = $request->input('perpage');
+            $request->session()->put('perpage', $perpage);
+        } elseif ($request->session()->exists('perpage')) {
+            $perpage = $request->session()->get('perpage');
+        }
+
+        $volumes = Volume::orderByDesc('id');
+
+        if (!empty($volumeFiltro)) $volumes->where('volume', 'like', "%$volumeFiltro%");
+        if (!empty($envioFiltro)) $volumes->whereRelation('envio', 'nota', 'like', "%$envioFiltro%");
+
+        $volumes = $volumes->paginate($perpage);
+
+        $volumes->volumeFiltro = $volumeFiltro;
+        $volumes->envioFiltro = $envioFiltro;
+        $volumes->perpage = $perpage;
+
         return view('volume.crud',['volumes' => $volumes]);
     }
 

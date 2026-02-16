@@ -14,12 +14,55 @@ class PedidoController extends Controller
     /**
      * Display a listing of the resource.
      *
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Contracts\View\View
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
-        $pedidos = Pedido::orderByDesc('solicitado')->paginate(50);
+        $pessoaFiltro = null;
+        $publicacaoFiltro = null;
+        $perpage = 10;
+
+        if (empty($request->query()) && $request->method() == 'GET') {
+            $request->session()->forget(['pessoaFiltro', 'publicacaoFiltro', 'perpage']);
+        }
+
+        if ($request->has('pessoa')) {
+            $pessoaFiltro = $request->input('pessoa');
+            $request->session()->put('pessoaFiltro', $pessoaFiltro);
+        } elseif ($request->session()->exists('pessoaFiltro')) {
+            $pessoaFiltro = $request->session()->get('pessoaFiltro');
+        }
+
+        if ($request->has('publicacao')) {
+            $publicacaoFiltro = $request->input('publicacao');
+            $request->session()->put('publicacaoFiltro', $publicacaoFiltro);
+        } elseif ($request->session()->exists('publicacaoFiltro')) {
+            $publicacaoFiltro = $request->session()->get('publicacaoFiltro');
+        }
+
+        if ($request->has('perpage')) {
+            $perpage = $request->input('perpage');
+            $request->session()->put('perpage', $perpage);
+        } elseif ($request->session()->exists('perpage')) {
+            $perpage = $request->session()->get('perpage');
+        }
+
+        $pedidos = Pedido::orderByDesc('id');
+
+        if (!empty($pessoaFiltro)) {
+            $pedidos->whereRelation('pessoa', 'nome', 'like', "%$pessoaFiltro%");
+        }
+        if (!empty($publicacaoFiltro)) {
+            $pedidos->whereRelation('publicacao', 'nome', 'like', "%$publicacaoFiltro%");
+        }
+
+        $pedidos = $pedidos->paginate($perpage);
+
+        $pedidos->pessoaFiltro = $pessoaFiltro;
+        $pedidos->publicacaoFiltro = $publicacaoFiltro;
+        $pedidos->perpage = $perpage;
+
         return view('pedido.crud',['pedidos' => $pedidos]);
     }
 

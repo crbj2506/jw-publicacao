@@ -19,6 +19,18 @@
     >
         @if($users)
             <x-slot:filtro>
+                <div class="card-header p-1">
+                    <form id="formFiltro" method="POST" action="{{ route('user.filtrada.post') }}">
+                        @csrf
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text">Filtros</span>
+                            <input name="name" type="text" class="form-control" placeholder="Nome" value="{{ $users->nameFiltro ?? '' }}">
+                            <input name="email" type="text" class="form-control" placeholder="E-mail" value="{{ $users->emailFiltro ?? '' }}">
+                            <button type="submit" class="btn btn-sm btn-outline-primary">Filtrar</button>
+                            <a href="{{ route('user.index') }}" class="btn btn-sm btn-outline-success">Limpar</a>
+                        </div>
+                    </form>
+                </div>
             </x-slot>
             <x-slot:lista>
                 <thead>

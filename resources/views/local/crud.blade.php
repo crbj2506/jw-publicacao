@@ -14,6 +14,17 @@
     >
         @if($locais)
             <x-slot:filtro>
+                <div class="card-header p-1">
+                    <form id="formFiltro" method="POST" action="{{ route('local.filtrada.post') }}" enctype="multipart/form-data">
+                        @csrf
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text">Filtros</span>
+                            <input id="nome" name="nome" type="text" class="form-control" placeholder="Digite o nome do local para buscar" value="{{ $locais->nomeFiltro ?? '' }}">
+                            <button type="submit" class="btn btn-sm btn-outline-primary" form="formFiltro"> Filtrar </button>
+                            <a href="{{ route('local.index') }}" class="btn btn-sm btn-outline-success">Limpar</a>
+                        </div>
+                    </form>
+                </div>
             </x-slot>
             <x-slot:lista>
                 <thead>
@@ -31,8 +42,8 @@
                             <th class="text-center py-0" scope="row">{{$l->id}}</th>
                             <td class="text-end py-0" scope="row">{{$l->sigla}}</td>
                             <td class=" py-0" scope="row">{{$l->nome}}</td>
-                            <td class="text-center py-0" scope="row"><a href="{{ route('local.show',['local' => $l['id']])}}" class="btn btn-sm btn-outline-primary py-0">Ver</a></td>
-                            <td class="text-center py-0" scope="row"><a href="{{ route('local.edit',['local' => $l['id']])}}" class="btn btn-sm btn-outline-warning py-0">Editar</a></td>
+                            <td class="text-center py-0" scope="row"><a href="{{ route('local.show',['local' => $l->id])}}" class="btn btn-sm btn-outline-primary py-0">Ver</a></td>
+                            <td class="text-center py-0" scope="row"><a href="{{ route('local.edit',['local' => $l->id])}}" class="btn btn-sm btn-outline-warning py-0">Editar</a></td>
                         </tr>
                     @endforeach
                 </tbody>

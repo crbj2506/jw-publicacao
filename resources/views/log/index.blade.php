@@ -4,6 +4,20 @@
 <div class="container">
     <div class="card">
         <div class="card-header">Log de Acesso</div>
+        <div class="card-header p-1">
+            <form id="formFiltro" method="POST" action="{{ route('log.filtrado.post') }}">
+                @csrf
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text">Filtros</span>
+                    <input name="tipo" type="text" class="form-control" placeholder="Tipo" value="{{ $logs->tipoFiltro ?? '' }}">
+                    <input name="origem" type="text" class="form-control" placeholder="Origem" value="{{ $logs->origemFiltro ?? '' }}">
+                    <input name="rota" type="text" class="form-control" placeholder="Rota" value="{{ $logs->rotaFiltro ?? '' }}">
+                    <input name="usuario" type="text" class="form-control" placeholder="Usuário" value="{{ $logs->usuarioFiltro ?? '' }}">
+                    <button type="submit" class="btn btn-sm btn-outline-primary">Filtrar</button>
+                    <a href="{{ route('log.index') }}" class="btn btn-sm btn-outline-success">Limpar</a>
+                </div>
+            </form>
+        </div>
         <div class="card-body">
             @foreach( $logs as $log)
                 @if($loop->first)

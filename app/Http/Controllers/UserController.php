@@ -29,12 +29,52 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      *
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Contracts\View\View
      */
-    public function index()
+    public function index(Request $request)
     {
-        //       
-        $users = User::paginate(50);
+        $nameFiltro = null;
+        $emailFiltro = null;
+        $perpage = 10; // Padrão 10 conforme solicitado
+
+        if (empty($request->query()) && $request->method() == 'GET') {
+            $request->session()->forget(['nameFiltro', 'emailFiltro', 'perpage']);
+        }
+
+        if ($request->has('name')) {
+            $nameFiltro = $request->input('name');
+            $request->session()->put('nameFiltro', $nameFiltro);
+        } elseif ($request->session()->exists('nameFiltro')) {
+            $nameFiltro = $request->session()->get('nameFiltro');
+        }
+
+        if ($request->has('email')) {
+            $emailFiltro = $request->input('email');
+            $request->session()->put('emailFiltro', $emailFiltro);
+        } elseif ($request->session()->exists('emailFiltro')) {
+            $emailFiltro = $request->session()->get('emailFiltro');
+        }
+
+        if ($request->has('perpage')) {
+            $perpage = $request->input('perpage');
+            $request->session()->put('perpage', $perpage);
+        } elseif ($request->session()->exists('perpage')) {
+            $perpage = $request->session()->get('perpage');
+        }
+
+        // Ordenação alfabética por padrão
+        $users = User::orderBy('name', 'asc');
+
+        if (!empty($nameFiltro)) $users->where('name', 'like', "%$nameFiltro%");
+        if (!empty($emailFiltro)) $users->where('email', 'like', "%$emailFiltro%");
+
+        $users = $users->paginate($perpage);
+
+        $users->nameFiltro = $nameFiltro;
+        $users->emailFiltro = $emailFiltro;
+        $users->perpage = $perpage;
+
         return view('user.crud',['users' => $users]);
     }
 

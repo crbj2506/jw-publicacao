@@ -57,17 +57,41 @@ Route::middleware('verified', 'permissao:,,Administrador')
 Route::middleware('verified', 'permissao:,,Administrador')
     ->resource('user', 'App\Http\Controllers\UserController');
 
+// Rotas de Filtro para User
+Route::middleware('verified', 'permissao:,,Administrador')
+    ->name('user.filtrada.post')
+    ->post('userFiltrado', [App\Http\Controllers\UserController::class, 'index']);
+Route::middleware('verified', 'permissao:,,Administrador')
+    ->name('user.filtrada.get')
+    ->get('userFiltrado', [App\Http\Controllers\UserController::class, 'index']);
+
 // ###########################
 // ##  CONJUNTO ENVIO
 // ###########################
 Route::middleware('verified', 'permissao:,,Administrador')
     ->resource('envio', 'App\Http\Controllers\EnvioController');
 
+// Rotas de Filtro para Envio
+Route::middleware('verified', 'permissao:,,Administrador')
+    ->name('envio.filtrada.post')
+    ->post('envioFiltrado', [App\Http\Controllers\EnvioController::class, 'index']);
+Route::middleware('verified', 'permissao:,,Administrador')
+    ->name('envio.filtrada.get')
+    ->get('envioFiltrado', [App\Http\Controllers\EnvioController::class, 'index']);
+
 // ###########################
 // ##  CONJUNTO VOLUME
 // ###########################
 Route::middleware('verified', 'permissao:,,Administrador')
     ->resource('volume', 'App\Http\Controllers\VolumeController');
+
+// Rotas de Filtro para Volume
+Route::middleware('verified', 'permissao:,,Administrador')
+    ->name('volume.filtrada.post')
+    ->post('volumeFiltrado', [App\Http\Controllers\VolumeController::class, 'index']);
+Route::middleware('verified', 'permissao:,,Administrador')
+    ->name('volume.filtrada.get')
+    ->get('volumeFiltrado', [App\Http\Controllers\VolumeController::class, 'index']);
 
 // ###########################
 // ##  CONJUNTO CONTEÚDO
@@ -87,6 +111,15 @@ Route::middleware('verified', 'permissao:,,Administrador')
 // ###########################
 Route::middleware('verified', 'permissao:,,Administrador')
     ->resource('local', 'App\Http\Controllers\LocalController');
+
+// Rota para POST do Filtro de Locais
+Route::middleware('verified', 'permissao:,,Administrador')
+    ->name('local.filtrada.post')
+    ->post('localFiltrado', [App\Http\Controllers\LocalController::class, 'index']);
+// Rota para GET do Filtro de Locais
+Route::middleware('verified', 'permissao:,,Administrador')
+    ->name('local.filtrada.get')
+    ->get('localFiltrado', [App\Http\Controllers\LocalController::class, 'index']);
 
 // ###########################
 // ##  CONJUNTO ESTOQUE
@@ -110,11 +143,28 @@ Route::middleware('verified', 'permissao:,Servo,Administrador')
 Route::middleware('verified', 'permissao:,,Administrador')
     ->resource('pessoa', 'App\Http\Controllers\PessoaController');
 
+// Rota para POST do Filtro de Pessoas
+Route::middleware('verified', 'permissao:,,Administrador')
+    ->name('pessoa.filtrada.post')
+    ->post('pessoaFiltrada', [App\Http\Controllers\PessoaController::class, 'index']);
+// Rota para GET do Filtro de Pessoas
+Route::middleware('verified', 'permissao:,,Administrador')
+    ->name('pessoa.filtrada.get')
+    ->get('pessoaFiltrada', [App\Http\Controllers\PessoaController::class, 'index']);
+
 // ###########################
 // ##  CONJUNTO PEDIDO
 // ###########################
 Route::middleware('verified', 'permissao:,,Administrador')
     ->resource('pedido', 'App\Http\Controllers\PedidoController');
+
+// Rotas de Filtro para Pedido
+Route::middleware('verified', 'permissao:,,Administrador')
+    ->name('pedido.filtrada.post')
+    ->post('pedidoFiltrado', [App\Http\Controllers\PedidoController::class, 'index']);
+Route::middleware('verified', 'permissao:,,Administrador')
+    ->name('pedido.filtrada.get')
+    ->get('pedidoFiltrado', [App\Http\Controllers\PedidoController::class, 'index']);
 
 // ###########################
 // ##  CONJUNTO INVENTÁRIO
@@ -152,3 +202,9 @@ Route::middleware('verified', 'permissao:,,Administrador')
 Route::middleware('verified','permissao:,,Administrador')
     ->get('/log', [App\Http\Controllers\LogController::class, 'index'])
     ->name('log.index');
+Route::middleware('verified','permissao:,,Administrador')
+    ->post('/logFiltrado', [App\Http\Controllers\LogController::class, 'index'])
+    ->name('log.filtrado.post');
+Route::middleware('verified','permissao:,,Administrador')
+    ->get('/logFiltrado', [App\Http\Controllers\LogController::class, 'index'])
+    ->name('log.filtrado.get');

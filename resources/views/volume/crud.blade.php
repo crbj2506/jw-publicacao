@@ -14,6 +14,18 @@
     >
         @if($volumes)
             <x-slot:filtro>
+                <div class="card-header p-1">
+                    <form id="formFiltro" method="POST" action="{{ route('volume.filtrada.post') }}">
+                        @csrf
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text">Filtros</span>
+                            <input name="volume" type="text" class="form-control" placeholder="Volume" value="{{ $volumes->volumeFiltro ?? '' }}">
+                            <input name="envio" type="text" class="form-control" placeholder="Nota do Envio" value="{{ $volumes->envioFiltro ?? '' }}">
+                            <button type="submit" class="btn btn-sm btn-outline-primary">Filtrar</button>
+                            <a href="{{ route('volume.index') }}" class="btn btn-sm btn-outline-success">Limpar</a>
+                        </div>
+                    </form>
+                </div>
             </x-slot>
             <x-slot:lista>
                 <thead>
@@ -30,13 +42,13 @@
                 <tbody>
                     @foreach ($volumes as $key => $v)
                         <tr>
-                            <th class="text-center py-0" scope="row">{{$v['id']}}</th>
+                            <th class="text-center py-0" scope="row">{{$v->id}}</th>
                             <td class="py-0" scope="row">{{$v->volume}}</td>
                             <td class="text-center py-0" scope="row">{{$v->envio->nota}}</td>
                             <td class="text-center py-0" scope="row">{{$v->envio->data}}</td>
                             <td class="text-center py-0" scope="row">{{$v->envio->congregacao->nome}}</td>
-                            <td class="text-center py-0" scope="row"><a href="{{ route('volume.show',['volume' => $v['id']])}}" class="btn btn-sm btn-outline-primary py-0">Ver</a></td>
-                            <td class="text-center py-0" scope="row"><a href="{{ route('volume.edit',['volume' => $v['id']])}}" class="btn btn-sm btn-outline-warning py-0">Editar</a></td>
+                            <td class="text-center py-0" scope="row"><a href="{{ route('volume.show',['volume' => $v->id])}}" class="btn btn-sm btn-outline-primary py-0">Ver</a></td>
+                            <td class="text-center py-0" scope="row"><a href="{{ route('volume.edit',['volume' => $v->id])}}" class="btn btn-sm btn-outline-warning py-0">Editar</a></td>
                         </tr>
                     @endforeach
                 </tbody>
