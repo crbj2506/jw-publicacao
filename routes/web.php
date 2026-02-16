@@ -208,3 +208,10 @@ Route::middleware('verified','permissao:,,Administrador')
 Route::middleware('verified','permissao:,,Administrador')
     ->get('/logFiltrado', [App\Http\Controllers\LogController::class, 'index'])
     ->name('log.filtrado.get');
+
+// ###########################
+// ##  CONJUNTO AUDITORIA
+// ###########################
+Route::middleware('verified', 'permissao:,Servo,Administrador')
+    ->get('/auditoria', [App\Http\Controllers\AuditoriaController::class, 'index'])
+    ->name('auditoria.index');

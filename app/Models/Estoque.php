@@ -5,10 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
+use App\Traits\Auditable;
 
 class Estoque extends Model
 {
-    use HasFactory;
+    use HasFactory, Auditable;
+
     protected $fillable = [
         'local_id',
         'publicacao_id',

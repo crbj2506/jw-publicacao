@@ -66,6 +66,9 @@
                                                 <a class="dropdown-item" href="{{ route('publicacao.index') }}">
                                                     {{ __('Publicações') }}
                                                 </a>
+                                                <a class="dropdown-item" href="{{ route('auditoria.index') }}">
+                                                    {{ __('Minha Auditoria') }}
+                                                </a>
                                             </div>
                                         </li>
                                     @endif
@@ -129,6 +132,9 @@
                                                 </a>
                                                 <a class="dropdown-item" href="{{ route('log.index') }}">
                                                     {{ __('Logs de Acesso') }}
+                                                </a>
+                                                <a class="dropdown-item" href="{{ route('auditoria.index') }}">
+                                                    {{ __('Auditoria de Dados') }}
                                                 </a>
                                                 <a class="dropdown-item" href="{{ route('permissao.index') }}">
                                                     {{ __('Permissões Possíveis') }}
