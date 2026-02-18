@@ -112,6 +112,11 @@ class PublicacaoController extends Controller
                 'item' => $request->item
             ]);
         }
+
+        if ($request->input('redirect_to') === 'back') {
+            return redirect()->back()->withInput();
+        }
+
         return redirect()->route('publicacao.show', ['publicacao' => $publicacao->id]);
     }
 
@@ -192,7 +197,7 @@ class PublicacaoController extends Controller
         $publicacao->save();
 
         if ($request->input('redirect_to') === 'back') {
-            return redirect()->back();
+            return redirect()->back()->withInput();
         }
 
         return redirect()->route('publicacao.show', ['publicacao' => $publicacao->id]);

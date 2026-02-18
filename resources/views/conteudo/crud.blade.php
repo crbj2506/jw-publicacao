@@ -117,7 +117,159 @@
                         @error('quantidade') message="{{$message}}" @enderror>
                     </input-group-component>
                 </div>
+
+                @if(!isset($conteudo->show))
+                    <div class="col-12 p-2 d-flex flex-wrap gap-2 align-items-center justify-content-end">
+                        <span class="text-muted small me-2">Não encontrou o que precisava?</span>
+                        <button type="button" class="btn btn-sm {{ $errors->hasAny(['nome', 'codigo', 'item', 'proporcao_cm', 'proporcao_unidade']) ? 'btn-danger' : 'btn-outline-secondary' }}" data-bs-toggle="modal" data-bs-target="#modalNovaPublicacao">
+                            <i class="bi bi-plus-circle me-1"></i> Nova Publicação
+                        </button>
+                        <button type="button" class="btn btn-sm {{ $errors->hasAny(['nota', 'congregacao_id', 'data', 'retirada']) ? 'btn-danger' : 'btn-outline-secondary' }}" data-bs-toggle="modal" data-bs-target="#modalNovoEnvio">
+                            <i class="bi bi-plus-circle me-1"></i> Novo Envio
+                        </button>
+                        <button type="button" class="btn btn-sm {{ $errors->hasAny(['volume', 'envio_id']) ? 'btn-danger' : 'btn-outline-secondary' }}" data-bs-toggle="modal" data-bs-target="#modalNovoVolume">
+                            <i class="bi bi-plus-circle me-1"></i> Novo Volume
+                        </button>
+                    </div>
+                @endif
             </div>
         @endif
     </x-crud>
+
+    @if(!$conteudos && !isset($conteudo->show))
+        <!-- Modal Novo Envio -->
+        <div class="modal fade" id="modalNovoEnvio" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <form action="{{ route('envio.store') }}" method="POST">
+                        @csrf
+                        <input type="hidden" name="redirect_to" value="back">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Cadastrar Novo Envio</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body row">
+                            <div class="col-12 mb-3">
+                                <select-filter-component
+                                    id="modal_congregacao_id" 
+                                    label="Congregação:" 
+                                    name="congregacao_id"
+                                    option="Selecione..." options="{{json_encode($congregacoes)}}"
+                                    required="required" 
+                                    class="@error('congregacao_id') is-invalid @enderror"
+                                    @error('congregacao_id') message="{{$message}}" classmessage="invalid-feedback" @enderror
+                                ></select-filter-component>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Nota:</label>
+                                <input type="text" name="nota" class="form-control @error('nota') is-invalid @enderror" value="{{ old('nota') }}" required>
+                                @error('nota') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Data:</label>
+                                <input type="date" name="data" class="form-control" value="{{ old('data') }}">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Retirada:</label>
+                                <input type="date" name="retirada" class="form-control" value="{{ old('retirada') }}">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-primary">Salvar Envio</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Novo Volume -->
+        <div class="modal fade" id="modalNovoVolume" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form action="{{ route('volume.store') }}" method="POST">
+                        @csrf
+                        <input type="hidden" name="redirect_to" value="back">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Cadastrar Novo Volume</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <select-filter-component
+                                    id="modal_envio_id" 
+                                    label="Envio:" 
+                                    name="envio_id"
+                                    option="Selecione o Envio..." options="{{json_encode($envios)}}"
+                                    required="required" 
+                                    class="@error('envio_id') is-invalid @enderror"
+                                    @error('envio_id') message="{{$message}}" classmessage="invalid-feedback" @enderror
+                                ></select-filter-component>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Volume:</label>
+                                <input type="text" name="volume" class="form-control @error('volume') is-invalid @enderror" value="{{ old('volume') }}" required>
+                                @error('volume') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-primary">Salvar Volume</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Nova Publicação -->
+        <div class="modal fade" id="modalNovaPublicacao" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <form action="{{ route('publicacao.store') }}" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <input type="hidden" name="redirect_to" value="back">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Cadastrar Nova Publicação</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body row">
+                            <div class="col-md-8 mb-3">
+                                <label class="form-label">Nome:</label>
+                                <input type="text" name="nome" class="form-control @error('nome') is-invalid @enderror" value="{{ old('nome') }}" required>
+                                @error('nome') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Código:</label>
+                                <input type="text" name="codigo" class="form-control @error('codigo') is-invalid @enderror" value="{{ old('codigo') }}">
+                                @error('codigo') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Item:</label>
+                                <input type="text" name="item" class="form-control @error('item') is-invalid @enderror" value="{{ old('item') }}">
+                                @error('item') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Proporção (cm):</label>
+                                <input type="number" name="proporcao_cm" step="0.1" class="form-control @error('proporcao_cm') is-invalid @enderror" value="{{ old('proporcao_cm', 0) }}">
+                                @error('proporcao_cm') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Proporção (un):</label>
+                                <input type="number" name="proporcao_unidade" class="form-control @error('proporcao_unidade') is-invalid @enderror" value="{{ old('proporcao_unidade', 0) }}">
+                                @error('proporcao_unidade') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                            </div>
+                            <div class="col-12 mb-3">
+                                <label class="form-label">Observação:</label>
+                                <input type="text" name="observacao" class="form-control" value="{{ old('observacao') }}">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-primary">Salvar Publicação</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    @endif
 @endsection

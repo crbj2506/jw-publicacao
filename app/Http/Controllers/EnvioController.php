@@ -91,6 +91,11 @@ class EnvioController extends Controller
         //
         $request->validate(Envio::rules($id = null),Envio::feedback());
         $envio = Envio::create($request->all());
+
+        if ($request->input('redirect_to') === 'back') {
+            return redirect()->back()->withInput();
+        }
+
         return redirect()->route('envio.show', ['envio' => $envio->id]);
     }
 
@@ -140,6 +145,11 @@ class EnvioController extends Controller
         $request->validate(Envio::rules($envio),Envio::feedback());
         $envio = Envio::find($envio);
         $envio->update($request->all());
+
+        if ($request->input('redirect_to') === 'back') {
+            return redirect()->back()->withInput();
+        }
+
         return redirect()->route('envio.show', ['envio' => $envio]);
     }
 

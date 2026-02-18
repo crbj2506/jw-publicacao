@@ -88,6 +88,11 @@ class VolumeController extends Controller
         //
         $request->validate(Volume::rules($id = null),Volume::feedback());
         $volume = Volume::create($request->all());
+
+        if ($request->input('redirect_to') === 'back') {
+            return redirect()->back()->withInput();
+        }
+
         return redirect()->route('volume.show', ['volume' => $volume]);
     }
 
@@ -141,6 +146,11 @@ class VolumeController extends Controller
         $request->validate(Volume::rules($volume),Volume::feedback());
         $volume = Volume::find($volume);
         $volume->update($request->all());
+
+        if ($request->input('redirect_to') === 'back') {
+            return redirect()->back()->withInput();
+        }
+
         return redirect()->route('volume.show', ['volume' => $volume]);
     }
 

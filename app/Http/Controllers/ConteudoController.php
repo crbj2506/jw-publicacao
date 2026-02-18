@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Conteudo;
+use App\Models\Congregacao;
+use App\Models\Envio;
 use App\Models\Publicacao;
 use App\Models\Volume;
 use Illuminate\Http\Request;
@@ -94,13 +96,7 @@ class ConteudoController extends Controller
 
         $conteudos = $conteudos->paginate($perpage);
 
-        // Preparar dados para os selects de filtro na view
-        $publicacoesList = Publicacao::orderBy('nome')->select('id as value', Publicacao::raw('CONCAT(nome, " (",codigo,") ") as text'))->get();
-        $volumesList = Volume::orderByDesc('id')->get();
-        foreach ($volumesList as $key => $v) {
-            $volumesList[$key]->text = $v->volume . ' Nota: ' . $v->envio->nota . ($v->envio->data ? ' de ' . $v->envio->data : null);
-            $volumesList[$key]->value = $v->id;
-        }
+        $viewData = $this->loadViewData();
 
         // Atribuir os valores dos filtros ao objeto paginado para uso na view
         $conteudos->publicacaoFiltro = $publicacaoFiltro;
@@ -108,7 +104,8 @@ class ConteudoController extends Controller
         $conteudos->codigoFiltro = $codigoFiltro;
         $conteudos->envioFiltro = $envioFiltro; // Atribuir o filtro de Envio
         $conteudos->perpage = $perpage;
-        return view('conteudo.crud', ['conteudos' => $conteudos, 'publicacoes' => $publicacoesList, 'volumes' => $volumesList]);
+
+        return view('conteudo.crud', array_merge(['conteudos' => $conteudos], $viewData));
     }
 
     /**
@@ -118,15 +115,8 @@ class ConteudoController extends Controller
      */
     public function create()
     {
-        //
-        $volumes = Volume::orderByDesc('id')->get();
-        foreach ($volumes as $key => $v) {
-            $volumes[$key]->text = $v->volume . ' Nota: ' . $v->envio->nota . ($v->envio->data ? ' de '. $v->envio->data : null);
-            $volumes[$key]->value = $v->id;
-        }
-        //$publicacoes = Publicacao::orderBy('nome')->select('id as value', 'nome as text')->get(); //DB::raw('SUM(price) as total_sales')
-        $publicacoes = Publicacao::orderBy('nome')->select('id as value', Publicacao::raw('CONCAT(nome, " (",codigo,") ") as text'))->get();
-        return view('conteudo.crud',['volumes' => $volumes,'publicacoes' => $publicacoes]);
+        $viewData = $this->loadViewData();
+        return view('conteudo.crud', $viewData);
     }
 
     /**
@@ -153,12 +143,12 @@ class ConteudoController extends Controller
     {
         //
         $conteudo = Conteudo::find($conteudo);
-        $volumes = Volume::orderByDesc('id')->get();
-        $publicacoes = Publicacao::orderBy('nome')->get();
         if(Route::current()->action['as'] == "conteudo.show"){
             $conteudo->show = true;
-        };
-        return view('conteudo.crud', ['conteudo' => $conteudo, 'volumes' => $volumes, 'publicacoes' => $publicacoes]);
+        }
+
+        $viewData = $this->loadViewData();
+        return view('conteudo.crud', array_merge(['conteudo' => $conteudo], $viewData));
     }
 
     /**
@@ -173,13 +163,39 @@ class ConteudoController extends Controller
         if(Route::current()->action['as'] == "conteudo.edit"){
             $conteudo->edit = true;
         };
+        
+        $viewData = $this->loadViewData();
+        return view('conteudo.crud', array_merge(['conteudo' => $conteudo], $viewData));
+    }
+
+    /**
+     * Carrega os dados necessários para as views de Conteúdo.
+     *
+     * @return array
+     */
+    private function loadViewData()
+    {
         $volumes = Volume::orderByDesc('id')->get();
         foreach ($volumes as $key => $v) {
             $volumes[$key]->text = $v->volume . ' Nota: ' . $v->envio->nota . ($v->envio->data ? ' de '. $v->envio->data : null);
             $volumes[$key]->value = $v->id;
         }
+
         $publicacoes = Publicacao::orderBy('nome')->select('id as value', Publicacao::raw('CONCAT(nome, " (",codigo,") ") as text'))->get();
-        return view('conteudo.crud', ['conteudo' => $conteudo, 'volumes' => $volumes, 'publicacoes' => $publicacoes]);
+        $congregacoes = Congregacao::orderBy('nome')->select('id as value', 'nome as text')->get();
+        
+        $envios = Envio::orderByDesc('id')->get();
+        foreach ($envios as $key => $e) {
+            $envios[$key]->text = $e->nota . ($e->data ? ' de '. $e->data : null);
+            $envios[$key]->value = $e->id;
+        }
+
+        return [
+            'volumes' => $volumes,
+            'publicacoes' => $publicacoes,
+            'congregacoes' => $congregacoes,
+            'envios' => $envios
+        ];
     }
 
     /**
