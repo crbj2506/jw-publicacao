@@ -137,6 +137,46 @@
     </x-crud>
 
     @if(!$conteudos && !isset($conteudo->show))
+        <script>
+            // Função para limpar todos os campos de um modal
+            function limparModalForm(modalId) {
+                const form = document.querySelector(modalId + ' form');
+                if (form) {
+                    // Limpa inputs de texto
+                    form.querySelectorAll('input[type="text"], input[type="date"], input[type="number"]').forEach(input => {
+                        input.value = '';
+                    });
+                    
+                    // Limpa selects (para componentes Vue e selects normais)
+                    form.querySelectorAll('select, [role="combobox"]').forEach(select => {
+                        if (select.tagName === 'SELECT') {
+                            select.value = '';
+                        } else {
+                            // Para componentes Vue, reseta o valor
+                            select.value = '';
+                        }
+                    });
+                    
+                    // Limpa textareas
+                    form.querySelectorAll('textarea').forEach(textarea => {
+                        textarea.value = '';
+                    });
+                    
+                    // Remove feedback/error classes
+                    form.querySelectorAll('.is-invalid, .is-valid').forEach(el => {
+                        el.classList.remove('is-invalid', 'is-valid');
+                    });
+                    
+                    // Reseta a cor do botão que abre o modal
+                    const botaoAbreModal = document.querySelector(`button[data-bs-target="${modalId}"]`);
+                    if (botaoAbreModal) {
+                        botaoAbreModal.classList.remove('btn-danger');
+                        botaoAbreModal.classList.add('btn-outline-secondary');
+                    }
+                }
+            }
+        </script>
+
         <!-- Modal Novo Envio -->
         <div class="modal fade" id="modalNovoEnvio" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-lg">
@@ -175,7 +215,8 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="button" class="btn btn-outline-secondary" onclick="limparModalForm('#modalNovoEnvio')">Limpar</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
                             <button type="submit" class="btn btn-primary">Salvar Envio</button>
                         </div>
                     </form>
@@ -213,7 +254,8 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="button" class="btn btn-outline-secondary" onclick="limparModalForm('#modalNovoVolume')">Limpar</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
                             <button type="submit" class="btn btn-primary">Salvar Volume</button>
                         </div>
                     </form>
@@ -264,12 +306,59 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="button" class="btn btn-outline-secondary" onclick="limparModalForm('#modalNovaPublicacao')">Limpar</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
                             <button type="submit" class="btn btn-primary">Salvar Publicação</button>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
+
+        @if ($errors->any())
+            @php($modalId = null)
+            @if($errors->hasAny(['nome', 'codigo', 'item', 'proporcao_cm', 'proporcao_unidade']))
+                @php($modalId = 'modalNovaPublicacao')
+            @elseif($errors->hasAny(['nota', 'congregacao_id', 'data', 'retirada']))
+                @php($modalId = 'modalNovoEnvio')
+            @elseif($errors->hasAny(['volume', 'envio_id']))
+                @php($modalId = 'modalNovoVolume')
+            @endif
+
+            @if($modalId)
+                @push('scripts')
+                    <script>
+                        // Aguarda o Bootstrap ficar disponível (carregado pelo Vite)
+                        function tentarAbrirModal() {
+                            const modalElement = document.getElementById('{{ $modalId }}');
+                            
+                            if (modalElement && typeof bootstrap !== 'undefined') {
+                                try {
+                                    const myModal = new bootstrap.Modal(modalElement);
+                                    myModal.show();
+                                    return true;
+                                } catch(e) {
+                                    console.error('Erro ao abrir modal:', e);
+                                    return false;
+                                }
+                            }
+                            return false;
+                        }
+                        
+                        // Tenta a cada 50ms por até 10 segundos
+                        let tentativas = 0;
+                        const maxTentativas = 200;
+                        
+                        const intervalo = setInterval(() => {
+                            tentativas++;
+                            
+                            if (tentarAbrirModal() || tentativas >= maxTentativas) {
+                                clearInterval(intervalo);
+                            }
+                        }, 50);
+                    </script>
+                @endpush
+            @endif
+        @endif
     @endif
 @endsection
