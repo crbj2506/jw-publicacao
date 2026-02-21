@@ -100,7 +100,6 @@ class PublicacaoController extends Controller
                 'proporcao_unidade' => $request->proporcao_unidade,
                 'imagem' => $imagem_urn,
                 'codigo' => $request->codigo,
-                'item' => $request->item
             ]);
         }else{
             $publicacao = Publicacao::create([
@@ -109,7 +108,6 @@ class PublicacaoController extends Controller
                 'proporcao_cm' => $request->proporcao_cm,
                 'proporcao_unidade' => $request->proporcao_unidade,
                 'codigo' => $request->codigo,
-                'item' => $request->item
             ]);
         }
 
@@ -190,7 +188,7 @@ class PublicacaoController extends Controller
             $imagem_urn = $imagem->store('imagens', 'public');
         }
 
-        $publicacao->fill($request->all());
+        $publicacao->fill($request->except('item'));
         if($imagem){
             $publicacao->imagem = $imagem_urn;
         }

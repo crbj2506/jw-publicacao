@@ -121,7 +121,7 @@
                 @if(!isset($conteudo->show))
                     <div class="col-12 p-2 d-flex flex-wrap gap-2 align-items-center justify-content-end">
                         <span class="text-muted small me-2">Não encontrou o que precisava?</span>
-                        <button type="button" class="btn btn-sm {{ $errors->hasAny(['nome', 'codigo', 'item', 'proporcao_cm', 'proporcao_unidade']) ? 'btn-danger' : 'btn-outline-secondary' }}" data-bs-toggle="modal" data-bs-target="#modalNovaPublicacao">
+                        <button type="button" class="btn btn-sm {{ $errors->hasAny(['nome', 'codigo', 'proporcao_cm', 'proporcao_unidade']) ? 'btn-danger' : 'btn-outline-secondary' }}" data-bs-toggle="modal" data-bs-target="#modalNovaPublicacao">
                             <i class="bi bi-plus-circle me-1"></i> Nova Publicação
                         </button>
                         <button type="button" class="btn btn-sm {{ $errors->hasAny(['nota', 'congregacao_id', 'data', 'retirada']) ? 'btn-danger' : 'btn-outline-secondary' }}" data-bs-toggle="modal" data-bs-target="#modalNovoEnvio">
@@ -286,11 +286,6 @@
                                 @error('codigo') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>
                             <div class="col-md-4 mb-3">
-                                <label class="form-label">Item:</label>
-                                <input type="text" name="item" class="form-control @error('item') is-invalid @enderror" value="{{ old('item') }}">
-                                @error('item') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                            </div>
-                            <div class="col-md-4 mb-3">
                                 <label class="form-label">Proporção (cm):</label>
                                 <input type="number" name="proporcao_cm" step="0.1" class="form-control @error('proporcao_cm') is-invalid @enderror" value="{{ old('proporcao_cm', 0) }}">
                                 @error('proporcao_cm') <div class="invalid-feedback">{{ $message }}</div> @enderror
@@ -317,7 +312,7 @@
 
         @if ($errors->any())
             @php($modalId = null)
-            @if($errors->hasAny(['nome', 'codigo', 'item', 'proporcao_cm', 'proporcao_unidade']))
+            @if($errors->hasAny(['nome', 'codigo', 'proporcao_cm', 'proporcao_unidade']))
                 @php($modalId = 'modalNovaPublicacao')
             @elseif($errors->hasAny(['nota', 'congregacao_id', 'data', 'retirada']))
                 @php($modalId = 'modalNovoEnvio')

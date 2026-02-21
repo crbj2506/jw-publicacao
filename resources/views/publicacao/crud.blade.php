@@ -36,7 +36,6 @@
                         <th class="text-center" scope="col">Nome</th>
                         <th class="text-center" scope="col">Observação</th>
                         <th class="text-center" scope="col">Proporção</th>
-                        <th class="text-center" scope="col">Item</th>
                         <th class="text-center" scope="col">Imagem</th>
                         <th class="text-center" scope="col">Ver</th>
                         <th class="text-center" scope="col">Editar</th>
@@ -54,7 +53,6 @@
                         {{$p->proporcao_cm && $p->proporcao_unidade ? ' = ' : ''}}
                         {{$p->proporcao_unidade ? $p->proporcao_unidade : ''}}
                     </td>
-                    <td class="py-0 text-center" scope="row">{{$p['item']}}</td>
                     <td class="py-0 text-center" scope="row"> 
                         @if ($p['imagem'])
                             <button type="button" class="btn btn-sm btn-outline-info py-0" data-bs-toggle="modal" data-bs-target="#modal{{$p['id']}}">Imagem</button>
@@ -96,7 +94,8 @@
             <div class="container-fluid d-flex flex-wrap">
                 <div class="col-12 p-2">
                     <input-group-component
-                        label="Nome:" 
+                        label="Nome:"
+                        placeholder="Nome da publicação:" 
                         type="text"
                         name="nome" 
                         id="nome" 
@@ -109,7 +108,8 @@
                 </div>
                 <div class="col-12 p-2">
                     <input-group-component
-                        label="Observação:" 
+                        label="Observação:"
+                        placeholder="Quantidade do Pacote, Uma revista dentro da outra, etc."
                         type="text"
                         name="observacao" 
                         id="observacao" 
@@ -138,8 +138,8 @@
                         type="number"
                         name="proporcao_unidade" 
                         id="proporcao_unidade" 
-                        step="0.5"
-                        value="{{isset($publicacao) ? $publicacao->proporcao_unidade : (old('proporcao_unidade')?old('proporcao_unidade'):'')}}"
+                        step="1"
+                        value="{{isset($publicacao) ? $publicacao->proporcao_unidade : (old('proporcao_unidade')?old('proporcao_unidade'):'0')}}"
                         {{!isset($publicacao->show) ? '' : 'disabled' }} 
                         class="@error('proporcao_unidade') is-invalid @enderror {{old('proporcao_unidade') ? 'is-valid' : '0'}}"
                         @error('proporcao_unidade') message="{{$message}}" @enderror>
@@ -147,29 +147,19 @@
                 </div>
                 <div class="col-12 p-2">
                     <input-group-component
-                        label="Código:" 
-                        type="text"
-                        name="codigo" 
                         id="codigo" 
+                        label="Código:" 
+                        name="codigo"
+                        placeholder="g25.1, wp21.1, etc." 
                         required="required"
+                        type="text"
                         value="{{isset($publicacao) ? $publicacao->codigo : (old('codigo')?old('codigo'):'')}}"
                         {{!isset($publicacao->show) ? '' : 'disabled' }} 
                         class="@error('codigo') is-invalid @enderror {{old('codigo') ? 'is-valid' : ''}}"
                         @error('codigo') message="{{$message}}" @enderror>
                     </input-group-component>
                 </div>
-                <div class="col-12 p-2">
-                    <input-group-component
-                        label="Item:" 
-                        type="text"
-                        name="item" 
-                        id="item" 
-                        value="{{isset($publicacao) ? $publicacao->item : (old('item')?old('item'):'')}}"
-                        {{!isset($publicacao->show) ? '' : 'disabled' }} 
-                        class="@error('item') is-invalid @enderror {{old('item') ? 'is-valid' : ''}}"
-                        @error('item') message="{{$message}}" @enderror>
-                    </input-group-component>
-                </div>
+                        
                 <div class="col-12 p-2">
                     <input-group-component
                         label="Imagem:" 

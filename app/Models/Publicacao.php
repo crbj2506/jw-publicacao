@@ -18,7 +18,6 @@ class Publicacao extends Model
         'proporcao_cm',
         'proporcao_unidade',
         'codigo',
-        'item',
         'imagem'
 
     ];
@@ -27,7 +26,6 @@ class Publicacao extends Model
         return [
             'nome' => 'required|unique:publicacoes,nome,'.$id.'|min:5',
             'codigo' => 'unique:publicacoes,codigo,'.$id.'|min:2|max:10',
-            'item' => 'nullable|sometimes|unique:publicacoes,item,'.$id.'|min:4|max:7',
             'proporcao_cm' => 'numeric|min:0|max:20',
             'proporcao_unidade' => 'numeric|integer|min:0|max:9999',
             //'imagem' => 'file|mimes:jpg',
