@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 use App\Models\Publicacao;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
+
 
 class PublicacaoController extends Controller
 {
@@ -90,32 +92,36 @@ class PublicacaoController extends Controller
     {
         //
         $request->validate(Publicacao::rules($id = null),Publicacao::feedback());
-        $imagem = $request->file('imagem');
-        if($imagem){
-            $imagem_urn = $imagem->store('imagens', 'public');
-            $publicacao = Publicacao::create([
-                'nome' => $request->nome,
-                'observacao' => $request->observacao,
-                'proporcao_cm' => $request->proporcao_cm,
-                'proporcao_unidade' => $request->proporcao_unidade,
-                'imagem' => $imagem_urn,
-                'codigo' => $request->codigo,
-            ]);
-        }else{
-            $publicacao = Publicacao::create([
-                'nome' => $request->nome,
-                'observacao' => $request->observacao,
-                'proporcao_cm' => $request->proporcao_cm,
-                'proporcao_unidade' => $request->proporcao_unidade,
-                'codigo' => $request->codigo,
-            ]);
+
+        $dados = $request->all();
+
+        if($request->hasFile('imagem') && $request->file('imagem')->isValid()){
+            
+            // Instancia o gerenciador de imagens manualmente, especificando a classe do driver
+            $imageManager = new ImageManager(Driver::class);
+
+            // Carrega a imagem
+            $imagem = $imageManager->read($request->file('imagem'));
+
+            // Redimensiona se necessário
+            if ($imagem->width() > 500 || $imagem->height() > 500) {
+                $imagem->scaleDown(500, 500);
+            }
+
+            // Cria um nome de arquivo único e salva a imagem processada
+            $nomeImagem = md5(uniqid(rand(), true)) . '.' . $request->file('imagem')->getClientOriginalExtension();
+            $caminho = 'imagens/' . $nomeImagem;
+            Storage::disk('public')->put($caminho, (string) $imagem->encode());
+            $dados['imagem'] = $caminho;
         }
+
+        Publicacao::create($dados);
 
         if ($request->input('redirect_to') === 'back') {
             return redirect()->back()->withInput();
         }
 
-        return redirect()->route('publicacao.show', ['publicacao' => $publicacao->id]);
+        return redirect()->route('publicacao.show', ['publicacao' => Publicacao::latest()->first()->id]);
     }
 
     /**
@@ -178,21 +184,35 @@ class PublicacaoController extends Controller
         //
         $publicacao = Publicacao::find($id);
         $request->validate(Publicacao::rules($id),Publicacao::feedback());
-        $imagem = $request->file('imagem');
+        
+        $dados = $request->all();
+
         // Se existe imagem nova informada para atualizar
-        if($imagem){
-            //Verifica se existia imagem anterior
-            if($publicacao->getOriginal()['imagem']){
+        if($request->hasFile('imagem') && $request->file('imagem')->isValid()){
+            //Verifica se existia imagem anterior e a remove
+            if($publicacao->imagem){
                 Storage::disk('public')->delete($publicacao->imagem);
             }
-            $imagem_urn = $imagem->store('imagens', 'public');
+
+            // Instancia o gerenciador de imagens manualmente, especificando a classe do driver
+            $imageManager = new ImageManager(Driver::class);
+
+            // Carrega a nova imagem
+            $imagem = $imageManager->read($request->file('imagem'));
+
+            // Redimensiona se necessário
+            if ($imagem->width() > 500 || $imagem->height() > 500) {
+                $imagem->scaleDown(500, 500);
+            }
+
+            // Cria um nome de arquivo único e salva a imagem processada
+            $nomeImagem = md5(uniqid(rand(), true)) . '.' . $request->file('imagem')->getClientOriginalExtension();
+            $caminho = 'imagens/' . $nomeImagem;
+            Storage::disk('public')->put($caminho, (string) $imagem->encode());
+            $dados['imagem'] = $caminho;
         }
 
-        $publicacao->fill($request->except('item'));
-        if($imagem){
-            $publicacao->imagem = $imagem_urn;
-        }
-        $publicacao->save();
+        $publicacao->update($dados);
 
         if ($request->input('redirect_to') === 'back') {
             return redirect()->back()->withInput();

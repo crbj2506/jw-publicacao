@@ -125,6 +125,7 @@
                         type="number"
                         name="proporcao_cm" 
                         id="proporcao_cm" 
+                        inputmode="decimal"
                         step="0.5"
                         value="{{isset($publicacao) ? $publicacao->proporcao_cm : (old('proporcao_cm')?old('proporcao_cm'):'0')}}"
                         {{!isset($publicacao->show) ? '' : 'disabled' }} 

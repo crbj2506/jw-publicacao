@@ -28,7 +28,7 @@ class Publicacao extends Model
             'codigo' => 'unique:publicacoes,codigo,'.$id.'|min:2|max:10',
             'proporcao_cm' => 'numeric|min:0|max:20',
             'proporcao_unidade' => 'numeric|integer|min:0|max:9999',
-            //'imagem' => 'file|mimes:jpg',
+            'imagem' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:512', // 512 KB = 500 KB
         ];
     }
     public static function feedback(){
