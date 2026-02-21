@@ -18,6 +18,7 @@
         "vue": "^3.5.00"
     },
     "dependencies": {
+        "bootstrap-icons": "^1.13.1",
         "maska": "^2.1.6",
         "v-money3": "^3.24.1"
     }
