@@ -195,10 +195,21 @@ class UserController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  \App\Models\User  $user
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function destroy(User $user)
     {
-        //
+        // Regra de negócio: só permite excluir se o e-mail do usuário não foi verificado.
+        if ($user->email_verified_at !== null) {
+            return redirect()
+                ->route('user.index')
+                ->with('error', 'Não é possível excluir um usuário com e-mail verificado.');
+        }
+
+        $user->delete();
+
+        return redirect()
+            ->route('user.index')
+            ->with('status', 'Usuário excluído com sucesso.');
     }
 }

@@ -6,6 +6,11 @@
             {{ session('status') }}
         </div>
     @endif
+    @if (session('error'))
+        <div class="alert alert-danger">
+            {{ session('error') }}
+        </div>
+    @endif
     @php($users = isset($users) ? $users : null)
     @php($user = isset($user) ? $user : null)
     <x-crud
@@ -42,6 +47,7 @@
                         <th class="text-center" scope="col">Criado em</th>
                         <th class="text-center" scope="col">Ver</th>
                         <th class="text-center" scope="col">Editar</th>
+                        <th class="text-center" scope="col">Excluir</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -54,7 +60,43 @@
                             <td class="text-center py-0" scope="row">{{$u->created_at}}</td>
                             <td class="text-center py-0" scope="row"><a href="{{ route('user.show',['user' => $u->id])}}" class="btn btn-sm btn-outline-primary py-0">Ver</a></td>
                             <td class="text-center py-0" scope="row"><a href="{{ route('user.edit',['user' => $u->id])}}" class="btn btn-sm btn-outline-warning py-0">Editar</a></td>
+                            <td class="text-center py-0" scope="row">
+                                @if(is_null($u->email_verified_at))
+                                    <!-- Botão que aciona o modal -->
+                                    <button type="button" class="btn btn-sm btn-outline-danger py-0" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal{{$u->id}}">
+                                        Excluir
+                                    </button>
+
+                                    <!-- Formulário de exclusão (fora do botão) -->
+                                    <form id="delete-form-{{$u->id}}" action="{{ route('user.destroy', ['user' => $u->id]) }}" method="post" class="d-none">
+                                        @csrf
+                                        @method('DELETE')
+                                    </form>
+                                @endif
+                            </td>
                         </tr>
+
+                        @if(is_null($u->email_verified_at))
+                        <!-- Modal de Confirmação -->
+                        <div class="modal fade" id="confirmDeleteModal{{$u->id}}" tabindex="-1" aria-labelledby="confirmDeleteModalLabel{{$u->id}}" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="confirmDeleteModalLabel{{$u->id}}">Confirmar Exclusão</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        Tem certeza de que deseja excluir o usuário <strong>{{ $u->name }}</strong>? Esta ação não pode ser desfeita.
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                        <!-- Botão que submete o formulário externo usando o atributo 'form' -->
+                                        <button type="submit" class="btn btn-danger" form="delete-form-{{$u->id}}">Confirmar Exclusão</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        @endif
                     @endforeach
                 </tbody>
             </x-slot>
