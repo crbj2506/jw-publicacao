@@ -109,15 +109,15 @@ Route::middleware('verified', 'permissao:,,Administrador')
 // ###########################
 // ##  CONJUNTO LOCAL
 // ###########################
-Route::middleware('verified', 'permissao:,,Administrador')
+Route::middleware('verified', 'permissao:,Servo,Administrador')
     ->resource('local', 'App\Http\Controllers\LocalController');
 
 // Rota para POST do Filtro de Locais
-Route::middleware('verified', 'permissao:,,Administrador')
+Route::middleware('verified', 'permissao:,Servo,Administrador')
     ->name('local.filtrada.post')
     ->post('localFiltrado', [App\Http\Controllers\LocalController::class, 'index']);
 // Rota para GET do Filtro de Locais
-Route::middleware('verified', 'permissao:,,Administrador')
+Route::middleware('verified', 'permissao:,Servo,Administrador')
     ->name('local.filtrada.get')
     ->get('localFiltrado', [App\Http\Controllers\LocalController::class, 'index']);
 

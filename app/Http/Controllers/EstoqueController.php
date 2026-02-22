@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Estoque;
 use App\Models\Publicacao;
 use App\Models\Local;
+use App\Models\Congregacao;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Route;
@@ -92,7 +93,8 @@ class EstoqueController extends Controller
             $locais[$key]->value = $l->id;
         }
         $publicacoes = Publicacao::orderBy('nome')->select('id as value', 'nome as text')->get();
-        return view('estoque.crud',['locais' => $locais,'publicacoes' => $publicacoes]);
+        $congregacoes = Congregacao::orderBy('nome')->select('id as value', 'nome as text')->get();
+        return view('estoque.crud',['locais' => $locais,'publicacoes' => $publicacoes, 'congregacoes' => $congregacoes]);
     }
 
     /**
@@ -156,6 +158,7 @@ class EstoqueController extends Controller
             $locais[$key]->value = $l->id;
         }
         $publicacoes = Publicacao::orderBy('nome')->select('id as value', 'nome as text')->get();
+        $congregacoes = Congregacao::orderBy('nome')->select('id as value', 'nome as text')->get();
 
         $estoques = Estoque::select('*')
             ->orderBy(Local::select('sigla')
@@ -171,7 +174,7 @@ class EstoqueController extends Controller
         if(Route::current()->action['as'] == "estoque.edit"){
             $estoque->edit = true;
         };
-        return view('estoque.crud', ['estoque' => $estoque, 'locais' => $locais, 'publicacoes' => $publicacoes]);
+        return view('estoque.crud', ['estoque' => $estoque, 'locais' => $locais, 'publicacoes' => $publicacoes, 'congregacoes' => $congregacoes]);
     }
 
     /**

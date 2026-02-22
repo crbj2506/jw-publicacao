@@ -62,9 +62,13 @@
                                                 <a class="dropdown-item" href="{{ route('estoque.index') }}">
                                                     {{ __('Estoque') }}
                                                 </a>
+                                                <a class="dropdown-item" href="{{ route('local.index') }}">
+                                                    {{ __('Locais') }}
+                                                </a>
                                                 <a class="dropdown-item" href="{{ route('publicacao.index') }}">
                                                     {{ __('Publicações') }}
                                                 </a>
+                                                <div class="dropdown-divider"></div>
                                                 <a class="dropdown-item" href="{{ route('auditoria.index') }}">
                                                     {{ __('Minha Auditoria') }}
                                                 </a>
@@ -102,12 +106,16 @@
                                             {{ __('Menu de Administrador') }}
                                             </a>
 
-                                            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">                                                <a class="dropdown-item" href="{{ route('congregacao.index') }}">
+                                            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                                <a class="dropdown-item" href="{{ route('congregacao.index') }}">
                                                     {{ __('Congregações') }}
                                                 </a>
                                                 <a class="dropdown-item" href="{{ route('conteudo.index') }}">
                                                     {{ __('Conteúdos dos Volumes') }}
-                                                </a>                                                
+                                                </a>
+                                                <a class="dropdown-item" href="{{ route('envio.index') }}">
+                                                    {{ __('Envios de Publicações') }}
+                                                </a>
                                                 <a class="dropdown-item" href="{{ route('inventariar.get') }}">
                                                     {{ __('Inventáriar') }}
                                                 </a>
@@ -120,26 +128,24 @@
                                                 <a class="dropdown-item" href="{{ route('local.index') }}">
                                                     {{ __('Locais de Publicações') }}
                                                 </a>
-                                                <a class="dropdown-item" href="{{ route('envio.index') }}">
-                                                    {{ __('Envios de Publicações') }}
-                                                </a>
                                                 <a class="dropdown-item" href="{{ route('pedido.index') }}">
                                                     {{ __('Pedidos dos Irmãos') }}
-                                                </a>
-                                                <a class="dropdown-item" href="{{ route('volume.index') }}">
-                                                    {{ __('Volumes dos Envios') }}
-                                                </a>
-                                                <a class="dropdown-item" href="{{ route('log.index') }}">
-                                                    {{ __('Logs de Acesso') }}
-                                                </a>
-                                                <a class="dropdown-item" href="{{ route('auditoria.index') }}">
-                                                    {{ __('Auditoria de Dados') }}
                                                 </a>
                                                 <a class="dropdown-item" href="{{ route('permissao.index') }}">
                                                     {{ __('Permissões Possíveis') }}
                                                 </a>
                                                 <a class="dropdown-item" href="{{ route('user.index') }}">
                                                     {{ __('Usuários do Sistema') }}
+                                                </a>
+                                                <a class="dropdown-item" href="{{ route('volume.index') }}">
+                                                    {{ __('Volumes dos Envios') }}
+                                                </a>
+                                                <div class="dropdown-divider"></div>
+                                                <a class="dropdown-item" href="{{ route('auditoria.index') }}">
+                                                    {{ __('Auditoria de Dados') }}
+                                                </a>
+                                                <a class="dropdown-item" href="{{ route('log.index') }}">
+                                                    {{ __('Logs de Acesso') }}
                                                 </a>
                                             </div>
                                         </li>

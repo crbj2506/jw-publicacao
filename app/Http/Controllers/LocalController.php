@@ -81,8 +81,32 @@ class LocalController extends Controller
     public function store(Request $request)
     {
         //
-        $request->validate(Local::rules($local = null),Local::feedback());
-        $local = Local::create($request->all());
+        // Se vier do modal, validar com nome_local e depois remapear
+        if ($request->has('nome_local')) {
+            $rules = [
+                'sigla' => 'required|unique:locais,sigla',
+                'nome_local' => 'required|unique:locais,nome',
+                'congregacao_id' => 'required|exists:congregacoes,id',
+            ];
+            $messages = [
+                'required' => 'O campo :attribute é obrigatório',
+                'unique' => 'O valor para :attribute já existe',
+                'exists' => 'O :attribute selecionado é inválido',
+            ];
+            $validated = $request->validate($rules, $messages);
+            // Remapear nome_local para nome
+            $validated['nome'] = $validated['nome_local'];
+            unset($validated['nome_local']);
+            $local = Local::create($validated);
+            // Redirecionar de volta se foi enviado pelo modal
+            if ($request->has('redirect_to') && $request->input('redirect_to') === 'back') {
+                return redirect()->back();
+            }
+        } else {
+            // Validação normal para criação via rota direta
+            $request->validate(Local::rules($local = null), Local::feedback());
+            $local = Local::create($request->all());
+        }
         return redirect()->route('local.show', ['local' => $local]);
     }
 

@@ -122,6 +122,19 @@
                         @error('quantidade') message="{{$message}}" @enderror>
                     </input-group-component>
                 </div>
+
+                @if(!isset($estoque->show))
+                    <div class="col-12 p-2 d-flex flex-wrap gap-2 align-items-center justify-content-end">
+                        <span class="text-muted small me-2">Não encontrou o que precisava?</span>
+                        <button type="button" class="btn btn-sm {{ $errors->hasAny(['congregacao_id', 'nome', 'sigla']) ? 'btn-danger' : 'btn-outline-secondary' }}" data-bs-toggle="modal" data-bs-target="#modalNovoLocal">
+                            <i class="bi bi-plus-circle me-1"></i> Novo Local
+                        </button>
+                        <button type="button" class="btn btn-sm {{ $errors->hasAny(['nome', 'codigo', 'proporcao_cm', 'proporcao_unidade']) ? 'btn-danger' : 'btn-outline-secondary' }}" data-bs-toggle="modal" data-bs-target="#modalNovaPublicacao">
+                            <i class="bi bi-plus-circle me-1"></i> Nova Publicação
+                        </button>
+                    </div>
+                @endif
+
                 @if(isset($estoque))
                     @if($estoque->publicacao->proporcao() > 0)
                         <div class="col-12 col-sm-6 col-md-4 p-2">
@@ -163,6 +176,186 @@
             </div>
         @endif
     </x-crud>
+
+    @if(!isset($estoque) || !isset($estoque->show))
+        <script>
+            // Função para limpar todos os campos de um modal
+            function limparModalForm(modalId) {
+                const form = document.querySelector(modalId + ' form');
+                if (form) {
+                    // Limpa inputs de texto
+                    form.querySelectorAll('input[type="text"], input[type="date"], input[type="number"]').forEach(input => {
+                        input.value = '';
+                    });
+                    
+                    // Limpa selects (para componentes Vue e selects normais)
+                    form.querySelectorAll('select, [role="combobox"]').forEach(select => {
+                        if (select.tagName === 'SELECT') {
+                            select.value = '';
+                        } else {
+                            // Para componentes Vue, reseta o valor
+                            select.value = '';
+                        }
+                    });
+                    
+                    // Limpa textareas
+                    form.querySelectorAll('textarea').forEach(textarea => {
+                        textarea.value = '';
+                    });
+                    
+                    // Remove feedback/error classes
+                    form.querySelectorAll('.is-invalid, .is-valid').forEach(el => {
+                        el.classList.remove('is-invalid', 'is-valid');
+                    });
+                    
+                    // Reseta a cor do botão que abre o modal
+                    const botaoAbreModal = document.querySelector(`button[data-bs-target="${modalId}"]`);
+                    if (botaoAbreModal) {
+                        botaoAbreModal.classList.remove('btn-danger');
+                        botaoAbreModal.classList.add('btn-outline-secondary');
+                    }
+                }
+            }
+        </script>
+
+        <!-- Modal Novo Local -->
+        <div class="modal fade" id="modalNovoLocal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form action="{{ route('local.store') }}" method="POST">
+                        @csrf
+                        <input type="hidden" name="redirect_to" value="back">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Cadastrar Novo Local</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <select-filter-component
+                                    id="modal_congregacao_id" 
+                                    label="Congregação:" 
+                                    name="congregacao_id"
+                                    option="Selecione..." 
+                                    options="{{json_encode($congregacoes)}}"
+                                    old_id="{{ @old('congregacao_id') }}"
+                                    value="{{ @old('congregacao_id') ? collect($congregacoes)->firstWhere('value', @old('congregacao_id'))->text ?? '' : '' }}"
+                                    required="required" 
+                                    class="@error('congregacao_id') is-invalid @enderror"
+                                    @error('congregacao_id') message="{{$message}}" classmessage="invalid-feedback" @enderror
+                                ></select-filter-component>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Nome:</label>
+                                <input type="text" name="nome_local" class="form-control @error('nome_local') is-invalid @enderror" value="{{ old('nome_local') }}" required>
+                                @error('nome_local') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Sigla:</label>
+                                <input type="text" name="sigla" class="form-control @error('sigla') is-invalid @enderror" value="{{ old('sigla') }}" required>
+                                @error('sigla') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-secondary" onclick="limparModalForm('#modalNovoLocal')">Limpar</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                            <button type="submit" class="btn btn-primary">Salvar Local</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Nova Publicação -->
+        <div class="modal fade" id="modalNovaPublicacao" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <form action="{{ route('publicacao.store') }}" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <input type="hidden" name="redirect_to" value="back">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Cadastrar Nova Publicação</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body row">
+                            <div class="col-md-8 mb-3">
+                                <label class="form-label">Nome:</label>
+                                <input type="text" name="nome" class="form-control @error('nome') is-invalid @enderror" value="{{ old('nome') }}" required>
+                                @error('nome') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Código:</label>
+                                <input type="text" name="codigo" class="form-control @error('codigo') is-invalid @enderror" value="{{ old('codigo') }}">
+                                @error('codigo') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Proporção (cm):</label>
+                                <input type="number" name="proporcao_cm" step="0.1" class="form-control @error('proporcao_cm') is-invalid @enderror" value="{{ old('proporcao_cm', 0) }}">
+                                @error('proporcao_cm') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Proporção (un):</label>
+                                <input type="number" name="proporcao_unidade" class="form-control @error('proporcao_unidade') is-invalid @enderror" value="{{ old('proporcao_unidade', 0) }}">
+                                @error('proporcao_unidade') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                            </div>
+                            <div class="col-12 mb-3">
+                                <label class="form-label">Observação:</label>
+                                <input type="text" name="observacao" class="form-control" value="{{ old('observacao') }}">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-secondary" onclick="limparModalForm('#modalNovaPublicacao')">Limpar</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                            <button type="submit" class="btn btn-primary">Salvar Publicação</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        @if ($errors->any())
+            @php($modalId = null)
+            @if($errors->hasAny(['congregacao_id', 'nome_local', 'sigla']))
+                @php($modalId = 'modalNovoLocal')
+            @elseif($errors->hasAny(['nome', 'codigo', 'proporcao_cm', 'proporcao_unidade']))
+                @php($modalId = 'modalNovaPublicacao')
+            @endif
+
+            @if($modalId)
+                @push('scripts')
+                    <script>
+                        // Aguarda o Bootstrap ficar disponível (carregado pelo Vite)
+                        function tentarAbrirModal() {
+                            const modalElement = document.getElementById('{{ $modalId }}');
+                            
+                            if (modalElement && typeof bootstrap !== 'undefined') {
+                                try {
+                                    const myModal = new bootstrap.Modal(modalElement);
+                                    myModal.show();
+                                    return true;
+                                } catch(e) {
+                                    console.error('Erro ao abrir modal:', e);
+                                    return false;
+                                }
+                            }
+                            return false;
+                        }
+                        
+                        // Tenta a cada 50ms por até 10 segundos
+                        let tentativas = 0;
+                        const maxTentativas = 200;
+                        
+                        const intervalo = setInterval(() => {
+                            tentativas++;
+                            
+                            if (tentarAbrirModal() || tentativas >= maxTentativas) {
+                                clearInterval(intervalo);
+                            }
+                        }, 50);
+                    </script>
+                @endpush
+            @endif
+        @endif
+    @endif
 
     @if(isset($estoque))
         <!-- Modal para atualizar proporção da publicação -->
