@@ -143,6 +143,11 @@ Route::middleware('verified', 'permissao:,Servo,Administrador')
 Route::middleware('verified', 'permissao:,,Administrador')
     ->resource('pessoa', 'App\Http\Controllers\PessoaController');
 
+// Rota para restaurar pessoa deletada
+Route::middleware('verified', 'permissao:,,Administrador')
+    ->name('pessoa.restore')
+    ->post('pessoa/{id}/restore', [App\Http\Controllers\PessoaController::class, 'restore']);
+
 // Rota para POST do Filtro de Pessoas
 Route::middleware('verified', 'permissao:,,Administrador')
     ->name('pessoa.filtrada.post')

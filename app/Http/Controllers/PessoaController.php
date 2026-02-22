@@ -6,9 +6,30 @@ use App\Models\Pessoa;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 
 class PessoaController extends Controller
 {
+    /**
+     * Check if the current user is an administrator.
+     *
+     * @return bool
+     */
+    private function isAdmin()
+    {
+        $user = Auth::user();
+        if (!$user) {
+            return false;
+        }
+        
+        $permissoes = $user->permissoes;
+        foreach ($permissoes as $permissao) {
+            if ($permissao->permissao === 'Administrador') {
+                return true;
+            }
+        }
+        return false;
+    }
     /**
      * Display a listing of the resource.
      *
@@ -43,7 +64,8 @@ class PessoaController extends Controller
         }
 
         // Inicia a query ordenada por nome (ordem alfabética) por padrão
-        $pessoas = Pessoa::orderBy('nome');
+        // Se for administrador, inclui também as pessoas deletadas
+        $pessoas = $this->isAdmin() ? Pessoa::withTrashed()->orderBy('nome') : Pessoa::orderBy('nome');
 
         if (!empty($nomeFiltro)) {
             $pessoas->where('nome', 'like', '%' . $nomeFiltro . '%');
@@ -55,6 +77,9 @@ class PessoaController extends Controller
         $pessoas->nomeFiltro = $nomeFiltro;
         $pessoas->perpage = $perpage;
         $pessoas->filtros = $request->all('nome', 'perpage');
+        
+        // Passa para a view se o usuário é administrador
+        $pessoas->isAdmin = $this->isAdmin();
 
         return view('pessoa.crud',['pessoas' => $pessoas]);
     }
@@ -93,10 +118,11 @@ class PessoaController extends Controller
     public function show($pessoa)
     {
         //
-        $pessoa = Pessoa::find($pessoa);
+        $pessoa = Pessoa::withTrashed()->find($pessoa);
         if(Route::current()->action['as'] == "pessoa.show"){
             $pessoa->show = true;
         };
+        $pessoa->isAdmin = $this->isAdmin();
         return view('pessoa.crud', ['pessoa' => $pessoa]);
     }
 
@@ -112,6 +138,7 @@ class PessoaController extends Controller
         if(Route::current()->action['as'] == "pessoa.edit"){
             $pessoa->edit = true;
         };
+        $pessoa->isAdmin = $this->isAdmin();
         return view('pessoa.crud', ['pessoa' => $pessoa]);
     }
 
@@ -135,10 +162,32 @@ class PessoaController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  \App\Models\Pessoa  $pessoa
-     * @return null
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function destroy(Pessoa $pessoa)
     {
-        //
+        if (!$this->isAdmin()) {
+            return redirect()->route('pessoa.index')->withErrors('Apenas administradores podem excluir pessoas.');
+        }
+        
+        $pessoa->delete();
+        return redirect()->route('pessoa.index')->with('success', 'Pessoa excluída com sucesso.');
+    }
+    
+    /**
+     * Restore the specified resource from soft delete.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function restore($id)
+    {
+        if (!$this->isAdmin()) {
+            return redirect()->route('pessoa.index')->withErrors('Apenas administradores podem restaurar pessoas.');
+        }
+        
+        $pessoa = Pessoa::withTrashed()->findOrFail($id);
+        $pessoa->restore();
+        return redirect()->route('pessoa.index')->with('success', 'Pessoa restaurada com sucesso.');
     }
 }

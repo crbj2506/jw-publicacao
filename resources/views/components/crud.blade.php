@@ -67,6 +67,9 @@
                                 {{ isset($o->edit) ? 'Salvar' : 'Cadastrar' }}
                             </button>
                         @endif
+                        @if(isset($actionButton))
+                            {{$actionButton}}
+                        @endif
                     </div>
                     <div class="col text-end">
                         @if(isset($o->show) && ($o->objetoAnterior || $o->objetoPosterior))
