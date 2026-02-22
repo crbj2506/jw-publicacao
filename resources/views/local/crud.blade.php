@@ -34,6 +34,7 @@
                         <th class="text-center" scope="col">Nome</th>
                         <th class="text-center" scope="col">Ver</th>
                         <th class="text-center" scope="col">Editar</th>
+                        <th class="text-center" scope="col">Excluir</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -44,6 +45,17 @@
                             <td class=" py-0" scope="row">{{$l->nome}}</td>
                             <td class="text-center py-0" scope="row"><a href="{{ route('local.show',['local' => $l->id])}}" class="btn btn-sm btn-outline-primary py-0">Ver</a></td>
                             <td class="text-center py-0" scope="row"><a href="{{ route('local.edit',['local' => $l->id])}}" class="btn btn-sm btn-outline-warning py-0">Editar</a></td>
+                            <td class="text-center py-0" scope="row">
+                                @if(!$l->temPublicacoes())
+                                    <form id="formExcluir_{{$l->id}}" method="POST" action="{{ route('local.destroy',['local' => $l->id])}}" enctype="multipart/form-data">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-outline-danger py-0" form="formExcluir_{{$l->id}}" onclick="return confirm('Tem certeza que deseja excluir este local?')"> Excluir </button>
+                                    </form>
+                                @else
+                                    <button class="btn btn-sm btn-outline-danger py-0" disabled title="Este local contém publicações">Excluir</button>
+                                @endif
+                            </td>
                         </tr>
                     @endforeach
                 </tbody>

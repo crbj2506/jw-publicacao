@@ -167,6 +167,11 @@ class LocalController extends Controller
      */
     public function destroy(Local $local)
     {
-        //
+        if ($local->temPublicacoes()) {
+            return redirect()->route('local.index')->withErrors('Este local contém publicações e não pode ser excluído.');
+        }
+        
+        $local->delete();
+        return redirect()->route('local.index')->with('success', 'Local excluído com sucesso.');
     }
 }

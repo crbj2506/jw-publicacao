@@ -35,4 +35,8 @@ class Local extends Model
     public function estoques(){
         return $this->hasMany('App\Models\Estoque');
     }
+
+    public function temPublicacoes(){
+        return $this->estoques()->count() > 0;
+    }
 }
