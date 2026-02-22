@@ -76,7 +76,8 @@ class EstoqueController extends Controller
         $estoques->codigoFiltro = $codigoFiltro;
         $estoques->perpage = $perpage;
 
-        return view('estoque.crud',['estoques' => $estoques]);
+        $congregacoes = Congregacao::orderBy('nome')->select('id as value', 'nome as text')->get();
+        return view('estoque.crud',['estoques' => $estoques, 'congregacoes' => $congregacoes]);
     }
 
     /**
