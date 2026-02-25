@@ -123,18 +123,6 @@
                     </input-group-component>
                 </div>
 
-                @if(!isset($estoque->show))
-                    <div class="col-12 p-2 d-flex flex-wrap gap-2 align-items-center justify-content-end">
-                        <span class="text-muted small me-2">Não encontrou o que precisava?</span>
-                        <button type="button" class="btn btn-sm {{ $errors->hasAny(['congregacao_id', 'nome', 'sigla']) ? 'btn-danger' : 'btn-outline-secondary' }}" data-bs-toggle="modal" data-bs-target="#modalNovoLocal">
-                            <i class="bi bi-plus-circle me-1"></i> Novo Local
-                        </button>
-                        <button type="button" class="btn btn-sm {{ $errors->hasAny(['nome', 'codigo', 'proporcao_cm', 'proporcao_unidade']) ? 'btn-danger' : 'btn-outline-secondary' }}" data-bs-toggle="modal" data-bs-target="#modalNovaPublicacao">
-                            <i class="bi bi-plus-circle me-1"></i> Nova Publicação
-                        </button>
-                    </div>
-                @endif
-
                 @if(isset($estoque))
                     @if($estoque->publicacao->proporcao() > 0)
                         <div class="col-12 col-sm-6 col-md-4 p-2">
@@ -172,6 +160,17 @@
                             </div>
                         </div>
                     @endif
+                @endif
+                @if(!isset($estoque->show))
+                    <div class="col-12 p-2 d-flex flex-wrap gap-2 align-items-center justify-content-end">
+                        <span class="text-muted small me-2">Não encontrou o que precisava?</span>
+                        <button type="button" class="btn btn-sm {{ $errors->hasAny(['congregacao_id', 'nome', 'sigla']) ? 'btn-danger' : 'btn-outline-secondary' }}" data-bs-toggle="modal" data-bs-target="#modalNovoLocal">
+                            <i class="bi bi-plus-circle me-1"></i> Novo Local
+                        </button>
+                        <button type="button" class="btn btn-sm {{ $errors->hasAny(['nome', 'codigo', 'proporcao_cm', 'proporcao_unidade']) ? 'btn-danger' : 'btn-outline-secondary' }}" data-bs-toggle="modal" data-bs-target="#modalNovaPublicacao">
+                            <i class="bi bi-plus-circle me-1"></i> Nova Publicação
+                        </button>
+                    </div>
                 @endif
             </div>
         @endif
