@@ -27,14 +27,16 @@ class HomeController extends Controller
     {
         $congregacoes = Congregacao::orderBy('nome')->get();
         foreach ($congregacoes as $i1 => $congregacao) {
-            $totalPublicacoes = null;
-            $publicacoes_id = null;
-            $local_id = null;
+            $totalPublicacoes = 0;
+            $publicacoes_id = [];
+            $local_id = [];
             $dataAlteracaoEstoque = null;
-            $ultimoInventario = null;
-            foreach($congregacao->inventarios as $i21 => $inventario){
-                $ultimoInventario = $inventario->select('ano','mes')->where('congregacao_id', $congregacao->id)->orderBy('ano')->orderBy('mes')->get()->last();
-            }
+            $ultimoInventario = Inventario::select('ano', 'mes')
+                ->where('congregacao_id', $congregacao->id)
+                ->orderByDesc('ano')
+                ->orderByDesc('mes')
+                ->first();
+
             if(!isset($ultimoInventario)){
                 $ultimoInventario = new Inventario;
                 $ultimoInventario->ano = null;
@@ -49,13 +51,9 @@ class HomeController extends Controller
                 }
             }
             $congregacoes[$i1]->totalPublicacoes = $totalPublicacoes;
-            if(isset($publicacoes_id)){ 
-                $publicacoes_id = array_unique($publicacoes_id);
-                $congregacoes[$i1]->totalItens = count($publicacoes_id);
-            }
-            if (isset($local_id)) {
-                $congregacoes[$i1]->totalLocais = count($local_id);
-            }
+            $publicacoes_id = array_unique($publicacoes_id);
+            $congregacoes[$i1]->totalItens = count($publicacoes_id);
+            $congregacoes[$i1]->totalLocais = count($local_id);
             $congregacoes[$i1]->dataAlteracaoEstoque = $dataAlteracaoEstoque;
             $congregacoes[$i1]->ultimoInventario = $ultimoInventario;
             $congregacoes[$i1]->enviosQuantidade = $congregacao->envios->count();
