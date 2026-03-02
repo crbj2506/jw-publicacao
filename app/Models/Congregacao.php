@@ -37,4 +37,51 @@ class Congregacao extends Model
         return $this->hasMany('App\Models\Inventario');
     }
 
+    // ==================== NOVOS RELACIONAMENTOS ====================
+
+    /**
+     * Todos os usuários desta congregação
+     */
+    public function users() {
+        return $this->hasMany('App\Models\User');
+    }
+
+    /**
+     * Todas as pessoas (irmãos) desta congregação
+     */
+    public function pessoas() {
+        return $this->hasMany('App\Models\Pessoa');
+    }
+
+    /**
+     * Retorna o Ancião desta congregação (se houver)
+     */
+    public function anciao() {
+        return $this->users()
+            ->whereHas('permissoes', function($query) {
+                $query->where('permissao', 'Ancião');
+            })
+            ->first();
+    }
+
+    /**
+     * Retorna todos os Anciões desta congregação
+     */
+    public function ancioes() {
+        return $this->users()
+            ->whereHas('permissoes', function($query) {
+                $query->where('permissao', 'Ancião');
+            });
+    }
+
+    /**
+     * Retorna todos os Servos desta congregação
+     */
+    public function servidores() {
+        return $this->users()
+            ->whereHas('permissoes', function($query) {
+                $query->where('permissao', 'Servo');
+            });
+    }
+
 }

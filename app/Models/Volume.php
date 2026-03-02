@@ -17,7 +17,7 @@ class Volume extends Model
         return [
             'volume' => [
                 'required',
-                'regex:/^Volume ([1-9][0-9]?|100) de ([1-9][0-9]?|100) - Caixa ([1-9][0-9]{0,2})$/',
+                'regex:/^Volume ([1-9][0-9]?|100) de ([1-9][0-9]?|100) - Caixa ((?!0+$)\d{1,3})$/',
                 function ($attribute, $value, $fail) {
                     if (preg_match('/^Volume (\d+) de (\d+) - Caixa \d+$/', $value, $matches)) {
                         $a = (int) $matches[1];

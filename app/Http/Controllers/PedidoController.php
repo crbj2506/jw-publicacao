@@ -7,6 +7,7 @@ use App\Models\Pessoa;
 use App\Models\Publicacao;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 class PedidoController extends Controller
@@ -19,6 +20,8 @@ class PedidoController extends Controller
      */
     public function index(Request $request)
     {
+        $user = Auth::user();
+        $congregacaoId = congregacaoAtivaId();
         $pessoaFiltro = null;
         $publicacaoFiltro = null;
         $perpage = 10;
@@ -48,7 +51,13 @@ class PedidoController extends Controller
             $perpage = $request->session()->get('perpage');
         }
 
-        $pedidos = Pedido::orderByDesc('id');
+        // Ordenar: não entregues mais antigos primeiro, depois entregues mais recentes
+        $pedidos = Pedido::orderByRaw('CASE WHEN entregue IS NULL THEN 0 ELSE 1 END')
+                         ->orderBy('solicitado', 'asc')
+                         ->orderBy('entregue', 'desc');
+
+        // Filtrar pela congregação ativa do usuário
+        $pedidos->where('congregacao_id', $congregacaoId);
 
         if (!empty($pessoaFiltro)) {
             $pedidos->whereRelation('pessoa', 'nome', 'like', "%$pessoaFiltro%");
@@ -63,7 +72,7 @@ class PedidoController extends Controller
         $pedidos->publicacaoFiltro = $publicacaoFiltro;
         $pedidos->perpage = $perpage;
 
-        return view('pedido.crud',['pedidos' => $pedidos]);
+        return view('pedido.crud', ['pedidos' => $pedidos]);
     }
 
     /**
@@ -73,10 +82,20 @@ class PedidoController extends Controller
      */
     public function create()
     {
-        //
-        $pessoas = Pessoa::orderBy('nome')->select('id as value', 'nome as text')->get();
-        $publicacoes = Publicacao::orderBy('nome')->select('id as value', 'nome as text')->get();
-        return view('pedido.crud',['pessoas'=>$pessoas,'publicacoes'=>$publicacoes]);
+        $user = Auth::user();
+        $congregacaoId = congregacaoAtivaId();
+
+        $pessoas = Pessoa::where('congregacao_id', $congregacaoId)
+                        ->orderBy('nome')
+                        ->select('id as value', 'nome as text')
+                        ->get();
+        $publicacoes = Publicacao::where('congregacao_id', $congregacaoId)
+                        ->orderBy('nome')
+                        ->select('id as value', 'nome as text')
+                        ->get();
+        
+        $pedido = new Pedido();
+        return view('pedido.crud', ['pedido' => $pedido, 'pessoas' => $pessoas, 'publicacoes' => $publicacoes]);
     }
 
     /**
@@ -87,9 +106,24 @@ class PedidoController extends Controller
      */
     public function store(Request $request)
     {
-        //
-        $request->validate(Pedido::rules($request->all('pessoa_id'),$request->all('publicacao_id'),$id = null),Pedido::feedback());
-        $pedido = Pedido::create($request->all());
+        $user = Auth::user();
+        $congregacaoId = congregacaoAtivaId();
+
+        $request->validate(Pedido::rules($request->all('pessoa_id'), $request->all('publicacao_id'), $id = null), Pedido::feedback());
+
+        // Validar que a pessoa pertence à congregação ativa
+        $pessoa = Pessoa::find($request->input('pessoa_id'));
+        if (!$pessoa || $pessoa->congregacao_id !== $congregacaoId) {
+            return back()->with('error', 'Pessoa não encontrada ou não pertence a sua congregação');
+        }
+
+        // Preparar dados
+        $dados = $request->all();
+        
+        // Preencher congregacao_id automaticamente pela congregação ativa
+        $dados['congregacao_id'] = $congregacaoId;
+
+        $pedido = Pedido::create($dados);
         return redirect()->route('pedido.show', ['pedido' => $pedido]);
     }
 
@@ -101,14 +135,27 @@ class PedidoController extends Controller
      */
     public function show($pedido)
     {
-        //
-        $pessoas = Pessoa::orderBy('nome')->get();
-        $publicacoes = Publicacao::orderBy('nome')->get();
+        $user = Auth::user();
+        $congregacaoId = congregacaoAtivaId();
         $pedido = Pedido::find($pedido);
-        if(Route::current()->action['as'] == "pedido.show"){
+
+        if (!$pedido) {
+            abort(404, 'Pedido não encontrado');
+        }
+
+        if ($pedido->congregacao_id !== $congregacaoId) {
+            abort(403, 'Você pode visualizar apenas pedidos de sua congregação');
+        }
+
+        // Buscar dados para a view (congregação ativa)
+        $pessoas = Pessoa::where('congregacao_id', $congregacaoId)->orderBy('nome')->get();
+        $publicacoes = Publicacao::where('congregacao_id', $congregacaoId)->orderBy('nome')->get();
+
+        if (Route::current()->action['as'] == "pedido.show") {
             $pedido->show = true;
-        };
-        return view('pedido.crud', ['pedido' => $pedido,'pessoas'=>$pessoas,'publicacoes'=>$publicacoes]);
+        }
+        
+        return view('pedido.crud', ['pedido' => $pedido, 'pessoas' => $pessoas, 'publicacoes' => $publicacoes]);
     }
 
     /**
@@ -119,13 +166,28 @@ class PedidoController extends Controller
      */
     public function edit(Pedido $pedido)
     {
-        //
-        if(Route::current()->action['as'] == "pedido.edit"){
+        $user = Auth::user();
+        $congregacaoId = congregacaoAtivaId();
+
+        if ($pedido->congregacao_id !== $congregacaoId) {
+            abort(403, 'Você pode editar apenas pedidos de sua congregação');
+        }
+
+        // Buscar dados para a view (congregação ativa)
+        $pessoas = Pessoa::where('congregacao_id', $congregacaoId)
+                        ->orderBy('nome')
+                        ->select('id as value', 'nome as text')
+                        ->get();
+        $publicacoes = Publicacao::where('congregacao_id', $congregacaoId)
+                        ->orderBy('nome')
+                        ->select('id as value', 'nome as text')
+                        ->get();
+
+        if (Route::current()->action['as'] == "pedido.edit") {
             $pedido->edit = true;
-        };
-        $pessoas = Pessoa::orderBy('nome')->select('id as value', 'nome as text')->get();
-        $publicacoes = Publicacao::orderBy('nome')->select('id as value', 'nome as text')->get();
-        return view('pedido.crud', ['pedido' => $pedido,'pessoas'=>$pessoas,'publicacoes'=>$publicacoes]);
+        }
+
+        return view('pedido.crud', ['pedido' => $pedido, 'pessoas' => $pessoas, 'publicacoes' => $publicacoes]);
     }
 
     /**
@@ -137,10 +199,32 @@ class PedidoController extends Controller
      */
     public function update(Request $request, $pedido)
     {
-        //
-        $request->validate(Pedido::rules($request->all('pessoa_id'),$request->all('publicacao_id'),$pedido),Pedido::feedback());
+        $user = Auth::user();
+        $congregacaoId = congregacaoAtivaId();
         $pedido = Pedido::find($pedido);
-        $pedido->update($request->all());
+
+        if (!$pedido) {
+            return back()->with('error', 'Pedido não encontrado');
+        }
+
+        if ($pedido->congregacao_id !== $congregacaoId) {
+            abort(403, 'Você pode editar apenas pedidos de sua congregação');
+        }
+
+        $request->validate(Pedido::rules($request->all('pessoa_id'), $request->all('publicacao_id'), $pedido->id), Pedido::feedback());
+
+        // Validar que a pessoa pertence à congregação ativa
+        $pessoa = Pessoa::find($request->input('pessoa_id'));
+        if (!$pessoa || $pessoa->congregacao_id !== $congregacaoId) {
+            return back()->with('error', 'Pessoa não encontrada ou não pertence a sua congregação');
+        }
+
+        $dados = $request->all();
+        
+        // Impedir alteração de congregacao_id
+        $dados['congregacao_id'] = $pedido->congregacao_id;
+
+        $pedido->update($dados);
         return redirect()->route('pedido.show', ['pedido' => $pedido]);
     }
 
@@ -148,10 +232,18 @@ class PedidoController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  \App\Models\Pedido  $pedido
-     * @return null
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function destroy(Pedido $pedido)
     {
-        //
+        $user = Auth::user();
+        $congregacaoId = congregacaoAtivaId();
+
+        if ($pedido->congregacao_id !== $congregacaoId) {
+            abort(403, 'Você pode deletar apenas pedidos de sua congregação');
+        }
+
+        $pedido->delete();
+        return redirect()->route('pedido.index')->with('success', 'Pedido deletado com sucesso');
     }
 }

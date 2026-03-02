@@ -8,22 +8,36 @@
             <form method="GET" action="{{ route('auditoria.index') }}">
                 <div class="input-group input-group-sm">
                     <span class="input-group-text">Filtros</span>
-                    @if(auth()->user()->permissoes->contains('permissao', 'Administrador'))
-                        <select name="user_id" class="form-select">
-                            <option value="">Todos os Usuários</option>
-                            @foreach($users as $user)
-                                <option value="{{ $user->id }}" {{ request('user_id') == $user->id ? 'selected' : '' }}>{{ $user->name }}</option>
-                            @endforeach
-                        </select>
+                    @if(auth()->user()->permissoes->contains('permissao', 'Administrador') || auth()->user()->permissoes->contains('permissao', 'Ancião'))
+                        <div class="col-md-3 p-0">
+                            <multi-select-users-component
+                                :options="{{json_encode($users)}}"
+                                :old_ids="{{ json_encode(old('user_ids', request('user_ids'))) }}"
+                                name="user_ids[]"
+                                placeholder="Selecionar Usuários..."
+                                search-placeholder="Buscar usuário..."
+                            ></multi-select-users-component>
+                        </div>
                     @endif
-                    <select name="evento" class="form-select">
-                        <option value="">Todos os Eventos</option>
-                        <option value="login" {{ request('evento') == 'login' ? 'selected' : '' }}>Login</option>
-                        <option value="logout" {{ request('evento') == 'logout' ? 'selected' : '' }}>Logout</option>
-                        <option value="created" {{ request('evento') == 'created' ? 'selected' : '' }}>Criação</option>
-                        <option value="updated" {{ request('evento') == 'updated' ? 'selected' : '' }}>Alteração</option>
-                        <option value="deleted" {{ request('evento') == 'deleted' ? 'selected' : '' }}>Exclusão</option>
-                    </select>
+                    @if(auth()->user()->permissoes->contains('permissao', 'Administrador'))
+                        <div class="col-md-3 p-0">
+                            <multi-select-congregations-component
+                                :options="{{json_encode($congregacoes)}}"
+                                :old_ids="{{ json_encode(old('congregacao_ids', request('congregacao_ids'))) }}"
+                                name="congregacao_ids[]"
+                                placeholder="Selecionar Congregações..."
+                                search-placeholder="Buscar congregação..."
+                            ></multi-select-congregations-component>
+                        </div>
+                    @endif
+                    <div class="col-md-2 p-0">
+                        <multi-select-eventos-component
+                            :options="{{json_encode($eventos)}}"
+                            :old_ids="{{ json_encode(old('eventos', request('eventos'))) }}"
+                            name="eventos[]"
+                            placeholder="Selecionar Eventos..."
+                        ></multi-select-eventos-component>
+                    </div>
                     <input type="text" name="recurso" class="form-control" placeholder="Recurso (ex: Publicacao)" value="{{ request('recurso') }}">
                     <button type="submit" class="btn btn-outline-primary">Filtrar</button>
                     <a href="{{ route('auditoria.index') }}" class="btn btn-outline-success">Limpar</a>
@@ -36,6 +50,7 @@
                     <tr>
                         <th class="text-center">Data</th>
                         <th class="text-center">Usuário</th>
+                        <th class="text-center">Congregação</th>
                         <th class="text-center">Evento</th>
                         <th class="text-center">Recurso</th>
                         <th class="text-center">ID</th>
@@ -47,8 +62,9 @@
                         <tr>
                             <td class="text-center small">{{ $auditoria->created_at->format('d/m/Y H:i:s') }}</td>
                             <td class="text-center">{{ $auditoria->user->name ?? 'Sistema' }}</td>
+                            <td class="text-center">{{ $auditoria->user && $auditoria->user->congregacao ? $auditoria->user->congregacao->nome : '-' }}</td>
                             <td class="text-center">
-                                <span class="badge {{ in_array($auditoria->evento, ['login', 'logout']) ? 'bg-info' : ($auditoria->evento == 'created' ? 'bg-success' : ($auditoria->evento == 'updated' ? 'bg-warning' : 'bg-danger')) }}">
+                                <span class="badge {{ in_array($auditoria->evento, ['login', 'logout']) ? 'bg-info' : ($auditoria->evento == 'criado' ? 'bg-success' : ($auditoria->evento == 'atualizado' ? 'bg-warning' : 'bg-danger')) }}">
                                     {{ strtoupper($auditoria->evento) }}
                                 </span>
                             </td>

@@ -11,11 +11,12 @@ class Pessoa extends Model
 {
     use HasFactory, Auditable, SoftDeletes;
     protected $fillable = [
-        'nome'
+        'nome',
+        'congregacao_id'
     ];
-    public static function rules($id){
+    public static function rules($id, $congregacao_id = null){
         return [
-            'nome' => 'required|unique:pessoas,nome,'.$id.'|min:3'
+            'nome' => 'required|unique:pessoas,nome,'.$id.',id,congregacao_id,'.$congregacao_id.'|min:3'
         ];
     }
     public static function feedback(){
@@ -23,6 +24,15 @@ class Pessoa extends Model
             'required' => 'O campo :attribute é obrigatório',
             'nome.min' => 'O campo :attribute deve ter no mínimo 3 caracteres'
         ];
+    }
+
+    // ==================== RELACIONAMENTOS ====================
+
+    /**
+     * Uma Pessoa pertence a uma Congregação
+     */
+    public function congregacao() {
+        return $this->belongsTo('App\Models\Congregacao');
     }
 
 }

@@ -67,21 +67,11 @@
             </x-slot>
             <div class="container-fluid d-flex flex-wrap">
                 <div class="col-12 col-sm-10 col-md-9 col-lg-8 col-xl-7 col-xxl-6 p-2">
-                    <select-filter-component
-                        class="@error('congregacao_id') is-invalid @enderror {{old('congregacao_id') ? 'is-valid' : ''}}"
-                        @error('congregacao_id') classinputgroup="has-validation" @enderror
-                        classmessage="valid-feedback @error('congregacao_id') invalid-feedback @enderror"
-                        id="congregacao_id"
-                        label="Congregação:"
-                        @error('congregacao_id') message="{{$message}}" @enderror
-                        name="congregacao_id"
-                        option="Selecione a Congregação..."
-                        options="{{json_encode($congregacoes)}}"
-                        old_id="{{ isset($local) ? $local->congregacao_id : @old('congregacao_id') }}"
-                        required="required"
-                        value="{{ isset($local) ? $local->congregacao->nome : @old('congregacao_id') }}"
-                        {{isset($local->show) ? 'disabled' : ''}}
-                    ></select-filter-component>
+                    <input type="hidden" name="congregacao_id" value="{{ isset($local) ? $local->congregacao_id : Auth::user()->congregacao_id }}">
+                    <div class="form-group">
+                        <label class="fw-bold">Congregação:</label>
+                        <p class="form-control-plaintext">{{ isset($local) && $local->congregacao ? $local->congregacao->nome : (Auth::user()->congregacao ? Auth::user()->congregacao->nome : 'N/A') }}</p>
+                    </div>
                 </div>
                 <div class="col-12 col-sm-4 col-md-3 col-lg-2 p-2">
                     <input-group-component

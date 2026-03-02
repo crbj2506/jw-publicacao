@@ -43,6 +43,7 @@
                         <th class="text-center" scope="col">#</th>
                         <th class="text-center" scope="col">Nome</th>
                         <th class="text-center" scope="col">E-mail</th>
+                        <th class="text-center" scope="col">Permissão</th>
                         <th class="text-center" scope="col">Verificado em</th>
                         <th class="text-center" scope="col">Criado em</th>
                         <th class="text-center" scope="col">Ver</th>
@@ -56,6 +57,7 @@
                             <th class="text-center py-0" scope="row">{{$u->id}}</th>
                             <td class="text-center py-0" scope="row">{{$u->name}}</td>
                             <td class="text-center py-0" scope="row">{{$u->email}}</td>
+                            <td class="text-center py-0" scope="row">{{ $u->permissaoMaiorNivel() }}</td>
                             <td class="text-center py-0" scope="row">{{$u->email_verified_at}}</td>
                             <td class="text-center py-0" scope="row">{{$u->created_at}}</td>
                             <td class="text-center py-0" scope="row"><a href="{{ route('user.show',['user' => $u->id])}}" class="btn btn-sm btn-outline-primary py-0">Ver</a></td>
@@ -132,6 +134,24 @@
                         @error('email') message="{{$message}}" @enderror>
                     </input-group-component>
                 </div>
+                
+                {{-- Campo Congregação --}}
+                <div class="col-12 p-2">
+                    @if(isset($user->show))
+                        {{-- Modo visualização --}}
+                        <div class="form-group">
+                            <label class="fw-bold">Congregação:</label>
+                            <p class="form-control-plaintext">{{ $user->congregacao ? $user->congregacao->nome : 'Não atribuído' }}</p>
+                        </div>
+                    @else
+                        <input type="hidden" name="congregacao_id" value="{{ isset($user) ? $user->congregacao_id : Auth::user()->congregacao_id }}">
+                        <div class="form-group">
+                            <label class="fw-bold">Congregação:</label>
+                            <p class="form-control-plaintext">{{ isset($user) && $user->congregacao ? $user->congregacao->nome : (Auth::user()->congregacao ? Auth::user()->congregacao->nome : 'N/A') }}</p>
+                        </div>
+                    @endif
+                </div>
+                
 @if(!isset($user->show) && !isset($user->edit))
                 <div class="col-12 p-2">
                     <input-group-component
@@ -163,9 +183,18 @@
                                     @php($checked = 'checked')
                                 @endif
                             @endforeach
+                            @php($nivel = $p->permissao === 'Administrador' ? 1 : ($p->permissao === 'Ancião' ? 2 : ($p->permissao === 'Servo' ? 3 : ($p->permissao === 'Publicador' ? 4 : 999))))
                                 <div class="form-check-inline form-switch">
-                                    <input class="form-check-input" type="checkbox" id="{{ $p->id }}" name="{{ $p->id }}" {{ $checked }} {{isset($user->show) ? 'disabled' : ''}}>
-                                    <label class="form-check-label px-1" for="{{$p->id}}"> {{ $p->permissao }}</label>
+                                    <input 
+                                        class="form-check-input permissao-checkbox" 
+                                        type="checkbox" 
+                                        id="permissao_{{ $p->id }}" 
+                                        name="permissao_{{ $p->id }}" 
+                                        data-permissao="{{ $p->permissao }}"
+                                        data-nivel="{{ $nivel }}"
+                                        {{ $checked }} 
+                                        {{isset($user->show) ? 'disabled' : ''}}>
+                                    <label class="form-check-label px-1" for="permissao_{{$p->id}}"> {{ $p->permissao }}</label>
                                 </div>
                         @endforeach
                     </div>
@@ -173,4 +202,133 @@
             </div>
         @endif
     </x-crud>
+
+    {{-- Modal de confirmação para Administrador --}}
+    @if(!isset($user->show))
+    <div class="modal fade" id="confirmAdminModal" tabindex="-1" aria-labelledby="confirmAdminModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-warning">
+                    <h5 class="modal-title" id="confirmAdminModalLabel">⚠️ Confirmar Perfil de Administrador</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="fw-bold">Você está prestes a conceder o perfil de <span class="text-danger">Administrador</span> a este usuário.</p>
+                    <p>Este perfil possui acesso total ao sistema, incluindo:</p>
+                    <ul>
+                        <li>Gerenciar todas as congregações</li>
+                        <li>Criar e editar qualquer usuário</li>
+                        <li>Acesso a logs e auditoria completa</li>
+                        <li>Gerenciar configurações do sistema</li>
+                    </ul>
+                    <p class="text-danger">⚠️ Esta ação requer responsabilidade. Tem certeza?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="cancelAdmin">Cancelar</button>
+                    <button type="button" class="btn btn-danger" id="confirmAdmin">Confirmar Administrador</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
+
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const checkboxes = document.querySelectorAll('.permissao-checkbox');
+    let adminCheckbox = null;
+    let pendingAdminCheck = false;
+
+    // Encontrar checkbox do Administrador
+    checkboxes.forEach(cb => {
+        if (cb.dataset.permissao === 'Administrador') {
+            adminCheckbox = cb;
+        }
+    });
+
+    // Função para ativar perfis inferiores
+    function ativarPerfisInferiores(nivelSelecionado, ativar) {
+        checkboxes.forEach(cb => {
+            const nivelAtual = parseInt(cb.dataset.nivel);
+            
+            // Se o nível for maior (menor poder), marca/desmarca
+            if (nivelAtual > nivelSelecionado) {
+                cb.checked = ativar;
+            }
+        });
+    }
+
+    // Listener para cada checkbox
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function(e) {
+            const nivel = parseInt(this.dataset.nivel);
+            const permissao = this.dataset.permissao;
+            const isChecked = this.checked;
+
+            // Se está marcando Administrador, mostrar modal
+            if (permissao === 'Administrador' && isChecked) {
+                e.preventDefault();
+                pendingAdminCheck = true;
+                this.checked = false; // Desmarca temporariamente
+                
+                const modal = new bootstrap.Modal(document.getElementById('confirmAdminModal'));
+                modal.show();
+                return;
+            }
+
+            // Se está marcando, ativar perfis inferiores
+            if (isChecked) {
+                ativarPerfisInferiores(nivel, true);
+            } else {
+                // Se está desmarcando, desativar perfis superiores
+                checkboxes.forEach(cb => {
+                    const nivelCb = parseInt(cb.dataset.nivel);
+                    if (nivelCb < nivel) {
+                        cb.checked = false;
+                    }
+                });
+            }
+        });
+    });
+
+    // Botão de confirmação do modal
+    const confirmBtn = document.getElementById('confirmAdmin');
+    if (confirmBtn) {
+        confirmBtn.addEventListener('click', function() {
+            if (adminCheckbox && pendingAdminCheck) {
+                adminCheckbox.checked = true;
+                // Ativar todos os perfis inferiores
+                ativarPerfisInferiores(1, true);
+                pendingAdminCheck = false;
+            }
+            bootstrap.Modal.getInstance(document.getElementById('confirmAdminModal')).hide();
+        });
+    }
+
+    // Botão de cancelamento do modal
+    const cancelBtn = document.getElementById('cancelAdmin');
+    if (cancelBtn) {
+        cancelBtn.addEventListener('click', function() {
+            pendingAdminCheck = false;
+            if (adminCheckbox) {
+                adminCheckbox.checked = false;
+            }
+            bootstrap.Modal.getInstance(document.getElementById('confirmAdminModal')).hide();
+        });
+    }
+
+    // Cancelar ao fechar modal pelo X ou clicando fora
+    const modal = document.getElementById('confirmAdminModal');
+    if (modal) {
+        modal.addEventListener('hidden.bs.modal', function() {
+            if (pendingAdminCheck && adminCheckbox) {
+                adminCheckbox.checked = false;
+                pendingAdminCheck = false;
+            }
+        });
+    }
+});
+</script>
+@endpush

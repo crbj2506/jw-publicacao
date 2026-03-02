@@ -14,10 +14,11 @@ class Envio extends Model
         'data',
         'retirada',
         'congregacao_id',
+        'inventariado',
     ];
-    public static function rules($id){
+    public static function rules($id, $congregacao_id = null){
         return [
-            'nota' => 'required|unique:envios,nota,'.$id.'|min:7|max:10',
+            'nota' => 'required|unique:envios,nota,'.$id.',id,congregacao_id,'.$congregacao_id.'|min:7|max:10',
             'data' => 'nullable|date',
             'retirada' => 'nullable|date',
             'congregacao_id' => 'exists:congregacoes,id',

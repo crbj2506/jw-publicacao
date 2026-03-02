@@ -13,6 +13,7 @@ class Pedido extends Model
     protected $fillable = [
         'pessoa_id',
         'publicacao_id',
+        'congregacao_id',
         'quantidade',
         'solicitado',
         'entregue',
@@ -26,6 +27,7 @@ class Pedido extends Model
                     return $query
                         ->where('pessoa_id', $pessoa_id)
                         ->where('publicacao_id', $publicacao_id)
+                        ->whereNull('entregue')
                         ->where('id', '!=', $id);
                 }),
 
@@ -37,6 +39,7 @@ class Pedido extends Model
                     return $query
                         ->where('pessoa_id', $pessoa_id)
                         ->where('publicacao_id', $publicacao_id)
+                        ->whereNull('entregue')
                         ->where('id', '!=', $id);
                 }),
 
@@ -48,7 +51,9 @@ class Pedido extends Model
     }
     public static function feedback(){
         return [
-            'required' => 'O campo :attribute é obrigatório'
+            'required' => 'O campo :attribute é obrigatório',
+            'pessoa_id.unique' => 'Já existe um pedido pendente para esta pessoa com esta publicação',
+            'publicacao_id.unique' => 'Já existe um pedido pendente para esta pessoa com esta publicação',
         ];
     }
     public function pessoa(){
@@ -58,5 +63,10 @@ class Pedido extends Model
     public function publicacao(){
         //Um Pedido pertence a uma Publicação
         return $this->belongsTo('App\Models\Publicacao');
+    }
+
+    public function congregacao(){
+        //Um Pedido pertence a uma Congregação
+        return $this->belongsTo('App\Models\Congregacao');
     }
 }

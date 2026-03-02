@@ -5,6 +5,7 @@ use App\Models\Publicacao;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
 
@@ -18,7 +19,8 @@ class PublicacaoController extends Controller
      */
     public function index(Request $request)
     {
-        //
+        $user = Auth::user();
+        $congregacaoId = congregacaoAtivaId();
         $nomeFiltro = null;
         $codigoFiltro = null;
         $perpage = 10;
@@ -29,6 +31,9 @@ class PublicacaoController extends Controller
         };
 
         $publicacoes = Publicacao::orderBy('nome');
+
+        // Filtrar pela congregação ativa
+        $publicacoes->where('congregacao_id', $congregacaoId);
 
         if ($request->has('filtro') || $request->session()->exists('nomeFiltro')) {
             if ($request->has('filtro')) {
@@ -91,9 +96,12 @@ class PublicacaoController extends Controller
     public function store(Request $request)
     {
         //
-        $request->validate(Publicacao::rules($id = null),Publicacao::feedback());
+        $user = Auth::user();
+        $congregacaoId = congregacaoAtivaId();
+        $request->validate(Publicacao::rules($id = null, $congregacaoId), Publicacao::feedback());
 
         $dados = $request->all();
+        $dados['congregacao_id'] = $congregacaoId;
 
         if($request->hasFile('imagem') && $request->file('imagem')->isValid()){
             
@@ -132,9 +140,19 @@ class PublicacaoController extends Controller
      */
     public function show($id)
     {
-        //
         $publicacao = Publicacao::find($id);
-        $publicacoes = Publicacao::orderBy('nome')->get();
+        if (!$publicacao) {
+            abort(404, 'Publicação não encontrada');
+        }
+        $user = Auth::user();
+        $congregacaoId = congregacaoAtivaId();
+        if ($publicacao->congregacao_id !== $congregacaoId) {
+            abort(403, 'Sem permissão para acessar esta publicação');
+        }
+
+        $publicacoes = Publicacao::where('congregacao_id', $congregacaoId)
+            ->orderBy('nome')
+            ->get();
         $indicePublicacaoAnterior = array_search($publicacao, $publicacoes->all()) - 1;
         $indicePublicacaoPosterior = array_search($publicacao, $publicacoes->all()) + 1;
         $publicacaoAnterior = $publicacoes->get($indicePublicacaoAnterior);
@@ -156,9 +174,19 @@ class PublicacaoController extends Controller
      */
     public function edit(Publicacao $publicacao)
     {
-        //
         $publicacao = Publicacao::find($publicacao->id);
-        $publicacoes = Publicacao::orderBy('nome')->get();
+        if (!$publicacao) {
+            abort(404, 'Publicação não encontrada');
+        }
+        $user = Auth::user();
+        $congregacaoId = congregacaoAtivaId();
+        if ($publicacao->congregacao_id !== $congregacaoId) {
+            abort(403, 'Sem permissão para acessar esta publicação');
+        }
+
+        $publicacoes = Publicacao::where('congregacao_id', $congregacaoId)
+            ->orderBy('nome')
+            ->get();
         $indicePublicacaoAnterior = array_search($publicacao, $publicacoes->all()) - 1;
         $indicePublicacaoPosterior = array_search($publicacao, $publicacoes->all()) + 1;
         $publicacaoAnterior = $publicacoes->get($indicePublicacaoAnterior);
@@ -182,10 +210,23 @@ class PublicacaoController extends Controller
     public function update(Request $request, $id)
     {
         //
+        $user = Auth::user();
         $publicacao = Publicacao::find($id);
-        $request->validate(Publicacao::rules($id),Publicacao::feedback());
+        
+        if (!$publicacao) {
+            abort(404, 'Publicação não encontrada');
+        }
+        $congregacaoId = congregacaoAtivaId();
+        if ($publicacao->congregacao_id !== $congregacaoId) {
+            abort(403, 'Sem permissão para atualizar esta publicação');
+        }
+
+        $request->validate(Publicacao::rules($id, $publicacao->congregacao_id), Publicacao::feedback());
         
         $dados = $request->all();
+        
+        // Impedir mudança de congregacao_id
+        $dados['congregacao_id'] = $publicacao->congregacao_id;
 
         // Se existe imagem nova informada para atualizar
         if($request->hasFile('imagem') && $request->file('imagem')->isValid()){
@@ -231,6 +272,14 @@ class PublicacaoController extends Controller
     {
         //
         $publicacao = Publicacao::find($id);
+        $user = Auth::user();
+        if (!$publicacao) {
+            abort(404, 'Publicação não encontrada');
+        }
+        $congregacaoId = congregacaoAtivaId();
+        if ($publicacao->congregacao_id !== $congregacaoId) {
+            abort(403, 'Sem permissão para excluir esta publicação');
+        }
         $publicacao->delete();
         return redirect()->route('publicacao.index');
     }

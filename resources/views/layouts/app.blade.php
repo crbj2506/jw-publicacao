@@ -48,19 +48,33 @@
                                 @endguest
                             </ul>
                         </div>
+                        
+                        {{-- Menu de Servo: Servo, Ancião e Admin (permissões cumulativas) --}}
                         <div class="">
                             <ul class="navbar-nav me-auto">
                                 @auth
-                                    @if(auth()->user()->permissoes->contains('permissao', '=', 'Servo') || auth()->user()->permissoes->contains('permissao', '=', 'Administrador'))
+                                    @if(Auth::user()->ehAdmin() || Auth::user()->ehAnciao() || Auth::user()->ehServidor())
                                         <li class="nav-item dropdown">
-                                            <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                                            <a id="navbarDropdownServo" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                                             {{ __('Menu de Servo') }}
                                             </a>
 
-                                            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-
+                                            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownServo">
+                                                <a class="dropdown-item" href="{{ route('pedido.index') }}">
+                                                    {{ __('Pedidos dos Irmãos') }}
+                                                </a>
+                                                <a class="dropdown-item" href="{{ route('pessoa.index') }}">
+                                                    {{ __('Irmãos') }}
+                                                </a>
+                                                <div class="dropdown-divider"></div>
+                                                <a class="dropdown-item" href="{{ route('envio.index') }}">
+                                                    📊 {{ __('Envios') }}
+                                                </a>
                                                 <a class="dropdown-item" href="{{ route('estoque.index') }}">
                                                     {{ __('Estoque') }}
+                                                </a>
+                                                <a class="dropdown-item" href="{{ route('inventario.index') }}">
+                                                    {{ __('Inventário') }}
                                                 </a>
                                                 <a class="dropdown-item" href="{{ route('local.index') }}">
                                                     {{ __('Locais') }}
@@ -68,9 +82,31 @@
                                                 <a class="dropdown-item" href="{{ route('publicacao.index') }}">
                                                     {{ __('Publicações') }}
                                                 </a>
-                                                <div class="dropdown-divider"></div>
-                                                <a class="dropdown-item" href="{{ route('auditoria.index') }}">
-                                                    {{ __('Minha Auditoria') }}
+                                            </div>
+                                        </li>
+                                    @elseif(Auth::user()->ehPublicador())
+                                        {{-- Publicador vê apenas Pedidos --}}
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="{{ route('pedido.index') }}">{{ __('Pedidos') }}</a>
+                                        </li>
+                                    @endif
+                                @endauth
+                            </ul>
+                        </div>
+                        
+                        {{-- Menu de Ancião: Ancião e Admin --}}
+                        <div class="">
+                            <ul class="navbar-nav me-auto">
+                                @auth
+                                    @if(Auth::user()->ehAdmin() || Auth::user()->ehAnciao())
+                                        <li class="nav-item dropdown">
+                                            <a id="navbarDropdownAnciao" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                                            {{ __('Menu de Ancião') }}
+                                            </a>
+
+                                            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownAnciao">
+                                                <a class="dropdown-item" href="{{ route('user.index') }}">
+                                                    {{ __('Usuários do Sistema') }}
                                                 </a>
                                             </div>
                                         </li>
@@ -78,72 +114,26 @@
                                 @endauth
                             </ul>
                         </div>
+                        
+                        {{-- Menu de Administrador: apenas Admin --}}
                         <div class="">
                             <ul class="navbar-nav me-auto">
                                 @auth
-                                    @if(auth()->user()->permissoes->contains('permissao', '=', 'Servo') || auth()->user()->permissoes->contains('permissao', '=', 'Administrador'))
-
-                                    @endif
-                                @endauth
-                            </ul>
-                        </div>
-                        <div class="">
-                            <ul class="navbar-nav me-auto">
-                                @auth
-                                    @if(auth()->user()->permissoes->contains('permissao', '=', 'Servo') || auth()->user()->permissoes->contains('permissao', '=', 'Administrador'))
-
-                                    @endif
-                                @endauth
-                            </ul>
-                        </div>
-                        <div class="">
-                            <ul class="navbar-nav me-auto">
-                                @auth
-                                    @if(auth()->user()->permissoes->contains('permissao', '=', 'Administrador'))
-                                    
+                                    @if(Auth::user()->ehAdmin())
                                         <li class="nav-item dropdown">
-                                            <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                                            <a id="navbarDropdownAdmin" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                                             {{ __('Menu de Administrador') }}
                                             </a>
 
-                                            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownAdmin">
                                                 <a class="dropdown-item" href="{{ route('congregacao.index') }}">
-                                                    {{ __('Congregações') }}
+                                                    {{ __('Área Administrativa: Congregações') }}
                                                 </a>
-                                                <a class="dropdown-item" href="{{ route('conteudo.index') }}">
-                                                    {{ __('Conteúdos dos Volumes') }}
-                                                </a>
-                                                <a class="dropdown-item" href="{{ route('envio.index') }}">
-                                                    {{ __('Envios de Publicações') }}
-                                                </a>
-                                                <a class="dropdown-item" href="{{ route('inventariar.get') }}">
-                                                    {{ __('Inventáriar') }}
-                                                </a>
-                                                <a class="dropdown-item" href="{{ route('inventario.index') }}">
-                                                    {{ __('Inventário') }}
-                                                </a>
-                                                <a class="dropdown-item" href="{{ route('pessoa.index') }}">
-                                                    {{ __('Irmãos') }}
-                                                </a>
-                                                <a class="dropdown-item" href="{{ route('local.index') }}">
-                                                    {{ __('Locais de Publicações') }}
-                                                </a>
-                                                <a class="dropdown-item" href="{{ route('pedido.index') }}">
-                                                    {{ __('Pedidos dos Irmãos') }}
-                                                </a>
+                                                <div class="dropdown-divider"></div>
                                                 <a class="dropdown-item" href="{{ route('permissao.index') }}">
                                                     {{ __('Permissões Possíveis') }}
                                                 </a>
-                                                <a class="dropdown-item" href="{{ route('user.index') }}">
-                                                    {{ __('Usuários do Sistema') }}
-                                                </a>
-                                                <a class="dropdown-item" href="{{ route('volume.index') }}">
-                                                    {{ __('Volumes dos Envios') }}
-                                                </a>
                                                 <div class="dropdown-divider"></div>
-                                                <a class="dropdown-item" href="{{ route('auditoria.index') }}">
-                                                    {{ __('Auditoria de Dados') }}
-                                                </a>
                                                 <a class="dropdown-item" href="{{ route('log.index') }}">
                                                     {{ __('Logs de Acesso') }}
                                                 </a>
@@ -153,26 +143,63 @@
                                 @endauth
                             </ul>
                         </div>
+                        
+                        {{-- Menu do Usuário: Perfil e Logout --}}
                         <div class="">
                             <ul class="navbar-nav me-auto">
                                 @auth
-                            <li class="nav-item dropdown">
-                                <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                                    {{ Auth::user()->name }}
-                                </a>
+                                    <li class="nav-item dropdown">
+                                        <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                                            <div class="d-flex flex-column">
+                                                <span>{{ Auth::user()->name }}</span>
+                                                @if(Auth::user()->ehAdmin() && isset($congregacaoAtiva))
+                                                    <small class="text-muted">
+                                                        {{ $congregacaoAtiva->nome }}
+                                                        @if(isset($congregacaoAtivaId, $congregacaoPadraoId) && (int)$congregacaoAtivaId !== (int)$congregacaoPadraoId)
+                                                            <span class="badge bg-warning text-dark ms-1">Ativa</span>
+                                                        @endif
+                                                    </small>
+                                                @endif
+                                            </div>
+                                        </a>
 
-                                <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                    <a class="dropdown-item" href="{{ route('logout') }}"
-                                       onclick="event.preventDefault();
-                                                     document.getElementById('logout-form').submit();">
-                                        {{ __('Logout') }}
-                                    </a>
+                                        <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                            @if(Auth::user()->ehAdmin() && isset($congregacoesAdmin) && $congregacoesAdmin->count())
+                                                <div class="px-3 py-2">
+                                                    <label class="form-label small mb-1">Congregação ativa</label>
+                                                    <form method="POST" action="{{ route('congregacao.ativa.set') }}">
+                                                        @csrf
+                                                        <select class="form-select form-select-sm mb-2" name="congregacao_ativa_id">
+                                                            @foreach ($congregacoesAdmin as $congregacao)
+                                                                <option value="{{ $congregacao->id }}" {{ isset($congregacaoAtivaId) && (int)$congregacaoAtivaId === (int)$congregacao->id ? 'selected' : '' }}>
+                                                                    {{ $congregacao->nome }}
+                                                                </option>
+                                                            @endforeach
+                                                        </select>
+                                                        <button type="submit" class="btn btn-sm btn-outline-primary w-100">Aplicar</button>
+                                                    </form>
+                                                    <form method="POST" action="{{ route('congregacao.ativa.reset') }}" class="mt-2">
+                                                        @csrf
+                                                        <button type="submit" class="btn btn-sm btn-outline-secondary w-100">Usar congregação padrão</button>
+                                                    </form>
+                                                </div>
+                                                <div class="dropdown-divider"></div>
+                                            @endif
+                                            <a class="dropdown-item" href="{{ route('auditoria.index') }}">
+                                                {{ __('Minha Auditoria') }}
+                                            </a>
+                                            <div class="dropdown-divider"></div>
+                                            <a class="dropdown-item" href="{{ route('logout') }}"
+                                               onclick="event.preventDefault();
+                                                             document.getElementById('logout-form').submit();">
+                                                {{ __('Logout') }}
+                                            </a>
 
-                                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                                        @csrf
-                                    </form>
-                                </div>
-                            </li>
+                                            <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                                                @csrf
+                                            </form>
+                                        </div>
+                                    </li>
                                 @endauth
                             </ul>
                         </div>
@@ -186,8 +213,19 @@
         </main>
         
         <footer class="footer">
-            <div class="fixed-bottom text-center bg-white">
-                <span class="text-muted">Desenvolvido por Custódio Junior.</span>
+            @php
+                $loggedUser = Auth::user();
+                $congregacaoNome = $loggedUser ? (optional($loggedUser->congregacao)->nome ?? 'Sem congregação') : 'Visitante';
+                $perfilNome = $loggedUser && method_exists($loggedUser, 'permissaoMaiorNivel') ? $loggedUser->permissaoMaiorNivel() : 'Sem permissão';
+                $lastCommitDate = trim((string) @shell_exec('git log -1 --format="%cd" --date=format:"%d/%m/%Y %H:%M" 2>NUL'));
+                $lastCommitDate = $lastCommitDate !== '' ? $lastCommitDate : '-';
+            @endphp
+            <div class="fixed-bottom bg-white border-top">
+                <div class="container-fluid py-1 px-3 d-flex justify-content-between align-items-center small text-muted">
+                    <span>{{ $congregacaoNome }} | {{ $perfilNome }}</span>
+                    <span>Desenvolvido por Custódio Junior.</span>
+                    <span>Último commit: {{ $lastCommitDate }}</span>
+                </div>
             </div>
         </footer>
     </div>

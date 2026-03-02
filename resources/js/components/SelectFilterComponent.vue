@@ -2,20 +2,19 @@
     <div class="input-group"
         :class="classinputgroup"
         >
-        <span v-if="disabled != ''" class="input-group-text">Filtro:</span>
-        <input v-if="disabled != ''" type="text" class="form-control" v-model="filtro">
+        <span v-if="!disabled" class="input-group-text">Filtro:</span>
+        <input v-if="!disabled" type="text" class="form-control" v-model="filtro">
         <span class="input-group-text">{{label}}</span>
-        <select v-if="disabled != ''"
+        <select v-if="!disabled"
             class="form-select w-50 rounded-end"
             :class="class"
-            :disabled="disabled"
             :id="id" 
             :name="name" 
-            :required="required" 
+            :required="required"
             >
-            <option v-for="opcao in listafiltrada" :value="opcao.value" :selected="opcao.value == old_id">{{opcao.text}}</option>
+            <option v-for="opcao in listafiltrada" :key="opcao.value" :value="opcao.value" :selected="String(opcao.value) === String(old_id)">{{opcao.text}}</option>
         </select>
-        <input v-if="disabled == ''" :value="value" 
+        <input v-if="disabled" :value="value" 
             class="form-control w-50 rounded-end" disabled>
         <span v-if="message != ''"
             class="text-start"

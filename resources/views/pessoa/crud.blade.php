@@ -106,6 +106,16 @@
                         @error('nome') message="{{$message}}" @enderror>
                     </input-group-component>
                 </div>
+                
+                {{-- Campo Congregação (somente visualização, auto-preenchido pelo controller) --}}
+                @if(isset($pessoa))
+                    <div class="col-12 p-2">
+                        <div class="form-group">
+                            <label class="fw-bold">Congregação:</label>
+                            <p class="form-control-plaintext">{{ $pessoa->congregacao ? $pessoa->congregacao->nome : (Auth::user()->congregacao ? Auth::user()->congregacao->nome : 'N/A') }}</p>
+                        </div>
+                    </div>
+                @endif
             </div>
         @endif
     </x-crud>

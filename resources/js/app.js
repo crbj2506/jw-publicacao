@@ -21,12 +21,20 @@ app.component('example-component', ExampleComponent);
 
 import SelectFilterComponent from './components/SelectFilterComponent.vue';
 app.component('select-filter-component', SelectFilterComponent);
-
+import MultiSelectCongregationsComponent from './components/MultiSelectCongregationsComponent.vue';
+app.component('multi-select-congregations-component', MultiSelectCongregationsComponent);
+import MultiSelectUsersComponent from './components/MultiSelectUsersComponent.vue';
+app.component('multi-select-users-component', MultiSelectUsersComponent);
+import MultiSelectEventosComponent from './components/MultiSelectEventosComponent.vue';
+app.component('multi-select-eventos-component', MultiSelectEventosComponent);
 import InputGroupComponent from './components/InputGroupComponent.vue';
 app.component('input-group-component', InputGroupComponent);
 
 import InputGroupQuantidadeEstoqueComponent from './components/InputGroupQuantidadeEstoqueComponent.vue';
 app.component('input-group-quantidade-estoque-component', InputGroupQuantidadeEstoqueComponent)
+
+import EnvioHierarchyComponent from './components/EnvioHierarchyComponent.vue';
+app.component('envio-hierarchy-component', EnvioHierarchyComponent);
 
 /**
  * The following block of code may be used to automatically register your

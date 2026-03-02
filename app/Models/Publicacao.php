@@ -18,16 +18,16 @@ class Publicacao extends Model
         'proporcao_cm',
         'proporcao_unidade',
         'codigo',
-        'imagem'
-
+        'imagem',
+        'congregacao_id'
     ];
 
-    public static function rules($id){
+    public static function rules($id, $congregacao_id = null){
         return [
-            'nome' => 'required|unique:publicacoes,nome,'.$id.'|min:5',
-            'codigo' => 'unique:publicacoes,codigo,'.$id.'|min:2|max:10',
-            'proporcao_cm' => 'numeric|min:0|max:20',
-            'proporcao_unidade' => 'numeric|integer|min:0|max:9999',
+            'nome' => 'required|unique:publicacoes,nome,'.$id.',id,congregacao_id,'.$congregacao_id.'|min:5',
+            'codigo' => 'unique:publicacoes,codigo,'.$id.',id,congregacao_id,'.$congregacao_id.'|min:2|max:10',
+            'proporcao_cm' => 'numeric|min:0|max:50|required_with:proporcao_unidade',
+            'proporcao_unidade' => 'numeric|integer|min:0|max:9999|required_with:proporcao_cm',
             'imagem' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:512', // 512 KB = 500 KB
         ];
     }
@@ -35,7 +35,9 @@ class Publicacao extends Model
         return [
             'required' => 'O campo :attribute é obrigatório',
             'nome.unique' => 'O nome da publicação já existe',
-            'nome.min' => 'O nome deve ter no mínimo 3 caracteres'
+            'nome.min' => 'O nome deve ter no mínimo 3 caracteres',
+            'proporcao_cm.required_with' => 'O campo proporção (cm) é obrigatório quando proporção (unidade) é informada',
+            'proporcao_unidade.required_with' => 'O campo proporção (unidade) é obrigatório quando proporção (cm) é informada',
         ];
     }
 
@@ -51,5 +53,14 @@ class Publicacao extends Model
             $proporcao = 0; 
         }
         return $proporcao;        
+    }
+
+    public function estoques(){
+        //Uma Publicação possui vários Estoques
+        return $this->hasMany('App\\Models\\Estoque');
+    }
+
+    public function congregacao(){
+        return $this->belongsTo('App\\Models\\Congregacao');
     }
 }

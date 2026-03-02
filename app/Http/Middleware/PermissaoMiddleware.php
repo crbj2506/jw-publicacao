@@ -2,7 +2,6 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\PermissaoUser;
 use App\Models\User;
 use Closure;
 use Illuminate\Http\Request;
@@ -16,15 +15,11 @@ class PermissaoMiddleware
      * @param  \Closure(\Illuminate\Http\Request): (\Illuminate\Http\Response|\Illuminate\Http\RedirectResponse)  $next
      * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
      */
-    public function handle(Request $request, Closure $next, $publicador,$servo,$administrador)
+    public function handle(Request $request, Closure $next, ...$permissoesPermitidas)
     {
         $permissoes = User::find(auth()->user()->id)->permissoes;
-        foreach ($permissoes as $key => $permissoaUser) {
-            if(
-                $permissoaUser->permissao == $publicador ||
-                $permissoaUser->permissao == $servo ||
-                $permissoaUser->permissao == $administrador
-            ){
+        foreach ($permissoes as $permissaoUser) {
+            if (in_array($permissaoUser->permissao, $permissoesPermitidas, true)) {
                 return $next($request);
             }
         }

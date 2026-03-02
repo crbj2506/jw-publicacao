@@ -9,6 +9,7 @@ use App\Models\Congregacao;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 
 class EstoqueController extends Controller
 {
@@ -20,7 +21,19 @@ class EstoqueController extends Controller
      */
     public function index(Request  $request)
     {
-        //
+        return $this->rapido($request);
+    }
+
+    /**
+     * Display old listing (legacy).
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Contracts\View\View
+     */
+    public function indexOld(Request  $request)
+    {
+        $user = Auth::user();
+        $congregacaoId = congregacaoAtivaId();
         $publicacaoFiltro = null;
         $localFiltro = null;
         $codigoFiltro = null;
@@ -34,6 +47,9 @@ class EstoqueController extends Controller
             ->orderBy(Local::select('sigla')
                 ->whereColumn('locais.id', 'estoques.local_id')
         );
+
+        // Filtrar pela congregação ativa
+        $estoques->whereRelation('local', 'congregacao_id', $congregacaoId);
 
         if($request->all('publicacao')['publicacao'] || $request->session()->exists('publicacaoFiltro')){
             $publicacaoFiltro = $request->session()->exists('publicacaoFiltro') ? $request->session()->get('publicacaoFiltro') : $request->all('publicacao')['publicacao'];
@@ -76,8 +92,55 @@ class EstoqueController extends Controller
         $estoques->codigoFiltro = $codigoFiltro;
         $estoques->perpage = $perpage;
 
-        $congregacoes = Congregacao::orderBy('nome')->select('id as value', 'nome as text')->get();
+        $congregacoes = Congregacao::where('id', $congregacaoId)
+            ->orderBy('nome')
+            ->select('id as value', 'nome as text')
+            ->get();
         return view('estoque.crud',['estoques' => $estoques, 'congregacoes' => $congregacoes]);
+    }
+
+    /**
+     * Modo rapido para atualizar estoque linha a linha.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Contracts\View\View
+     */
+    public function rapido(Request $request)
+    {
+        $congregacaoId = congregacaoAtivaId();
+        $localId = $request->query('local_id');
+        $perpage = 10;
+
+        if($request->input('perpage')){
+            $perpage = $request->input('perpage');
+            $request->session()->put('perpage', $perpage);
+        } elseif ($request->session()->exists('perpage')){
+            $perpage = $request->session()->get('perpage');
+        }
+
+        $locais = Local::where('congregacao_id', $congregacaoId)
+            ->orderBy('sigla')
+            ->get();
+
+        $estoques = Estoque::with(['local', 'publicacao'])
+            ->join('locais', 'locais.id', '=', 'estoques.local_id')
+            ->where('locais.congregacao_id', $congregacaoId)
+            ->when($localId, function ($query) use ($localId) {
+                $query->where('estoques.local_id', $localId);
+            })
+            ->orderBy('locais.sigla')
+            ->orderBy('estoques.publicacao_id')
+            ->select('estoques.*')
+            ->paginate($perpage)
+            ->appends($request->except(['page', 'saved_id']));
+
+        $estoques->perpage = $perpage;
+
+        return view('estoque.rapido', [
+            'estoques' => $estoques,
+            'locais' => $locais,
+            'localId' => $localId,
+        ]);
     }
 
     /**
@@ -87,14 +150,22 @@ class EstoqueController extends Controller
      */
     public function create()
     {
-        //
-        $locais = Local::orderBy('id')->get();
+        $user = Auth::user();
+        $congregacaoId = congregacaoAtivaId();
+        $locaisQuery = Local::orderBy('id');
+        $locaisQuery->where('congregacao_id', $congregacaoId);
+        $locais = $locaisQuery->get();
         foreach ($locais as $key => $l) {
             $locais[$key]->text = $l->sigla . ' - ' . $l->nome ;
             $locais[$key]->value = $l->id;
         }
-        $publicacoes = Publicacao::orderBy('nome')->select('id as value', 'nome as text')->get();
-        $congregacoes = Congregacao::orderBy('nome')->select('id as value', 'nome as text')->get();
+        $publicacoesQuery = Publicacao::orderBy('nome')->select('id as value', 'nome as text');
+        $publicacoesQuery->where('congregacao_id', $congregacaoId);
+        $publicacoes = $publicacoesQuery->get();
+        $congregacoes = Congregacao::where('id', $congregacaoId)
+            ->orderBy('nome')
+            ->select('id as value', 'nome as text')
+            ->get();
         return view('estoque.crud',['locais' => $locais,'publicacoes' => $publicacoes, 'congregacoes' => $congregacoes]);
     }
 
@@ -106,10 +177,17 @@ class EstoqueController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $user = Auth::user();
+        $congregacaoId = congregacaoAtivaId();
         $local_id = $request->all('local_id');
         $publicacao_id = $request->all('publicacao_id');
         $request->validate(Estoque::rules($local_id, $publicacao_id, $id = null), Estoque::feedback());
+
+        $local = Local::find($request->input('local_id'));
+        if (!$local || $local->congregacao_id !== $congregacaoId) {
+            return back()->with('error', 'Local inválido para sua congregação');
+        }
+
         $estoque = Estoque::create($request->all());
         return redirect()->route('estoque.show', ['estoque' => $estoque->id]);
     }
@@ -122,18 +200,33 @@ class EstoqueController extends Controller
      */
     public function show($estoque)
     {
-        //
+        $user = Auth::user();
+        $congregacaoId = congregacaoAtivaId();
         $estoque = Estoque::find($estoque);
-        $locais = Local::orderBy('sigla')->get();
-        $publicacoes = Publicacao::orderBy('nome')->get();
+        if (!$estoque) {
+            return back()->with('error', 'Estoque não encontrado');
+        }
+        if ($estoque->local && $estoque->local->congregacao_id !== $congregacaoId) {
+            abort(403, 'Sem permissão para acessar este estoque');
+        }
 
-        $estoques = Estoque::select('*')
-            ->orderBy(Local::select('sigla')
-                ->whereColumn('locais.id', 'estoques.local_id')
-        )->get();
+        $locaisQuery = Local::orderBy('sigla');
+        $locaisQuery->where('congregacao_id', $congregacaoId);
+        $locais = $locaisQuery->get();
+        $publicacoes = Publicacao::where('congregacao_id', $congregacaoId)->orderBy('nome')->get();
 
-        $indiceEstoqueAnterior = array_search($estoque, $estoques->all()) - 1;
-        $indiceEstoquePosterior = array_search($estoque, $estoques->all()) + 1;
+        $estoques = Estoque::join('locais', 'locais.id', '=', 'estoques.local_id')
+            ->where('locais.congregacao_id', $congregacaoId)
+            ->orderBy('locais.sigla')
+            ->select('estoques.*')
+            ->get();
+
+        $indiceEstoque = $estoques->search(function ($item) use ($estoque) {
+            return $item->id === $estoque->id;
+        });
+
+        $indiceEstoqueAnterior = $indiceEstoque - 1;
+        $indiceEstoquePosterior = $indiceEstoque + 1;
         $estoqueAnterior = $estoques->get($indiceEstoqueAnterior);
         $estoquePosterior = $estoques->get($indiceEstoquePosterior);
         $estoque->objetoAnterior = $estoqueAnterior ? $estoqueAnterior->id : null;
@@ -152,26 +245,44 @@ class EstoqueController extends Controller
      */
     public function edit(Estoque $estoque)
     {
-        //
-        $locais = Local::orderBy('id')->get();
+        $user = Auth::user();
+        $congregacaoId = congregacaoAtivaId();
+        if ($estoque->local && $estoque->local->congregacao_id !== $congregacaoId) {
+            abort(403, 'Sem permissão para acessar este estoque');
+        }
+
+        $locaisQuery = Local::orderBy('id');
+        $locaisQuery->where('congregacao_id', $congregacaoId);
+        $locais = $locaisQuery->get();
         foreach ($locais as $key => $l) {
             $locais[$key]->text = $l->sigla . ' - ' . $l->nome ;
             $locais[$key]->value = $l->id;
         }
-        $publicacoes = Publicacao::orderBy('nome')->select('id as value', 'nome as text')->get();
-        $congregacoes = Congregacao::orderBy('nome')->select('id as value', 'nome as text')->get();
+        $publicacoes = Publicacao::where('congregacao_id', $congregacaoId)
+            ->orderBy('nome')
+            ->select('id as value', 'nome as text')
+            ->get();
+        $congregacoes = Congregacao::where('id', $congregacaoId)
+            ->orderBy('nome')
+            ->select('id as value', 'nome as text')
+            ->get();
 
-        $estoques = Estoque::select('*')
-            ->orderBy(Local::select('sigla')
-                ->whereColumn('locais.id', 'estoques.local_id')
-        )->get();
+        $estoques = Estoque::join('locais', 'locais.id', '=', 'estoques.local_id')
+            ->where('locais.congregacao_id', $congregacaoId)
+            ->orderBy('locais.sigla')
+            ->select('estoques.*')
+            ->get();
         
-        $indiceEstoqueAnterior = array_search($estoque, $estoques->all()) - 1;
-        $indiceEstoquePosterior = array_search($estoque, $estoques->all()) + 1;
+        $indiceEstoque = $estoques->search(function ($item) use ($estoque) {
+            return $item->id === $estoque->id;
+        });
+
+        $indiceEstoqueAnterior = $indiceEstoque - 1;
+        $indiceEstoquePosterior = $indiceEstoque + 1;
         $estoqueAnterior = $estoques->get($indiceEstoqueAnterior);
         $estoquePosterior = $estoques->get($indiceEstoquePosterior);
-        $estoque->objetoAnterior = $estoqueAnterior ? $estoqueAnterior : null;
-        $estoque->objetoPosterior = $estoquePosterior ? $estoquePosterior : null;
+        $estoque->objetoAnterior = $estoqueAnterior ? $estoqueAnterior->id : null;
+        $estoque->objetoPosterior = $estoquePosterior ? $estoquePosterior->id : null;
         if(Route::current()->action['as'] == "estoque.edit"){
             $estoque->edit = true;
         };
@@ -187,12 +298,39 @@ class EstoqueController extends Controller
      */
     public function update(Request $request, $estoque)
     {
-        //
+        $user = Auth::user();
+        $congregacaoId = congregacaoAtivaId();
         $local_id = $request->all('local_id');
         $publicacao_id = $request->all('publicacao_id');
         $request->validate(Estoque::rules($local_id, $publicacao_id, $estoque), Estoque::feedback());
         $estoque = Estoque::find($estoque);
+        if (!$estoque) {
+            return back()->with('error', 'Estoque não encontrado');
+        }
+        if ($estoque->local && $estoque->local->congregacao_id !== $congregacaoId) {
+            abort(403, 'Sem permissão para atualizar este estoque');
+        }
         $estoque->update($request->all());
+
+        if ($request->input('redirect_to') === 'rapido') {
+            $localFilter = $request->input('local_id_filter');
+            $pageFilter = $request->input('page_filter');
+            $perpageFilter = $request->input('perpage_filter');
+
+            $params = [];
+            if ($localFilter) {
+                $params['local_id'] = $localFilter;
+            }
+            if ($pageFilter) {
+                $params['page'] = $pageFilter;
+            }
+            if ($perpageFilter) {
+                $params['perpage'] = $perpageFilter;
+            }
+            $params['saved_id'] = $estoque->id;
+
+            return redirect()->route('estoque.rapido', $params);
+        }
         return redirect()->route('estoque.show', ['estoque' => $estoque->id]);
     }
 
@@ -204,8 +342,15 @@ class EstoqueController extends Controller
      */
     public function destroy($estoque)
     {
-        //
+        $user = Auth::user();
+        $congregacaoId = congregacaoAtivaId();
         $estoque = Estoque::find($estoque);
+        if (!$estoque) {
+            return back()->with('error', 'Estoque não encontrado');
+        }
+        if ($estoque->local && $estoque->local->congregacao_id !== $congregacaoId) {
+            abort(403, 'Sem permissão para excluir este estoque');
+        }
         $estoque->delete();
         return redirect()->route('estoque.index');
     }

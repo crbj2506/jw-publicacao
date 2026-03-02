@@ -15,10 +15,10 @@ class Local extends Model
         'nome',
         'congregacao_id',
     ];
-    public static function rules($id){
+    public static function rules($id, $congregacao_id = null){
         return [
-            'sigla' => 'required|unique:locais,sigla,'.$id,
-            'nome' => 'required|unique:locais,nome,'.$id,
+            'sigla' => 'required|unique:locais,sigla,'.$id.',id,congregacao_id,'.$congregacao_id,
+            'nome' => 'required|unique:locais,nome,'.$id.',id,congregacao_id,'.$congregacao_id,
             'congregacao_id' => 'required|exists:congregacoes,id',
         ];
     }

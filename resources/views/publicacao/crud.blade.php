@@ -55,7 +55,7 @@
                     </td>
                     <td class="py-0 text-center" scope="row"> 
                         @if ($p['imagem'])
-                            <button type="button" class="btn btn-sm btn-outline-info py-0" data-bs-toggle="modal" data-bs-target="#modal{{$p['id']}}">Imagem</button>
+                            <button type="button" class="btn btn-sm btn-outline-info py-0" onclick="openImageViewer('{{ $p['imagem'] }}', '{{ $p['nome'] }}')" title="Ver imagem">Imagem</button>
                         @endif
                     </td>
                     <td class="py-0 text-center" scope="row"><a href="{{ route('publicacao.show',['publicacao' => $p['id']])}}" class="btn btn-sm btn-outline-primary py-0">Ver</a></td>
@@ -63,25 +63,7 @@
                 </tr>
 
 
-                @if ($p['imagem'])
-                <!-- Modal -->
-                <div class="modal fade" id="modal{{$p['id']}}" tabindex="-1" aria-labelledby="modalLabelmodal{{$p['id']}}" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="modalLabelmodal{{$p['id']}}">{{$p['nome']}}</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
-                        </div>
-                        <div class="modal-body">
-                            <img src="/storage/{{$p['imagem']}}" class="img-thumbnail">
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button btn-sm" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-                        </div>
-                        </div>
-                    </div>
-                </div>
-                @endif
+
 
             @endforeach
                 </tbody>
@@ -125,8 +107,9 @@
                         type="number"
                         name="proporcao_cm" 
                         id="proporcao_cm" 
-                        inputmode="decimal"
-                        step="0.5"
+                        min="0"
+                        step="0.1"
+                        autocomplete="off"
                         value="{{isset($publicacao) ? $publicacao->proporcao_cm : (old('proporcao_cm')?old('proporcao_cm'):'0')}}"
                         {{!isset($publicacao->show) ? '' : 'disabled' }} 
                         class="@error('proporcao_cm') is-invalid @enderror {{old('proporcao_cm') ? 'is-valid' : ''}}"
@@ -176,4 +159,128 @@
             </div>
         @endif
     </x-crud>
+
+    @push('scripts')
+        <style>
+            .image-viewer-overlay {
+                display: none;
+                position: fixed;
+                z-index: 1050;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.7);
+                justify-content: center;
+                align-items: center;
+            }
+            
+            .image-viewer-overlay.active {
+                display: flex;
+            }
+            
+            .image-viewer-container {
+                position: relative;
+                max-width: 90vw;
+                max-height: 90vh;
+                background: white;
+                padding: 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            }
+            
+            .image-viewer-container img {
+                max-width: 100%;
+                max-height: 70vh;
+                object-fit: contain;
+            }
+            
+            .image-viewer-close {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                background: #dc3545;
+                color: white;
+                border: none;
+                border-radius: 50%;
+                width: 40px;
+                height: 40px;
+                cursor: pointer;
+                font-size: 24px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 0;
+            }
+            
+            .image-viewer-close:hover {
+                background: #c82333;
+            }
+            
+            .image-viewer-title {
+                position: absolute;
+                bottom: 10px;
+                left: 20px;
+                right: 60px;
+                color: white;
+                max-width: 100%;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                background: rgba(0, 0, 0, 0.5);
+                padding: 8px;
+                border-radius: 4px;
+                font-size: 14px;
+            }
+        </style>
+        <script>
+            // Cria o overlay uma única vez
+            if (!document.getElementById('imageViewerOverlay')) {
+                const overlay = document.createElement('div');
+                overlay.id = 'imageViewerOverlay';
+                overlay.className = 'image-viewer-overlay';
+                overlay.innerHTML = `
+                    <div class="image-viewer-container">
+                        <button class="image-viewer-close" onclick="closeImageViewer()">&times;</button>
+                        <img id="imageViewerImg" src="" alt="Imagem">
+                        <div class="image-viewer-title" id="imageViewerTitle"></div>
+                    </div>
+                `;
+                document.body.appendChild(overlay);
+            }
+            
+            function openImageViewer(imagePath, title) {
+                const overlay = document.getElementById('imageViewerOverlay');
+                const img = document.getElementById('imageViewerImg');
+                const titleEl = document.getElementById('imageViewerTitle');
+                
+                img.src = '/storage/' + imagePath;
+                titleEl.textContent = title;
+                overlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+            
+            function closeImageViewer() {
+                const overlay = document.getElementById('imageViewerOverlay');
+                overlay.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+            
+            // Fecha ao clicar fora da imagem
+            document.addEventListener('click', function(e) {
+                const overlay = document.getElementById('imageViewerOverlay');
+                if (overlay && e.target === overlay) {
+                    closeImageViewer();
+                }
+            });
+            
+            // Fecha ao pressionar ESC
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    closeImageViewer();
+                }
+            });
+        </script>
+    @endpush
 @endsection
+

@@ -25,6 +25,7 @@
                     <input id="publicacao" name="publicacao" type="text" class="form-control" placeholder="digite parte do nome da Publicação" value="{{ $estoques->publicacaoFiltro ? $estoques->publicacaoFiltro : ''}}">
                     <button type="submit" class="btn btn-sm btn-outline-primary" form="formFiltro"> Filtrar </button>
                     <a href="{{ route('estoque.index')}}" class="btn btn-sm btn-outline-success">Limpar</a>
+                    <a href="{{ route('estoque.rapido') }}" class="btn btn-sm btn-outline-dark">Modo rápido</a>
                 </div>
             </form> 
         </div>               
@@ -86,10 +87,10 @@
                         name="local_id"
                         option="Selecione o Local..."
                         options="{{json_encode($locais)}}"
-                        old_id="{{ isset($estoque) ? $estoque->local_id : @old('local_id') }}"
+                        old_id="{{ old('local_id') ?: (isset($estoque) ? $estoque->local_id : '') }}"
                         required="required"
                         value="{{ isset($estoque) ? $estoque->local->nome : @old('local_id') }}"
-                        {{isset($estoque->show) ? 'disabled' : ''}}
+                        @if(isset($estoque->show) && $estoque->show) disabled="true" @endif
                     ></select-filter-component>
                 </div>
                 <div class="col-12 col-xl-6 p-2">
@@ -103,10 +104,10 @@
                         name="publicacao_id"
                         option="Selecione a Publicação..."
                         options="{{json_encode($publicacoes)}}"
-                        old_id="{{ isset($estoque) ? $estoque->publicacao_id : @old('publicacao_id') }}"
+                        old_id="{{ old('publicacao_id') ?: (isset($estoque) ? $estoque->publicacao_id : '') }}"
                         required="required"
                         value="{{ isset($estoque) ? $estoque->publicacao->nome : @old('publicacao_id') }}"
-                        {{isset($estoque->show) ? 'disabled' : ''}}
+                        @if(isset($estoque->show) && $estoque->show) disabled="true" @endif
                     ></select-filter-component>
                 </div>
                 <div class="col-12 col-sm-6 col-md-4 p-2">
@@ -116,8 +117,8 @@
                         name="quantidade" 
                         id="quantidade" 
                         required="required"
-                        value="{{isset($estoque) ? $estoque->quantidade : (old('quantidade')?old('quantidade'):'')}}"
-                        {{isset($estoque->show) ? 'disabled' : ''}} 
+                        value="{{old('quantidade') ?: (isset($estoque) ? $estoque->quantidade : '')}}"
+                        @if(isset($estoque->show) && $estoque->show) disabled="true" @endif
                         class="@error('quantidade') is-invalid @enderror {{old('quantidade') ? 'is-valid' : ''}}"
                         @error('quantidade') message="{{$message}}" @enderror>
                     </input-group-component>
@@ -164,7 +165,7 @@
                 @if(!isset($estoque->show))
                     <div class="col-12 p-2 d-flex flex-wrap gap-2 align-items-center justify-content-end">
                         <span class="text-muted small me-2">Não encontrou o que precisava?</span>
-                        <button type="button" class="btn btn-sm {{ $errors->hasAny(['congregacao_id', 'nome', 'sigla']) ? 'btn-danger' : 'btn-outline-secondary' }}" data-bs-toggle="modal" data-bs-target="#modalNovoLocal">
+                        <button type="button" class="btn btn-sm {{ $errors->hasAny(['nome_local', 'sigla']) ? 'btn-danger' : 'btn-outline-secondary' }}" data-bs-toggle="modal" data-bs-target="#modalNovoLocal">
                             <i class="bi bi-plus-circle me-1"></i> Novo Local
                         </button>
                         <button type="button" class="btn btn-sm {{ $errors->hasAny(['nome', 'codigo', 'proporcao_cm', 'proporcao_unidade']) ? 'btn-danger' : 'btn-outline-secondary' }}" data-bs-toggle="modal" data-bs-target="#modalNovaPublicacao">
@@ -177,46 +178,6 @@
     </x-crud>
 
     @if(!isset($estoque) || !isset($estoque->show))
-        <script>
-            // Função para limpar todos os campos de um modal
-            function limparModalForm(modalId) {
-                const form = document.querySelector(modalId + ' form');
-                if (form) {
-                    // Limpa inputs de texto
-                    form.querySelectorAll('input[type="text"], input[type="date"], input[type="number"]').forEach(input => {
-                        input.value = '';
-                    });
-                    
-                    // Limpa selects (para componentes Vue e selects normais)
-                    form.querySelectorAll('select, [role="combobox"]').forEach(select => {
-                        if (select.tagName === 'SELECT') {
-                            select.value = '';
-                        } else {
-                            // Para componentes Vue, reseta o valor
-                            select.value = '';
-                        }
-                    });
-                    
-                    // Limpa textareas
-                    form.querySelectorAll('textarea').forEach(textarea => {
-                        textarea.value = '';
-                    });
-                    
-                    // Remove feedback/error classes
-                    form.querySelectorAll('.is-invalid, .is-valid').forEach(el => {
-                        el.classList.remove('is-invalid', 'is-valid');
-                    });
-                    
-                    // Reseta a cor do botão que abre o modal
-                    const botaoAbreModal = document.querySelector(`button[data-bs-target="${modalId}"]`);
-                    if (botaoAbreModal) {
-                        botaoAbreModal.classList.remove('btn-danger');
-                        botaoAbreModal.classList.add('btn-outline-secondary');
-                    }
-                }
-            }
-        </script>
-
         <!-- Modal Novo Local -->
         <div class="modal fade" id="modalNovoLocal" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog">
@@ -229,20 +190,6 @@
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                            <div class="mb-3">
-                                <select-filter-component
-                                    id="modal_congregacao_id" 
-                                    label="Congregação:" 
-                                    name="congregacao_id"
-                                    option="Selecione..." 
-                                    options="{{json_encode($congregacoes)}}"
-                                    old_id="{{ @old('congregacao_id') }}"
-                                    value="{{ @old('congregacao_id') ? collect($congregacoes)->firstWhere('value', @old('congregacao_id'))->text ?? '' : '' }}"
-                                    required="required" 
-                                    class="@error('congregacao_id') is-invalid @enderror"
-                                    @error('congregacao_id') message="{{$message}}" classmessage="invalid-feedback" @enderror
-                                ></select-filter-component>
-                            </div>
                             <div class="mb-3">
                                 <label class="form-label">Nome:</label>
                                 <input type="text" name="nome_local" class="form-control @error('nome_local') is-invalid @enderror" value="{{ old('nome_local') }}" required>
@@ -288,7 +235,7 @@
                             </div>
                             <div class="col-md-4 mb-3">
                                 <label class="form-label">Proporção (cm):</label>
-                                <input type="number" name="proporcao_cm" step="0.1" class="form-control @error('proporcao_cm') is-invalid @enderror" value="{{ old('proporcao_cm', 0) }}">
+                                <input type="number" name="proporcao_cm" min="0" step="0.1" autocomplete="off" class="form-control @error('proporcao_cm') is-invalid @enderror" value="{{ old('proporcao_cm', 0) }}">
                                 @error('proporcao_cm') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>
                             <div class="col-md-4 mb-3">
@@ -313,7 +260,7 @@
 
         @if ($errors->any())
             @php($modalId = null)
-            @if($errors->hasAny(['congregacao_id', 'nome_local', 'sigla']))
+            @if($errors->hasAny(['nome_local', 'sigla']))
                 @php($modalId = 'modalNovoLocal')
             @elseif($errors->hasAny(['nome', 'codigo', 'proporcao_cm', 'proporcao_unidade']))
                 @php($modalId = 'modalNovaPublicacao')
@@ -354,6 +301,48 @@
                 @endpush
             @endif
         @endif
+        
+        @push('scripts')
+            <script>
+                // Função para limpar todos os campos de um modal
+                function limparModalForm(modalId) {
+                    const form = document.querySelector(modalId + ' form');
+                    if (form) {
+                        // Limpa inputs de texto
+                        form.querySelectorAll('input[type="text"], input[type="date"], input[type="number"]').forEach(input => {
+                            input.value = '';
+                        });
+                        
+                        // Limpa selects (para componentes Vue e selects normais)
+                        form.querySelectorAll('select, [role="combobox"]').forEach(select => {
+                            if (select.tagName === 'SELECT') {
+                                select.value = '';
+                            } else {
+                                // Para componentes Vue, reseta o valor
+                                select.value = '';
+                            }
+                        });
+                        
+                        // Limpa textareas
+                        form.querySelectorAll('textarea').forEach(textarea => {
+                            textarea.value = '';
+                        });
+                        
+                        // Remove feedback/error classes
+                        form.querySelectorAll('.is-invalid, .is-valid').forEach(el => {
+                            el.classList.remove('is-invalid', 'is-valid');
+                        });
+                        
+                        // Reseta a cor do botão que abre o modal
+                        const botaoAbreModal = document.querySelector(`button[data-bs-target="${modalId}"]`);
+                        if (botaoAbreModal) {
+                            botaoAbreModal.classList.remove('btn-danger');
+                            botaoAbreModal.classList.add('btn-outline-secondary');
+                        }
+                    }
+                }
+            </script>
+        @endpush
     @endif
 
     @if(isset($estoque))
@@ -391,7 +380,7 @@
 
                             <div class="mb-3">
                                 <label class="form-label">Centímetros (cm)</label>
-                                <input type="number" name="proporcao_cm" step="0.1" min="0.1" class="form-control" value="{{ old('proporcao_cm', $estoque->publicacao->proporcao_cm) }}" required>
+                                <input type="number" name="proporcao_cm" min="0" step="0.1" autocomplete="off" class="form-control" value="{{ old('proporcao_cm', $estoque->publicacao->proporcao_cm) }}" required>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Unidades</label>
@@ -431,7 +420,7 @@
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Centímetros (cm)</label>
-                                    <input type="number" name="proporcao_cm" step="0.1" min="0.1" class="form-control" value="{{ old('proporcao_cm', $estoque->publicacao->proporcao_cm) }}" required>
+                                    <input type="number" name="proporcao_cm" min="0" step="0.1" autocomplete="off" class="form-control" value="{{ old('proporcao_cm', $estoque->publicacao->proporcao_cm) }}" required>
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Unidades</label>

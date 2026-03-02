@@ -72,10 +72,10 @@
                         name="publicacao_id"
                         option="Selecione a Publicação..."
                         options="{{json_encode($publicacoes)}}"
-                        old_id="{{ isset($pedido) ? $pedido->publicacao_id : @old('publicacao_id') }}"
+                        old_id="{{ old('publicacao_id') ?: (isset($pedido) ? $pedido->publicacao_id : '') }}"
                         required="required"
-                        value="{{ isset($pedido) ? $pedido->publicacao->nome : @old('publicacao_id') }}"
-                        {{isset($pedido->show) ? 'disabled' : ''}}
+                        value="{{ isset($pedido) ? optional($pedido->publicacao)->nome : @old('publicacao_id') }}"
+                        disabled="{{ isset($pedido->show) && $pedido->show ? 'true' : '' }}"
                     ></select-filter-component>
                 </div>
                 <div class="col-12 col-xl-6 col-xxl-4 p-2">
@@ -89,10 +89,10 @@
                         name="pessoa_id"
                         option="Selecione a Pessoa..."
                         options="{{json_encode($pessoas)}}"
-                        old_id="{{ isset($pedido) ? $pedido->pessoa_id : @old('pessoa_id') }}"
+                        old_id="{{ old('pessoa_id') ?: (isset($pedido) ? $pedido->pessoa_id : '') }}"
                         required="required"
-                        value="{{ isset($pedido) ? $pedido->pessoa->nome : @old('pessoa_id') }}"
-                        {{isset($pedido->show) ? 'disabled' : ''}}
+                        value="{{ isset($pedido) ? optional($pedido->pessoa)->nome : @old('pessoa_id') }}"
+                        disabled="{{ isset($pedido->show) && $pedido->show ? 'true' : '' }}"
                     ></select-filter-component>
                 </div>
                 <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 p-2">
@@ -102,7 +102,7 @@
                         name="quantidade" 
                         id="quantidade" 
                         required="required"
-                        value="{{isset($pedido) ? $pedido->quantidade : (old('quantidade')?old('quantidade'):'')}}"
+                        value="{{old('quantidade') ?: (isset($pedido) ? $pedido->quantidade : '')}}"
                         {{isset($pedido->show) ? 'disabled' : ''}} 
                         class="@error('quantidade') is-invalid @enderror {{old('quantidade') ? 'is-valid' : ''}}"
                         @error('quantidade') message="{{$message}}" @enderror>
@@ -115,7 +115,7 @@
                         name="solicitado" 
                         id="solicitado" 
                         required="required"
-                        value="{{isset($pedido) ? $pedido->solicitado : (old('solicitado')?old('solicitado'):'')}}"
+                        value="{{old('solicitado') ?: (isset($pedido) ? $pedido->solicitado : '')}}"
                         {{isset($pedido->show) ? 'disabled' : ''}} 
                         class="@error('solicitado') is-invalid @enderror {{old('solicitado') ? 'is-valid' : ''}}"
                         @error('solicitado') message="{{$message}}" @enderror>
@@ -127,12 +127,22 @@
                         type="date"
                         name="entregue" 
                         id="entregue"
-                        value="{{isset($pedido) ? $pedido->entregue : (old('entregue')?old('entregue'):'')}}"
+                        value="{{old('entregue') ?: (isset($pedido) ? $pedido->entregue : '')}}"
                         {{isset($pedido->show) ? 'disabled' : ''}} 
                         class="@error('entregue') is-invalid @enderror {{old('entregue') ? 'is-valid' : ''}}"
                         @error('entregue') message="{{$message}}" @enderror>
                     </input-group-component>
                 </div>
+                
+                {{-- Mostrar congregação no modo visualização --}}
+                @if(isset($pedido->show))
+                    <div class="col-12 p-2">
+                        <div class="form-group">
+                            <label class="fw-bold">Congregação:</label>
+                            <p class="form-control-plaintext">{{ optional(optional($pedido->pessoa)->congregacao)->nome ?? 'N/A' }}</p>
+                        </div>
+                    </div>
+                @endif
             </div>
         @endif
     </x-crud>

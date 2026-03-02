@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Congregacao;
 use App\Models\Inventario;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
 {
@@ -25,7 +26,15 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $congregacoes = Congregacao::orderBy('nome')->get();
+        $user = Auth::user();
+        $congregacaoId = congregacaoAtivaId();
+
+        $congregacoesQuery = Congregacao::orderBy('nome');
+        if (!$user->ehAdmin() && $congregacaoId) {
+            $congregacoesQuery->where('id', $congregacaoId);
+        }
+
+        $congregacoes = $congregacoesQuery->get();
         foreach ($congregacoes as $i1 => $congregacao) {
             $totalPublicacoes = 0;
             $publicacoes_id = [];

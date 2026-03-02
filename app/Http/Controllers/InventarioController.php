@@ -24,6 +24,8 @@ class InventarioController extends Controller
     public function index(Request $request)
     {
         //
+        $user = auth()->user();
+        $congregacaoId = congregacaoAtivaId();
 
         $congregacaoIdFiltro = null;
         $anoFiltro = null;
@@ -41,6 +43,9 @@ class InventarioController extends Controller
         ->orderByDesc('mes')
         ->orderBy(Publicacao::select('nome')
         ->whereColumn('publicacoes.id', 'inventarios.publicacao_id'));
+
+        // Filtrar pela congregação ativa
+        $inventarios = $inventarios->where('congregacao_id', $congregacaoId);
 
         if($request->all('publicacao')['publicacao'] || $request->session()->exists('publicacaoFiltro')){
             $publicacaoFiltro = $request->session()->exists('publicacaoFiltro') ? $request->session()->get('publicacaoFiltro') : $request->all('publicacao')['publicacao'];
@@ -85,13 +90,69 @@ class InventarioController extends Controller
 
         $inventarios->filtros = $request->all('congregacao_id', 'ano', 'mes');
         $inventarios->perpage = $perpage;
-        $inventarios->congregacoesFiltro = Congregacao::select('id','nome')->orderBy('nome')->distinct()->get();
+        
+        // Filtrar congregações visíveis (apenas a ativa)
+        $inventarios->congregacoesFiltro = Congregacao::select('id','nome')
+            ->where('id', $congregacaoId)
+            ->get();
+        
         $inventarios->anosFiltro = Inventario::select('ano')->orderBy('ano')->distinct()->get();
         $inventarios->mesesFiltro = Inventario::select('mes')->orderBy('mes')->distinct()->get();
         $inventarios->congregacaoIdFiltro = $congregacaoIdFiltro;
         $inventarios->anoFiltro = $anoFiltro;
         $inventarios->mesFiltro = $mesFiltro;
         $inventarios->publicacaoFiltro = $publicacaoFiltro;
+
+        // Calcular próximo mês a ser inventariado
+        $congregacao_id = $congregacaoId;
+        
+        $ultimoInventario = Inventario::where('congregacao_id', $congregacao_id)
+            ->orderByDesc('ano')
+            ->orderByDesc('mes')
+            ->first();
+        
+        // Calcular próximo ano/mês
+        if ($ultimoInventario) {
+            $proximoMes = (int)$ultimoInventario->mes + 1;
+            $proximoAno = $ultimoInventario->ano;
+            if ($proximoMes > 12) {
+                $proximoMes = 1;
+                $proximoAno = (string)((int)$proximoAno + 1);
+            }
+            $proximoMes = str_pad($proximoMes, 2, '0', STR_PAD_LEFT);
+        } else {
+            // Se não existe inventário, sugerir mês atual
+            $proximoAno = date('Y');
+            $proximoMes = date('m');
+        }
+        
+        // Verificar se estoque está desatualizado
+        $ultimaAtualizacaoEstoque = Estoque::selectRaw('COALESCE(estoques.updated_at, estoques.created_at) as ultima_atualizacao')
+            ->join('locais', 'locais.id', '=', 'estoques.local_id')
+            ->where('locais.congregacao_id', $congregacao_id)
+            ->orderByDesc('ultima_atualizacao')
+            ->first();
+        
+        $estoqueDesatualizado = false;
+        if ($ultimoInventario && $ultimaAtualizacaoEstoque) {
+            // Comparar com o momento em que o inventário foi realizado
+            $dataUltimoInventario = $ultimoInventario->created_at;
+            $dataUltimaAtualizacaoEstoque = \Carbon\Carbon::parse($ultimaAtualizacaoEstoque->ultima_atualizacao);
+            
+            if ($dataUltimaAtualizacaoEstoque->lte($dataUltimoInventario)) {
+                $estoqueDesatualizado = true;
+            }
+        }
+        
+        $inventarios->proximoAno = $proximoAno;
+        $inventarios->proximoMes = $proximoMes;
+        $inventarios->estoqueDesatualizado = $estoqueDesatualizado;
+        $inventarios->ultimoInventario = $ultimoInventario;
+        $inventarios->ultimaAtualizacaoEstoque = $ultimaAtualizacaoEstoque
+            ? \Carbon\Carbon::parse($ultimaAtualizacaoEstoque->ultima_atualizacao)
+                ->timezone(config('app.timezone'))
+                ->format('d/m/Y H:i')
+            : null;
 
         return view('inventario.crud',['inventarios' => $inventarios]);
     }
@@ -104,7 +165,14 @@ class InventarioController extends Controller
     public function create()
     {
         //
-        $congregacoes = Congregacao::orderBy('nome')->select('id as value', 'nome as text')->get();
+        $user = auth()->user();
+        $congregacaoId = congregacaoAtivaId();
+        
+        // Filtrar congregações (Admin vê todas, outros apenas a própria)
+        $congregacoes = Congregacao::where('id', $congregacaoId)
+            ->select('id as value', 'nome as text')
+            ->get();
+        
         $publicacoes = Publicacao::orderBy('nome')->select('id as value', 'nome as text')->get();
         $anos = Inventario::select('ano as value', 'ano as text')->orderBy('ano')->distinct()->get();
         for ($i=1; $i <= 12; $i++) { 
@@ -126,22 +194,51 @@ class InventarioController extends Controller
     public function inventariar(Request $request)
     {
         //
-        // Se não existe REQUEST mostra View inventariar
-        if(!$request->all()){
-            $congregacoes = Congregacao::orderBy('nome')->get();
-            $publicacoes = Publicacao::orderBy('nome')->select('id as value', 'nome as text')->get();
-            return view('inventario.inventariar',['congregacoes' => $congregacoes,'publicacoes' => $publicacoes]);
-        }else{
-            $ano = $request->all('ano')['ano'];
-            $mes = $request->all('mes')['mes'];
-            $congregacao_id = (int) $request->all('congregacao_id')['congregacao_id'];
-            $inventario['ano'] = $ano;
-            $inventario['mes'] = $mes;
-            $inventario['congregacao_id'] = $congregacao_id;
-            $request->validate(Inventario::rulesInventariar($ano,$mes,$congregacao_id,$id = null), Inventario::feedback($congregacao_id));
+        $user = auth()->user();
+        $congregacao_id = congregacaoAtivaId();
+        
+        // Calcular próximo mês automaticamente
+        $ultimoInventario = Inventario::where('congregacao_id', $congregacao_id)
+            ->orderByDesc('ano')
+            ->orderByDesc('mes')
+            ->first();
+        
+        if ($ultimoInventario) {
+            $proximoMes = (int)$ultimoInventario->mes + 1;
+            $ano = $ultimoInventario->ano;
+            if ($proximoMes > 12) {
+                $proximoMes = 1;
+                $ano = (string)((int)$ano + 1);
+            }
+            $mes = str_pad($proximoMes, 2, '0', STR_PAD_LEFT);
+        } else {
+            // Se não existe inventário, usar mês atual
+            $ano = date('Y');
+            $mes = date('m');
+        }
+        
+        // Criar array com dados calculados para validação
+        $dadosInventario = [
+            'ano' => $ano,
+            'mes' => $mes,
+            'congregacao_id' => $congregacao_id
+        ];
+        
+        // Validar os dados calculados
+        $validator = \Validator::make($dadosInventario, Inventario::rulesInventariar($ano,$mes,$congregacao_id,$id = null), Inventario::feedback($congregacao_id));
+        
+        if ($validator->fails()) {
+            return redirect()->route('inventario.index')
+                ->withErrors($validator)
+                ->with('error', 'Não foi possível fazer o inventário: ' . $validator->errors()->first());
+        }
+        
+        $inventario['ano'] = $ano;
+        $inventario['mes'] = $mes;
+        $inventario['congregacao_id'] = $congregacao_id;
 
-            // Ver se tem Envios não Inventáriados e com data de retirada
-            $enviosNaoInventariados = Conteudo::select('*')
+        // Ver se tem Envios não Inventáriados e com data de retirada
+        $enviosNaoInventariados = Conteudo::select('*')
                 ->join('volumes','volumes.id', '=', 'conteudos.volume_id')
                 ->join('envios','envios.id', '=', 'volumes.envio_id')
                 ->where('envios.congregacao_id', $congregacao_id)
@@ -230,12 +327,11 @@ class InventarioController extends Controller
                 Inventario::create($itemInventario);
     
                 $publicacoes[] = Publicacao::find($publicacao_id)->get();
-            }
-            foreach ($enviosNaoInventariados as $key => $nota) {
-                Envio::where('nota',$nota)->update(['inventariado' => 1]);
-            }
-            return redirect()->route('inventario.index');
         }
+        foreach ($enviosNaoInventariados as $key => $nota) {
+            Envio::where('nota',$nota)->update(['inventariado' => 1]);
+        }
+        return redirect()->route('inventario.index');
     }
 
     /**
@@ -247,6 +343,14 @@ class InventarioController extends Controller
     public function mostra($ano,$mes,$congregacao_id)
     {
         //
+        $user = auth()->user();
+        $congregacaoId = congregacaoAtivaId();
+        
+        // Verificar permissão: não-admin só pode ver da própria congregação
+        if ($congregacao_id != $congregacaoId) {
+            abort(403, 'Não autorizado');
+        }
+        
         $inventarios = Inventario::where('ano', $ano)->where('mes', $mes)->where('congregacao_id', $congregacao_id)
         ->orderByDesc('ano')
         ->orderByDesc('mes')
@@ -267,9 +371,22 @@ class InventarioController extends Controller
     public function show($id)
     {
         //
+        $user = auth()->user();
+        $congregacaoId = congregacaoAtivaId();
         $inventario = Inventario::find($id);
-        $congregacoes = Congregacao::orderBy('nome')->get();
-        $publicacoes = Publicacao::orderBy('nome')->select('id as value', 'nome as text')->get();
+        
+        // Verificar permissão: não-admin só pode ver da própria congregação
+        if ($inventario->congregacao_id != $congregacaoId) {
+            abort(403, 'Não autorizado');
+        }
+        
+        // Filtrar congregações (apenas a ativa)
+        $congregacoes = Congregacao::where('id', $congregacaoId)->get();
+        
+        $publicacoes = Publicacao::where('congregacao_id', $congregacaoId)
+            ->orderBy('nome')
+            ->select('id as value', 'nome as text')
+            ->get();
         $anos = Inventario::select('ano')->orderBy('ano')->distinct()->get();
         $meses = Inventario::select('mes')->orderBy('mes')->distinct()->get();
         if(Route::current()->action['as'] == "inventario.show"){
@@ -287,8 +404,23 @@ class InventarioController extends Controller
     public function edit(Inventario $inventario)
     {
         //
-        $congregacoes = Congregacao::orderBy('nome')->select('id as value', 'nome as text')->get();
-        $publicacoes = Publicacao::orderBy('nome')->select('id as value', 'nome as text')->get();
+        $user = auth()->user();
+        $congregacaoId = congregacaoAtivaId();
+        
+        // Verificar permissão: não-admin só pode editar da própria congregação
+        if ($inventario->congregacao_id != $congregacaoId) {
+            abort(403, 'Não autorizado');
+        }
+        
+        // Filtrar congregações (apenas a ativa)
+        $congregacoes = Congregacao::where('id', $congregacaoId)
+            ->select('id as value', 'nome as text')
+            ->get();
+        
+        $publicacoes = Publicacao::where('congregacao_id', $congregacaoId)
+            ->orderBy('nome')
+            ->select('id as value', 'nome as text')
+            ->get();
         $anos = Inventario::select('ano as value','ano as text')->orderBy('ano')->distinct()->get();
         $meses = Inventario::select('mes as value','mes as text')->orderBy('mes')->distinct()->get();
         if(Route::current()->action['as'] == "inventario.edit"){
@@ -307,12 +439,21 @@ class InventarioController extends Controller
     public function update(Request $request, $id)
     {
         //
+        $user = auth()->user();
+        $congregacaoId = congregacaoAtivaId();
+        $inventario = Inventario::find($id);
+        
+        if ($inventario->congregacao_id != $congregacaoId) {
+            abort(403, 'Não autorizado');
+        }
+        
         $ano = $request->all('ano')['ano'] ? $request->all('ano')['ano'] : null;
         $mes = $request->all('mes')['mes'] ? $request->all('mes')['mes'] : null;
-        $congregacao_id = $request->all('congregacao_id')['congregacao_id'] ? $request->all('congregacao_id')['congregacao_id'] : null;
+        $congregacao_id = $inventario->congregacao_id;
         $request->validate(Inventario::rulesUpdate($ano,$mes,$congregacao_id,$id),Inventario::feedback($congregacao_id));
-        $inventario = Inventario::find($id);
-        $inventario->update($request->all());
+        $dados = $request->all();
+        $dados['congregacao_id'] = $inventario->congregacao_id;
+        $inventario->update($dados);
         return redirect()->route('inventario.show', ['inventario' => $inventario->id]);
     }
 
@@ -485,5 +626,14 @@ class InventarioController extends Controller
     public function destroy(Inventario $inventario)
     {
         //
+        $user = auth()->user();
+        $congregacaoId = congregacaoAtivaId();
+        
+        if ($inventario->congregacao_id != $congregacaoId) {
+            abort(403, 'Não autorizado');
+        }
+        
+        $inventario->delete();
+        return redirect()->route('inventario.index');
     }
 }

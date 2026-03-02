@@ -124,9 +124,6 @@
                         <button type="button" class="btn btn-sm {{ $errors->hasAny(['nome', 'codigo', 'proporcao_cm', 'proporcao_unidade']) ? 'btn-danger' : 'btn-outline-secondary' }}" data-bs-toggle="modal" data-bs-target="#modalNovaPublicacao">
                             <i class="bi bi-plus-circle me-1"></i> Nova Publicação
                         </button>
-                        <button type="button" class="btn btn-sm {{ $errors->hasAny(['nota', 'congregacao_id', 'data', 'retirada']) ? 'btn-danger' : 'btn-outline-secondary' }}" data-bs-toggle="modal" data-bs-target="#modalNovoEnvio">
-                            <i class="bi bi-plus-circle me-1"></i> Novo Envio
-                        </button>
                         <button type="button" class="btn btn-sm {{ $errors->hasAny(['volume', 'envio_id']) ? 'btn-danger' : 'btn-outline-secondary' }}" data-bs-toggle="modal" data-bs-target="#modalNovoVolume">
                             <i class="bi bi-plus-circle me-1"></i> Novo Volume
                         </button>
@@ -137,93 +134,6 @@
     </x-crud>
 
     @if(!$conteudos && !isset($conteudo->show))
-        <script>
-            // Função para limpar todos os campos de um modal
-            function limparModalForm(modalId) {
-                const form = document.querySelector(modalId + ' form');
-                if (form) {
-                    // Limpa inputs de texto
-                    form.querySelectorAll('input[type="text"], input[type="date"], input[type="number"]').forEach(input => {
-                        input.value = '';
-                    });
-                    
-                    // Limpa selects (para componentes Vue e selects normais)
-                    form.querySelectorAll('select, [role="combobox"]').forEach(select => {
-                        if (select.tagName === 'SELECT') {
-                            select.value = '';
-                        } else {
-                            // Para componentes Vue, reseta o valor
-                            select.value = '';
-                        }
-                    });
-                    
-                    // Limpa textareas
-                    form.querySelectorAll('textarea').forEach(textarea => {
-                        textarea.value = '';
-                    });
-                    
-                    // Remove feedback/error classes
-                    form.querySelectorAll('.is-invalid, .is-valid').forEach(el => {
-                        el.classList.remove('is-invalid', 'is-valid');
-                    });
-                    
-                    // Reseta a cor do botão que abre o modal
-                    const botaoAbreModal = document.querySelector(`button[data-bs-target="${modalId}"]`);
-                    if (botaoAbreModal) {
-                        botaoAbreModal.classList.remove('btn-danger');
-                        botaoAbreModal.classList.add('btn-outline-secondary');
-                    }
-                }
-            }
-        </script>
-
-        <!-- Modal Novo Envio -->
-        <div class="modal fade" id="modalNovoEnvio" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <form action="{{ route('envio.store') }}" method="POST">
-                        @csrf
-                        <input type="hidden" name="redirect_to" value="back">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Cadastrar Novo Envio</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body row">
-                            <div class="col-12 mb-3">
-                                <select-filter-component
-                                    id="modal_congregacao_id" 
-                                    label="Congregação:" 
-                                    name="congregacao_id"
-                                    option="Selecione..." options="{{json_encode($congregacoes)}}"
-                                    required="required" 
-                                    class="@error('congregacao_id') is-invalid @enderror"
-                                    @error('congregacao_id') message="{{$message}}" classmessage="invalid-feedback" @enderror
-                                ></select-filter-component>
-                            </div>
-                            <div class="col-md-4 mb-3">
-                                <label class="form-label">Nota:</label>
-                                <input type="text" name="nota" class="form-control @error('nota') is-invalid @enderror" value="{{ old('nota') }}" required>
-                                @error('nota') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                            </div>
-                            <div class="col-md-4 mb-3">
-                                <label class="form-label">Data:</label>
-                                <input type="date" name="data" class="form-control" value="{{ old('data') }}">
-                            </div>
-                            <div class="col-md-4 mb-3">
-                                <label class="form-label">Retirada:</label>
-                                <input type="date" name="retirada" class="form-control" value="{{ old('retirada') }}">
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-outline-secondary" onclick="limparModalForm('#modalNovoEnvio')">Limpar</button>
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-                            <button type="submit" class="btn btn-primary">Salvar Envio</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-
         <!-- Modal Novo Volume -->
         <div class="modal fade" id="modalNovoVolume" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog">
@@ -314,8 +224,6 @@
             @php($modalId = null)
             @if($errors->hasAny(['nome', 'codigo', 'proporcao_cm', 'proporcao_unidade']))
                 @php($modalId = 'modalNovaPublicacao')
-            @elseif($errors->hasAny(['nota', 'congregacao_id', 'data', 'retirada']))
-                @php($modalId = 'modalNovoEnvio')
             @elseif($errors->hasAny(['volume', 'envio_id']))
                 @php($modalId = 'modalNovoVolume')
             @endif
@@ -355,5 +263,47 @@
                 @endpush
             @endif
         @endif
+        
+        @push('scripts')
+            <script>
+                // Função para limpar todos os campos de um modal
+                function limparModalForm(modalId) {
+                    const form = document.querySelector(modalId + ' form');
+                    if (form) {
+                        // Limpa inputs de texto
+                        form.querySelectorAll('input[type="text"], input[type="date"], input[type="number"]').forEach(input => {
+                            input.value = '';
+                        });
+                        
+                        // Limpa selects (para componentes Vue e selects normais)
+                        form.querySelectorAll('select, [role="combobox"]').forEach(select => {
+                            if (select.tagName === 'SELECT') {
+                                select.value = '';
+                            } else {
+                                // Para componentes Vue, reseta o valor
+                                select.value = '';
+                            }
+                        });
+                        
+                        // Limpa textareas
+                        form.querySelectorAll('textarea').forEach(textarea => {
+                            textarea.value = '';
+                        });
+                        
+                        // Remove feedback/error classes
+                        form.querySelectorAll('.is-invalid, .is-valid').forEach(el => {
+                            el.classList.remove('is-invalid', 'is-valid');
+                        });
+                        
+                        // Reseta a cor do botão que abre o modal
+                        const botaoAbreModal = document.querySelector(`button[data-bs-target="${modalId}"]`);
+                        if (botaoAbreModal) {
+                            botaoAbreModal.classList.remove('btn-danger');
+                            botaoAbreModal.classList.add('btn-outline-secondary');
+                        }
+                    }
+                }
+            </script>
+        @endpush
     @endif
 @endsection
