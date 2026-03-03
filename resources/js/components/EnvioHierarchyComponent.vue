@@ -477,8 +477,8 @@ export default {
     
     // Ordena por data desc, depois por nota desc
     this.enviosData.sort((a, b) => {
-      const dataA = a.data ? new Date(a.data).getTime() : 0;
-      const dataB = b.data ? new Date(b.data).getTime() : 0;
+      const dataA = this.getDateTimeForSort(a.data);
+      const dataB = this.getDateTimeForSort(b.data);
       if (dataB !== dataA) return dataB - dataA;
 
       const notaA = parseInt(a.nota) || 0;
@@ -494,9 +494,29 @@ export default {
     }
   },
   methods: {
+    getDateTimeForSort(dateValue) {
+      if (!dateValue) return 0;
+
+      const datePart = String(dateValue).split('T')[0];
+      const [year, month, day] = datePart.split('-').map(Number);
+
+      if (!year || !month || !day) return 0;
+
+      return new Date(year, month - 1, day).getTime();
+    },
+
     formatDate(date) {
       if (!date) return "";
-      return new Date(date).toLocaleDateString("pt-BR");
+
+      const datePart = String(date).split('T')[0];
+      const [year, month, day] = datePart.split('-').map(Number);
+
+      if (!year || !month || !day) {
+        return String(date);
+      }
+
+      const localDate = new Date(year, month - 1, day);
+      return localDate.toLocaleDateString("pt-BR");
     },
 
     // ENVIO OPERATIONS
@@ -566,8 +586,8 @@ export default {
           }
           // Re-ordena após adicionar/editar
           this.enviosData.sort((a, b) => {
-            const dataA = a.data ? new Date(a.data).getTime() : 0;
-            const dataB = b.data ? new Date(b.data).getTime() : 0;
+            const dataA = this.getDateTimeForSort(a.data);
+            const dataB = this.getDateTimeForSort(b.data);
             if (dataB !== dataA) return dataB - dataA;
 
             const notaA = parseInt(a.nota) || 0;
