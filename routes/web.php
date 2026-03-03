@@ -105,7 +105,7 @@ Route::middleware('verified', 'permissao:,,Administrador')
 // ###########################
 // ##  ENVIO HIERARCHY (NOVO - Accordion)
 // ###########################
-Route::middleware('verified', 'permissao:Servo,Ancião,Administrador')->group(function () {
+Route::middleware('verified', 'permissao:Ancião,Administrador')->group(function () {
     // View do accordion
     Route::get('envio', [App\Http\Controllers\EnvioHierarchyController::class, 'index'])
         ->name('envio.index');

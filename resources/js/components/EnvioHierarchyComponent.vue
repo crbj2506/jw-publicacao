@@ -33,6 +33,7 @@
           </button>
           <div class="d-flex align-items-center gap-1 px-2">
             <button
+              v-if="canManage"
               @click.stop="showEditEnvioModal(envio)"
               class="btn btn-sm btn-outline-warning"
               type="button"
@@ -41,6 +42,7 @@
               ✎
             </button>
             <button
+              v-if="canManage"
               @click.stop="deleteEnvio(envio.id)"
               class="btn btn-sm btn-outline-danger"
               type="button"
@@ -71,6 +73,7 @@
                   </button>
                   <div class="d-flex align-items-center gap-1 px-2">
                     <button
+                      v-if="canManage"
                       @click.stop="showNovoConteudoModal(volume.id)"
                       class="btn btn-sm btn-outline-primary"
                       type="button"
@@ -79,6 +82,7 @@
                       +
                     </button>
                     <button
+                      v-if="canManage"
                       @click.stop="showEditVolumeModal(volume)"
                       class="btn btn-sm btn-outline-warning"
                       type="button"
@@ -87,6 +91,7 @@
                       ✎
                     </button>
                     <button
+                      v-if="canManage"
                       @click.stop="deleteVolume(volume.id)"
                       class="btn btn-sm btn-outline-danger"
                       type="button"
@@ -117,12 +122,13 @@
                               type="number"
                               class="form-control form-control-sm"
                               :value="conteudo.quantidade"
+                              :disabled="!canManage"
                               @change="(e) => updateConteudo(conteudo.id, parseInt(e.target.value))"
                               min="1"
                               max="9999"
                             />
                           </td>
-                          <td class="text-center align-middle" style="width: 50px">
+                          <td v-if="canManage" class="text-center align-middle" style="width: 50px">
                             <button
                               @click.stop="deleteConteudo(conteudo.id)"
                               class="btn btn-sm btn-outline-danger"
@@ -142,6 +148,7 @@
             <!-- Botão Novo Volume -->
             <div class="mt-2">
               <button
+                v-if="canManage"
                 @click="showNovoVolumeModal(envio.id)"
                 class="btn btn-sm btn-outline-success w-100"
                 type="button"
@@ -402,6 +409,10 @@ export default {
       type: Array,
       required: true,
     },
+    canManage: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -490,6 +501,7 @@ export default {
 
     // ENVIO OPERATIONS
     showNovoEnvioModal() {
+      if (!this.canManage) return;
       this.editingEnvio = null;
       this.formEnvio = { nota: "", data: "", retirada: "", inventariado: false };
       this.errors = {};
@@ -499,6 +511,7 @@ export default {
     },
 
     showEditEnvioModal(envio) {
+      if (!this.canManage) return;
       this.editingEnvio = envio;
       // Formatar as datas para o formato YYYY-MM-DD esperado pelo input type="date"
       this.formEnvio = { 
@@ -519,6 +532,7 @@ export default {
     },
 
     saveEnvio() {
+      if (!this.canManage) return;
       this.loadingModal = true;
       this.errors = {};
 
@@ -577,6 +591,7 @@ export default {
     },
 
     deleteEnvio(id) {
+      if (!this.canManage) return;
       if (!confirm("Deseja remover este envio e todos seus volumes/conteúdos?")) return;
 
       axios
@@ -595,6 +610,7 @@ export default {
 
     // VOLUME OPERATIONS
     showNovoVolumeModal(envioId) {
+      if (!this.canManage) return;
       this.formVolume = { volume: "", envio_id: envioId };
       this.errors = {};
       this.$nextTick(() => {
@@ -603,6 +619,7 @@ export default {
     },
 
     showEditVolumeModal(volume) {
+      if (!this.canManage) return;
       this.editingVolume = volume;
       // Enviar apenas os campos necessários
       this.formVolume = { 
@@ -621,6 +638,7 @@ export default {
     },
 
     saveVolume() {
+      if (!this.canManage) return;
       this.loadingModal = true;
       this.errors = {};
 
@@ -674,6 +692,7 @@ export default {
     },
 
     deleteVolume(id) {
+      if (!this.canManage) return;
       if (!confirm("Deseja remover este volume e todo seu conteúdo?")) return;
 
       axios
@@ -694,6 +713,7 @@ export default {
 
     // CONTEUDO OPERATIONS
     showNovoConteudoModal(volumeId) {
+      if (!this.canManage) return;
       this.formConteudo = { volume_id: volumeId, publicacao_id: "", quantidade: 1 };
       this.filtroPublicacao = "";
       this.errors = {};
@@ -708,6 +728,7 @@ export default {
     },
 
     saveConteudo() {
+      if (!this.canManage) return;
       this.loadingModal = true;
       this.errors = {};
 
@@ -737,6 +758,7 @@ export default {
     },
 
     updateConteudo(id, quantidade) {
+      if (!this.canManage) return;
       axios
         .put(`/api/envio/conteudo/${id}`, { quantidade })
         .catch((error) => {
@@ -749,6 +771,7 @@ export default {
     },
 
     deleteConteudo(id) {
+      if (!this.canManage) return;
       if (!confirm("Deseja remover esta publicação?")) return;
 
       axios
@@ -771,6 +794,7 @@ export default {
 
     // PUBLICACAO OPERATIONS
     showNovaPublicacaoModal() {
+      if (!this.canManage) return;
       this.formPublicacao = { nome: "", codigo: "" };
       this.errorsPublicacao = {};
       this.$nextTick(() => {
@@ -784,6 +808,7 @@ export default {
     },
 
     savePublicacao() {
+      if (!this.canManage) return;
       this.loadingModal = true;
       this.errorsPublicacao = {};
 

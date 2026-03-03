@@ -66,10 +66,6 @@
                                                 <a class="dropdown-item" href="{{ route('pessoa.index') }}">
                                                     {{ __('Irmãos') }}
                                                 </a>
-                                                <div class="dropdown-divider"></div>
-                                                <a class="dropdown-item" href="{{ route('envio.index') }}">
-                                                    📊 {{ __('Envios') }}
-                                                </a>
                                                 <a class="dropdown-item" href="{{ route('estoque.index') }}">
                                                     {{ __('Estoque') }}
                                                 </a>
@@ -107,6 +103,10 @@
                                             <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownAnciao">
                                                 <a class="dropdown-item" href="{{ route('user.index') }}">
                                                     {{ __('Usuários do Sistema') }}
+                                                </a>
+                                                <div class="dropdown-divider"></div>
+                                                <a class="dropdown-item" href="{{ route('envio.index') }}">
+                                                    📊 {{ __('Envios') }}
                                                 </a>
                                             </div>
                                         </li>

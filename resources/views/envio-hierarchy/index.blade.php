@@ -10,7 +10,9 @@
                     <div class="row align-items-center">
                         <div class="col">Lista de Envios, Volumes e Conteúdos</div>
                         <div class="col-4 container-fluid d-flex-inline text-end p-0">
-                            <button id="btnNovoEnvio" class="btn btn-sm btn-outline-success py-0" type="button">+ Novo Envio</button>
+                            @if(auth()->user()->ehAdmin() || auth()->user()->ehAnciao())
+                                <button id="btnNovoEnvio" class="btn btn-sm btn-outline-success py-0" type="button">+ Novo Envio</button>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -39,6 +41,7 @@
                     <envio-hierarchy-component 
                         :envios-initial="{{ json_encode($envios->items()) }}"
                         :publicacoes="{{ json_encode($publicacoes) }}"
+                        :can-manage="@json(auth()->user()->ehAdmin() || auth()->user()->ehAnciao())"
                     />
                 </div>
 
@@ -52,8 +55,10 @@
                 <ul class="mb-0">
                     <li>Use a barra de busca para encontrar rapidamente publicações, volumes ou envios</li>
                     <li>Clique nas linhas do accordion para expandir/recolher detalhes</li>
-                    <li>Edite quantidades diretamente nos campos de input ou use os botões ✎ para editar</li>
-                    <li>Clique em <strong>+ Novo Envio</strong> para criar um novo envio de publicações</li>
+                    @if(auth()->user()->ehAdmin() || auth()->user()->ehAnciao())
+                        <li>Edite quantidades diretamente nos campos de input ou use os botões ✎ para editar</li>
+                        <li>Clique em <strong>+ Novo Envio</strong> para criar um novo envio de publicações</li>
+                    @endif
                 </ul>
             </div>
         </div>
