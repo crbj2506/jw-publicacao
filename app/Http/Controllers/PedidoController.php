@@ -109,7 +109,7 @@ class PedidoController extends Controller
         $user = Auth::user();
         $congregacaoId = congregacaoAtivaId();
 
-        $request->validate(Pedido::rules($request->all('pessoa_id'), $request->all('publicacao_id'), $id = null), Pedido::feedback());
+        $request->validate(Pedido::rules($request->input('pessoa_id'), $request->input('publicacao_id'), $id = null), Pedido::feedback());
 
         // Validar que a pessoa pertence à congregação ativa
         $pessoa = Pessoa::find($request->input('pessoa_id'));
@@ -211,7 +211,7 @@ class PedidoController extends Controller
             abort(403, 'Você pode editar apenas pedidos de sua congregação');
         }
 
-        $request->validate(Pedido::rules($request->all('pessoa_id'), $request->all('publicacao_id'), $pedido->id), Pedido::feedback());
+        $request->validate(Pedido::rules($request->input('pessoa_id'), $request->input('publicacao_id'), $pedido->id), Pedido::feedback());
 
         // Validar que a pessoa pertence à congregação ativa
         $pessoa = Pessoa::find($request->input('pessoa_id'));

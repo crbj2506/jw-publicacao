@@ -16,6 +16,7 @@
     <x-crud
         :l="$users"
         :o="$user"
+        :disableShowEditButton="isset($user->show) && !Auth::user()->ehAdmin() && $user->ehAdmin()"
         r="user"
         tc="Cadastra Usuário"
         te="Altera Usuário"
@@ -53,6 +54,7 @@
                 </thead>
                 <tbody>
                     @foreach ($users as $key => $u)
+                        @php($elderTryingAdmin = !Auth::user()->ehAdmin() && $u->ehAdmin())
                         <tr>
                             <th class="text-center py-0" scope="row">{{$u->id}}</th>
                             <td class="text-center py-0" scope="row">{{$u->name}}</td>
@@ -61,9 +63,15 @@
                             <td class="text-center py-0" scope="row">{{$u->email_verified_at}}</td>
                             <td class="text-center py-0" scope="row">{{$u->created_at}}</td>
                             <td class="text-center py-0" scope="row"><a href="{{ route('user.show',['user' => $u->id])}}" class="btn btn-sm btn-outline-primary py-0">Ver</a></td>
-                            <td class="text-center py-0" scope="row"><a href="{{ route('user.edit',['user' => $u->id])}}" class="btn btn-sm btn-outline-warning py-0">Editar</a></td>
                             <td class="text-center py-0" scope="row">
-                                @if(is_null($u->email_verified_at))
+                                @if($elderTryingAdmin)
+                                    <span class="text-muted">—</span>
+                                @else
+                                    <a href="{{ route('user.edit',['user' => $u->id])}}" class="btn btn-sm btn-outline-warning py-0">Editar</a>
+                                @endif
+                            </td>
+                            <td class="text-center py-0" scope="row">
+                                @if(is_null($u->email_verified_at) && !$elderTryingAdmin)
                                     <!-- Botão que aciona o modal -->
                                     <button type="button" class="btn btn-sm btn-outline-danger py-0" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal{{$u->id}}">
                                         Excluir
@@ -78,7 +86,7 @@
                             </td>
                         </tr>
 
-                        @if(is_null($u->email_verified_at))
+                        @if(is_null($u->email_verified_at) && !$elderTryingAdmin)
                         <!-- Modal de Confirmação -->
                         <div class="modal fade" id="confirmDeleteModal{{$u->id}}" tabindex="-1" aria-labelledby="confirmDeleteModalLabel{{$u->id}}" aria-hidden="true">
                             <div class="modal-dialog">
@@ -127,6 +135,7 @@
                         type="text"
                         name="email" 
                         id="email" 
+                        autocomplete="off"
                         required="required"
                         value="{{ old('email', $user->email ?? '') }}"
                         {{ isset($user->show) || isset($user->edit) ? 'disabled' : '' }}
@@ -159,6 +168,7 @@
                         type="password"
                         name="password" 
                         id="password" 
+                        autocomplete="new-password"
                         required="required"
                         class="@error('password') is-invalid @enderror"
                         @error('password') message="{{ $message }}" @enderror>
@@ -170,6 +180,7 @@
                         type="password"
                         name="password_confirmation" 
                         id="password_confirmation" 
+                        autocomplete="new-password"
                         required="required">
                     </input-group-component>
                 </div>

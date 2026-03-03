@@ -60,23 +60,21 @@
                                             </a>
 
                                             <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownServo">
+                                                <a class="dropdown-item" href="{{ route('estoque.index') }}">
+                                                    {{ __('Estoque') }}
+                                                </a>
+                                                <a class="dropdown-item" href="{{ route('publicacao.index') }}">
+                                                    {{ __('Publicações') }}
+                                                </a>
+                                                <a class="dropdown-item" href="{{ route('local.index') }}">
+                                                    {{ __('Locais') }}
+                                                </a>
+                                                <div class="dropdown-divider"></div>
                                                 <a class="dropdown-item" href="{{ route('pedido.index') }}">
                                                     {{ __('Pedidos dos Irmãos') }}
                                                 </a>
                                                 <a class="dropdown-item" href="{{ route('pessoa.index') }}">
                                                     {{ __('Irmãos') }}
-                                                </a>
-                                                <a class="dropdown-item" href="{{ route('estoque.index') }}">
-                                                    {{ __('Estoque') }}
-                                                </a>
-                                                <a class="dropdown-item" href="{{ route('inventario.index') }}">
-                                                    {{ __('Inventário') }}
-                                                </a>
-                                                <a class="dropdown-item" href="{{ route('local.index') }}">
-                                                    {{ __('Locais') }}
-                                                </a>
-                                                <a class="dropdown-item" href="{{ route('publicacao.index') }}">
-                                                    {{ __('Publicações') }}
                                                 </a>
                                             </div>
                                         </li>
@@ -101,12 +99,15 @@
                                             </a>
 
                                             <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownAnciao">
-                                                <a class="dropdown-item" href="{{ route('user.index') }}">
-                                                    {{ __('Usuários do Sistema') }}
-                                                </a>
-                                                <div class="dropdown-divider"></div>
                                                 <a class="dropdown-item" href="{{ route('envio.index') }}">
                                                     📊 {{ __('Envios') }}
+                                                </a>
+                                                <a class="dropdown-item" href="{{ route('inventario.index') }}">
+                                                    {{ __('Inventário') }}
+                                                </a>
+                                                <div class="dropdown-divider"></div>
+                                                <a class="dropdown-item" href="{{ route('user.index') }}">
+                                                    {{ __('Usuários do Sistema') }}
                                                 </a>
                                             </div>
                                         </li>
@@ -129,13 +130,11 @@
                                                 <a class="dropdown-item" href="{{ route('congregacao.index') }}">
                                                     {{ __('Área Administrativa: Congregações') }}
                                                 </a>
-                                                <div class="dropdown-divider"></div>
-                                                <a class="dropdown-item" href="{{ route('permissao.index') }}">
-                                                    {{ __('Permissões Possíveis') }}
-                                                </a>
-                                                <div class="dropdown-divider"></div>
                                                 <a class="dropdown-item" href="{{ route('log.index') }}">
                                                     {{ __('Logs de Acesso') }}
+                                                </a>
+                                                <a class="dropdown-item" href="{{ route('permissao.index') }}">
+                                                    {{ __('Permissões Possíveis') }}
                                                 </a>
                                             </div>
                                         </li>

@@ -13,12 +13,13 @@ class Crud extends Component
     public $te; // título Edit
     public $ti; // Título Index
     public $ts; // Título Show
+    public $disableShowEditButton; // oculta botão Editar na tela show
     /**
      * Create a new component instance.
      *
      * @return void
      */
-    public function __construct($l, $o, $r, $tc, $te, $ti, $ts)
+    public function __construct($l, $o, $r, $tc, $te, $ti, $ts, $disableShowEditButton = false)
     {
         //
         $this->l = $l;
@@ -28,6 +29,7 @@ class Crud extends Component
         $this->te = $te;
         $this->ti = $ti;
         $this->ts = $ts;
+        $this->disableShowEditButton = $disableShowEditButton;
     }
 
     /**

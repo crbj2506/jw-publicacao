@@ -179,8 +179,8 @@ class EstoqueController extends Controller
     {
         $user = Auth::user();
         $congregacaoId = congregacaoAtivaId();
-        $local_id = $request->all('local_id');
-        $publicacao_id = $request->all('publicacao_id');
+        $local_id = $request->input('local_id');
+        $publicacao_id = $request->input('publicacao_id');
         $request->validate(Estoque::rules($local_id, $publicacao_id, $id = null), Estoque::feedback());
 
         $local = Local::find($request->input('local_id'));
@@ -300,8 +300,8 @@ class EstoqueController extends Controller
     {
         $user = Auth::user();
         $congregacaoId = congregacaoAtivaId();
-        $local_id = $request->all('local_id');
-        $publicacao_id = $request->all('publicacao_id');
+        $local_id = $request->input('local_id');
+        $publicacao_id = $request->input('publicacao_id');
         $request->validate(Estoque::rules($local_id, $publicacao_id, $estoque), Estoque::feedback());
         $estoque = Estoque::find($estoque);
         if (!$estoque) {

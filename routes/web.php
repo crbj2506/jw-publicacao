@@ -220,25 +220,25 @@ Route::middleware('verified', 'permissao:Publicador,Servo,Ancião,Administrador'
 // ###########################
 // ##  CONJUNTO INVENTÁRIO
 // ###########################
-Route::middleware('verified', 'permissao:,Servo,Ancião,Administrador')
+Route::middleware('verified', 'permissao:Ancião,Administrador')
     ->resource('inventario', 'App\Http\Controllers\InventarioController');
 
 // Rota para POST do Filtro de Inventários
-Route::middleware('verified', 'permissao:,Servo,Ancião,Administrador')
+Route::middleware('verified', 'permissao:Ancião,Administrador')
     ->name('inventario.filtrado.post')
     ->post('inventarioFiltrado', [App\Http\Controllers\InventarioController::class, 'index']);
 
 // Rota para GET do Filtro de Inventários
-Route::middleware('verified', 'permissao:,Servo,Ancião,Administrador')
+Route::middleware('verified', 'permissao:Ancião,Administrador')
     ->name('inventario.filtrado.get')
     ->get('inventarioFiltrado', [App\Http\Controllers\InventarioController::class, 'index']);
 
 // Rota Fazer Inventário POST (Faz o Inventário)
-Route::middleware('verified', 'permissao:,Servo,Ancião,Administrador')
+Route::middleware('verified', 'permissao:Ancião,Administrador')
     ->name('inventariar.post')
     ->post('inventariar', [App\Http\Controllers\InventarioController::class, 'inventariar']);
 
-Route::middleware('verified', 'permissao:,Servo,Ancião,Administrador')
+Route::middleware('verified', 'permissao:Ancião,Administrador')
     ->name('inventario.mostra')
     ->get('inventario/{ano}/{mes}/{congregacao_id}', [App\Http\Controllers\InventarioController::class, 'mostra']);
 

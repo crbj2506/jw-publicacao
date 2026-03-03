@@ -265,6 +265,10 @@ class UserController extends Controller
             abort(403, 'Você pode editar apenas usuários de sua congregação');
         }
 
+        if (!$loggedUser->ehAdmin() && $user->ehAdmin()) {
+            abort(403, 'Ancião não pode editar permissões de um Administrador');
+        }
+
         if (Route::current()->action['as'] == "user.edit") {
             $user->edit = true;
         }
@@ -321,6 +325,10 @@ class UserController extends Controller
             abort(403, 'Você pode editar apenas usuários de sua congregação');
         }
 
+        if (!$loggedUser->ehAdmin() && $targetUser->ehAdmin()) {
+            abort(403, 'Ancião não pode alterar permissões de um Administrador');
+        }
+
         $request->request->remove('congregacao_id');
 
         // Validar dados
@@ -331,10 +339,21 @@ class UserController extends Controller
 
         // Atualizar permissões
         $ordemPermissoes = ['Administrador' => 1, 'Ancião' => 2, 'Servo' => 3, 'Publicador' => 4];
+
+        if ($loggedUser->ehAdmin()) {
+            $permissoesPermitidas = ['Administrador', 'Ancião', 'Servo', 'Publicador'];
+        } else {
+            $permissoesPermitidas = ['Ancião', 'Servo', 'Publicador'];
+        }
+
         $permissoes = Permissao::get()->sortBy(function($p) use ($ordemPermissoes) {
             return $ordemPermissoes[$p->permissao] ?? 999;
         })->values();
         foreach ($permissoes as $p) {
+            if (!in_array($p->permissao, $permissoesPermitidas, true)) {
+                continue;
+            }
+
             $temPermissao = $request->has("permissao_{$p->id}");
             $jaTem = $targetUser->permissoes()->where('permissao_id', $p->id)->exists();
 
@@ -371,6 +390,10 @@ class UserController extends Controller
         // Ancião só pode deletar usuários de sua congregação
         if (!$loggedUser->ehAdmin() && $user->congregacao_id !== $congregacaoId) {
             abort(403, 'Você pode deletar apenas usuários de sua congregação');
+        }
+
+        if (!$loggedUser->ehAdmin() && $user->ehAdmin()) {
+            abort(403, 'Ancião não pode excluir um Administrador');
         }
 
         // Regra de negócio: só permite excluir se o e-mail do usuário não foi verificado.

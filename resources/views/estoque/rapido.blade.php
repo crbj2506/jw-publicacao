@@ -121,12 +121,21 @@
                                         </td>
                                         <td class="text-center">
                                             <button type="submit" class="btn btn-sm btn-outline-success" form="form-{{ $e->id }}">Salvar</button>
+                                            @if ((int) $e->quantidade === 0)
+                                                <form id="form-delete-{{ $e->id }}" method="POST" action="{{ route('estoque.destroy', ['estoque' => $e->id]) }}" class="d-inline">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger ms-1" title="Excluir item com quantidade zero" onclick="return confirm('Confirma excluir este item de estoque com quantidade zero?');">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </form>
+                                            @endif
                                             <i class="bi bi-check-circle-fill text-success ms-1 saved-indicator d-none" data-estoque-id="{{ $e->id }}" title="Salvo"></i>
                                         </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="9" class="text-center text-muted py-3">Nenhum item encontrado.</td>
+                                    <td colspan="10" class="text-center text-muted py-3">Nenhum item encontrado.</td>
                                 </tr>
                             @endforelse
                         </tbody>

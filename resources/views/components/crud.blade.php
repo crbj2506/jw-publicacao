@@ -58,7 +58,9 @@
                 <div class="row">
                     <div class="col">
                         @if(isset($o->show))
-                            <a href='{{ isset($o) ? route("$r.edit",["$r" => $o]) : null}}' class="btn btn-sm btn-outline-warning">{{ __('Editar') }}</a>
+                            @if(!isset($disableShowEditButton) || !$disableShowEditButton)
+                                <a href='{{ isset($o) ? route("$r.edit",["$r" => $o]) : null}}' class="btn btn-sm btn-outline-warning">{{ __('Editar') }}</a>
+                            @endif
                         @else
                             <button 
                                 type="submit" 
