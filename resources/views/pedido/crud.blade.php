@@ -38,6 +38,9 @@
                         <th class="text-center" scope="col">Entregue</th>
                         <th class="text-center" scope="col">Ver</th>
                         <th class="text-center" scope="col">Editar</th>
+                        @if($pedidos->podeExcluir)
+                            <th class="text-center" scope="col">Excluir</th>
+                        @endif
                     </tr>
                 </thead>
                 <tbody>
@@ -51,6 +54,23 @@
                             <td class="text-center py-0" scope="row">{{$p->entregue}}</td>
                             <td class="text-center py-0" scope="row"><a href="{{ route('pedido.show',['pedido' => $p])}}" class="btn btn-sm btn-outline-primary py-0">Ver</a></td>
                             <td class="text-center py-0" scope="row"><a href="{{ route('pedido.edit',['pedido' => $p])}}" class="btn btn-sm btn-outline-warning py-0">Editar</a></td>
+                            @if($pedidos->podeExcluir)
+                                <td class="text-center py-0" scope="row">
+                                    <button type="button"
+                                            class="btn btn-sm btn-outline-danger py-0"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#modalExcluirPedido"
+                                            data-pedido-id="{{ $p->id }}"
+                                            data-pessoa="{{ optional($p->pessoa)->nome }}"
+                                            data-publicacao="{{ optional($p->publicacao)->nome }}"
+                                            data-quantidade="{{ $p->quantidade }}"
+                                            data-solicitado="{{ $p->solicitado }}"
+                                            data-entregue="{{ $p->entregue }}"
+                                            data-url="{{ route('pedido.destroy', ['pedido' => $p->id]) }}">
+                                        Excluir
+                                    </button>
+                                </td>
+                            @endif
                         </tr>
                     @endforeach
                 </tbody>
@@ -142,8 +162,93 @@
                             <p class="form-control-plaintext">{{ optional(optional($pedido->pessoa)->congregacao)->nome ?? 'N/A' }}</p>
                         </div>
                     </div>
+                    @if(isset($pedido->podeExcluir) && $pedido->podeExcluir)
+                        <div class="col-12 p-2">
+                            <button type="button"
+                                    class="btn btn-sm btn-outline-danger"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#modalExcluirPedido"
+                                    data-pedido-id="{{ $pedido->id }}"
+                                    data-pessoa="{{ optional($pedido->pessoa)->nome }}"
+                                    data-publicacao="{{ optional($pedido->publicacao)->nome }}"
+                                    data-quantidade="{{ $pedido->quantidade }}"
+                                    data-solicitado="{{ $pedido->solicitado }}"
+                                    data-entregue="{{ $pedido->entregue }}"
+                                    data-url="{{ route('pedido.destroy', ['pedido' => $pedido->id]) }}">
+                                Excluir Pedido
+                            </button>
+                        </div>
+                    @endif
                 @endif
             </div>
         @endif
     </x-crud>
+
+    <div class="modal fade" id="modalExcluirPedido" tabindex="-1" aria-labelledby="modalExcluirPedidoLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-light">
+                    <h5 class="modal-title" id="modalExcluirPedidoLabel">Confirmar exclusão</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-3">Tem certeza que deseja excluir este pedido?</p>
+                    <div class="border rounded p-3 bg-light">
+                        <div class="fw-bold" id="modalExcluirPedidoTitulo">Pedido</div>
+                        <ul class="list-unstyled mb-0 mt-2">
+                            <li><strong>Pessoa:</strong> <span id="modalExcluirPedidoPessoa">-</span></li>
+                            <li><strong>Publicação:</strong> <span id="modalExcluirPedidoPublicacao">-</span></li>
+                            <li><strong>Quantidade:</strong> <span id="modalExcluirPedidoQuantidade">-</span></li>
+                            <li><strong>Solicitado:</strong> <span id="modalExcluirPedidoSolicitado">-</span></li>
+                            <li><strong>Entregue:</strong> <span id="modalExcluirPedidoEntregue">-</span></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <form id="formModalExcluirPedido" method="POST" action="" enctype="multipart/form-data" style="display:inline;">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-danger">Confirmar Exclusão</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const modal = document.getElementById('modalExcluirPedido');
+            if (!modal) {
+                return;
+            }
+
+            modal.addEventListener('show.bs.modal', function (event) {
+                const button = event.relatedTarget;
+                if (!button) {
+                    return;
+                }
+
+                const form = document.getElementById('formModalExcluirPedido');
+                const titulo = document.getElementById('modalExcluirPedidoTitulo');
+                const pessoa = document.getElementById('modalExcluirPedidoPessoa');
+                const publicacao = document.getElementById('modalExcluirPedidoPublicacao');
+                const quantidade = document.getElementById('modalExcluirPedidoQuantidade');
+                const solicitado = document.getElementById('modalExcluirPedidoSolicitado');
+                const entregue = document.getElementById('modalExcluirPedidoEntregue');
+
+                if (!form || !titulo || !pessoa || !publicacao || !quantidade || !solicitado || !entregue) {
+                    return;
+                }
+
+                form.action = button.getAttribute('data-url') || '';
+                titulo.textContent = `Pedido #${button.getAttribute('data-pedido-id') || ''}`;
+                pessoa.textContent = button.getAttribute('data-pessoa') || '—';
+                publicacao.textContent = button.getAttribute('data-publicacao') || '—';
+                quantidade.textContent = button.getAttribute('data-quantidade') || '—';
+                solicitado.textContent = button.getAttribute('data-solicitado') || '—';
+                entregue.textContent = button.getAttribute('data-entregue') || '—';
+            });
+        });
+    </script>
 @endsection

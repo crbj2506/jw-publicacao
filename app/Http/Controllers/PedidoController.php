@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Pedido;
 use App\Models\Pessoa;
 use App\Models\Publicacao;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
@@ -21,6 +22,7 @@ class PedidoController extends Controller
     public function index(Request $request)
     {
         $user = Auth::user();
+        $user = $user instanceof User ? $user : User::find($user->id);
         $congregacaoId = congregacaoAtivaId();
         $pessoaFiltro = null;
         $publicacaoFiltro = null;
@@ -51,7 +53,7 @@ class PedidoController extends Controller
             $perpage = $request->session()->get('perpage');
         }
 
-        // Ordenar: não entregues mais antigos primeiro, depois entregues mais recentes
+        // Ordenar: pendentes primeiro (mais antigos primeiro), depois entregues (mais recentes primeiro)
         $pedidos = Pedido::orderByRaw('CASE WHEN entregue IS NULL THEN 0 ELSE 1 END')
                          ->orderBy('solicitado', 'asc')
                          ->orderBy('entregue', 'desc');
@@ -71,6 +73,7 @@ class PedidoController extends Controller
         $pedidos->pessoaFiltro = $pessoaFiltro;
         $pedidos->publicacaoFiltro = $publicacaoFiltro;
         $pedidos->perpage = $perpage;
+        $pedidos->podeExcluir = $user->ehAdmin() || $user->ehAnciao();
 
         return view('pedido.crud', ['pedidos' => $pedidos]);
     }
@@ -83,6 +86,7 @@ class PedidoController extends Controller
     public function create()
     {
         $user = Auth::user();
+        $user = $user instanceof User ? $user : User::find($user->id);
         $congregacaoId = congregacaoAtivaId();
 
         $pessoas = Pessoa::where('congregacao_id', $congregacaoId)
@@ -107,6 +111,7 @@ class PedidoController extends Controller
     public function store(Request $request)
     {
         $user = Auth::user();
+        $user = $user instanceof User ? $user : User::find($user->id);
         $congregacaoId = congregacaoAtivaId();
 
         $request->validate(Pedido::rules($request->input('pessoa_id'), $request->input('publicacao_id'), $id = null), Pedido::feedback());
@@ -136,6 +141,7 @@ class PedidoController extends Controller
     public function show($pedido)
     {
         $user = Auth::user();
+        $user = $user instanceof User ? $user : User::find($user->id);
         $congregacaoId = congregacaoAtivaId();
         $pedido = Pedido::find($pedido);
 
@@ -154,6 +160,8 @@ class PedidoController extends Controller
         if (Route::current()->action['as'] == "pedido.show") {
             $pedido->show = true;
         }
+
+        $pedido->podeExcluir = $user->ehAdmin() || $user->ehAnciao();
         
         return view('pedido.crud', ['pedido' => $pedido, 'pessoas' => $pessoas, 'publicacoes' => $publicacoes]);
     }
@@ -167,6 +175,7 @@ class PedidoController extends Controller
     public function edit(Pedido $pedido)
     {
         $user = Auth::user();
+        $user = $user instanceof User ? $user : User::find($user->id);
         $congregacaoId = congregacaoAtivaId();
 
         if ($pedido->congregacao_id !== $congregacaoId) {
@@ -200,6 +209,7 @@ class PedidoController extends Controller
     public function update(Request $request, $pedido)
     {
         $user = Auth::user();
+        $user = $user instanceof User ? $user : User::find($user->id);
         $congregacaoId = congregacaoAtivaId();
         $pedido = Pedido::find($pedido);
 
@@ -237,10 +247,17 @@ class PedidoController extends Controller
     public function destroy(Pedido $pedido)
     {
         $user = Auth::user();
+        $user = $user instanceof User ? $user : User::find($user->id);
         $congregacaoId = congregacaoAtivaId();
 
+        if (!$user->ehAdmin() && !$user->ehAnciao()) {
+            return redirect()->route('pedido.index')
+                            ->with('error', 'Apenas Administrador e Ancião podem deletar pedidos');
+        }
+
         if ($pedido->congregacao_id !== $congregacaoId) {
-            abort(403, 'Você pode deletar apenas pedidos de sua congregação');
+            return redirect()->route('pedido.index')
+                            ->with('error', 'Você pode deletar apenas pedidos de sua congregação');
         }
 
         $pedido->delete();
