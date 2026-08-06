@@ -53,10 +53,10 @@ class PedidoController extends Controller
             $perpage = $request->session()->get('perpage');
         }
 
-        // Ordenar: pendentes primeiro (mais antigos primeiro), depois entregues (mais recentes primeiro)
+        // Ordenar: pendentes por solicitado ASC; entregues por entregue DESC
         $pedidos = Pedido::orderByRaw('CASE WHEN entregue IS NULL THEN 0 ELSE 1 END')
-                         ->orderBy('solicitado', 'asc')
-                         ->orderBy('entregue', 'desc');
+                 ->orderByRaw('CASE WHEN entregue IS NULL THEN solicitado END ASC')
+                 ->orderByRaw('CASE WHEN entregue IS NOT NULL THEN entregue END DESC');
 
         // Filtrar pela congregação ativa do usuário
         $pedidos->where('congregacao_id', $congregacaoId);
