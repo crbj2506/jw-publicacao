@@ -1,95 +1,238 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# JW Publicação
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Sistema web para gestão de publicações, congregações, estoque, inventário e permissões de usuários em ambiente de organização religiosa.
 
-## About Laravel
+## Sobre o projeto
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Este projeto foi desenvolvido em Laravel e tem como objetivo centralizar o controle de material de publicação e a administração dos usuários vinculados a congregações.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+A aplicação permite:
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- gerir congregações;
+- controlar usuários e permissões por perfil;
+- cadastrar publicações, volumes e conteúdos;
+- registrar locais e estoque;
+- acompanhar inventários e movimentações;
+- organizar envios e distribuição por hierarquia;
+- manter histórico e auditoria das ações realizadas no sistema.
 
-## Learning Laravel
+## Stack tecnológica
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- PHP 8.2
+- Laravel 12
+- MySQL
+- Composer
+- Node.js + npm
+- Vite
+- Bootstrap (utilizado pela interface do projeto)
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## Funcionalidades principais
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### 1. Autenticação e autorização
 
-## Laravel Sponsors
+- login com verificação de e-mail;
+- controle de acesso por perfil;
+- permissões com papéis como Publicador, Servo, Ancião e Administrador;
+- rotas protegidas por middleware de permissão.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+### 2. Gestão de congregações
 
-### Premium Partners
+- cadastro e manutenção de congregações;
+- definição da congregação ativa;
+- organização por unidade administrativa.
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+### 3. Usuários e permissões
 
-## Contributing
+- cadastro de usuários;
+- associação com congregação;
+- controle de acessos por perfil;
+- gestão centralizada de permissões e auditoria da criação e alteração de registros.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### 4. Publicações, conteúdos e volumes
 
-## Code of Conduct
+- cadastro de publicações com nome, código, observação, proporção e imagem;
+- estrutura de volumes e conteúdos;
+- organização dos materiais por categoria e contexto operacional.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### 5. Estoque e locais
 
-## Security Vulnerabilities
+- cadastro de locais de armazenamento;
+- controle de estoque por publicação;
+- manutenção do histórico de movimentações e disponibilidade.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### 6. Inventário e pedidos
 
-## License
+- acompanhamento de materiais disponíveis;
+- registros de pedidos e movimentações;
+- controle operacional para suporte do fluxo de distribuição.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### 7. Envio por hierarquia
 
+- interface para envio e organização por níveis;
+- gestão de volumes, conteúdos e publicações de forma rápida;
+- apoio ao fluxo de distribuição entre grupos da estrutura.
 
-PHP 8.2
-Clone o Diretório
+### 8. Auditoria e logs
 
-Extensões PHP
+- registro de ações realizadas no sistema;
+- histórico de alterações e acompanhamento de uso.
+
+## Requisitos do ambiente
+
+Antes de instalar, certifique-se de ter instalado:
+
+- PHP 8.2 ou superior
+- Composer
+- Node.js 18+ e npm
+- MySQL 8+
+- Git
+
+Extensões PHP recomendadas:
+
+```ini
 extension=openssl
 extension=fileinfo
 extension=curl
 extension=pdo_mysql
 extension=mbstring
+```
 
-COMPOSER
+## Instalação
+
+### 1. Clone o repositório
+
+```bash
+git clone <url-do-repositorio>
+cd jw-publicacao
+```
+
+### 2. Instale as dependências do PHP
+
+```bash
 composer install
+```
 
+### 3. Configure o ambiente
+
+```bash
 cp .env.example .env
+```
+
+Edite o arquivo `.env` e defina as informações do banco de dados, por exemplo:
+
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=jw-publicacao
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+> Se preferir outro nome para o banco, ajuste o valor do `DB_DATABASE` conforme sua necessidade.
+
+### 4. Crie o banco de dados
+
+No MySQL, crie a base de dados antes de rodar as migrations:
+
+```sql
+CREATE DATABASE `jw-publicacao`;
+```
+
+### 5. Gere a chave da aplicação
+
+```bash
 php artisan key:generate
+```
+
+### 6. Inicialize o banco
+
+```bash
+php artisan migrate
+```
+
+Se quiser também criar links de armazenamento para arquivos de imagens e uploads:
+
+```bash
 php artisan storage:link
+```
 
-CRIAR SCHEMA BD: jw-publicacao
+### 7. Instale as dependências do front-end
 
-NODE.JS
+```bash
 npm install
+```
+
+### 8. Rode o ambiente de desenvolvimento
+
+```bash
 npm run dev
+```
 
-php .\artisan migrate
+Em outro terminal, inicie o servidor local do Laravel:
 
-Habilitar Registro no Laravel
-Inseria no BD Perfis e Permissões
+```bash
+php artisan serve
+```
+
+A aplicação ficará disponível em:
+
+```text
+http://localhost:8000
+```
+
+## Verificação de e-mail e permissões
+
+A aplicação já está configurada para exigir verificação de e-mail do usuário e desabilitar registro público.
+
+Após o primeiro acesso, o administrador deve configurar os perfis e as permissões no banco ou pela área administrativa do sistema, de acordo com o fluxo da organização.
+
+Os perfis esperados pelo sistema incluem:
+
+- Publicador
+- Servo
+- Ancião
+- Administrador
+
+## Fluxo de uso recomendado
+
+1. Crie ou configure as congregações.
+2. Cadastre os usuários e atribua as permissões corretas.
+3. Defina a congregação ativa.
+4. Cadastre publicações, volumes e conteúdos.
+5. Configure locais e estoque.
+6. Realize os controles de inventário e envio.
+7. Acompanhe logs e auditoria para manter o histórico das ações.
+
+## Scripts úteis
+
+### Desenvolvimento front-end
+
+```bash
+npm run dev
+```
+
+### Build para produção
+
+```bash
+npm run build
+```
+
+### Limpeza do cache do Laravel
+
+```bash
+php artisan cache:clear
+php artisan config:clear
+php artisan route:clear
+php artisan view:clear
+```
+
+## Observações importantes
+
+- O sistema foi pensado para uso interno e com controle de acessos por perfil.
+- O cadastro de usuários e permissões deve ser administrado com atenção para manter a segurança e organização do ambiente.
+- Em ambientes de produção, configure corretamente as variáveis do `.env`, incluindo mail, banco de dados e URL pública da aplicação.
+
+## Licença
+
+Este projeto segue a licença do Laravel e pode ser adaptado conforme a necessidade da organização responsável pelo sistema.
