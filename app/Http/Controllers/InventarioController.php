@@ -248,16 +248,9 @@ class InventarioController extends Controller
                 ->unique();
     
             // Inventário Anterior
-            if($mes == '01'){
-                $inventarioAnterior['ano'] = (string)((int) $ano -1);
-                $inventarioAnterior['mes'] = '12';
-            }elseif($mes == '10' | $mes == '11'){
-                $inventarioAnterior['ano'] = (string) $ano;
-                $inventarioAnterior['mes'] = (string)((int) $mes -1);
-            }else{
-                $inventarioAnterior['ano'] = (string) $ano;
-                $inventarioAnterior['mes'] = '0'. (int) $mes -1;
-            }
+            $dataAnterior = \Carbon\Carbon::create((int) $ano, (int) $mes, 1)->subMonthNoOverflow();
+            $inventarioAnterior['ano'] = $dataAnterior->format('Y');
+            $inventarioAnterior['mes'] = $dataAnterior->format('m');
     
             $publicacoesEmEstoque = Estoque::select('*')
                 ->join('locais','locais.id', '=', 'estoques.local_id')
