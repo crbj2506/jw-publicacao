@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
+use Carbon\Carbon;
 use App\Traits\Auditable;
 
 class Inventario extends Model
@@ -103,36 +104,30 @@ class Inventario extends Model
 
     public static function defineAnoMesUltimoInventariado($congregacao_id){
 
-        $anomesUltimoInventariado = self::select('ano','mes')->where('congregacao_id', $congregacao_id)->orderBy('ano')->orderBy('mes')->get()->last();
-        if($anomesUltimoInventariado){
-            $anomesUltimoInventariado = $anomesUltimoInventariado->getAttributes();
-            $anoUltimoInventariado = $anomesUltimoInventariado['ano'];
-            $mesUltimoInventariado = $anomesUltimoInventariado['mes'];
-            if($mesUltimoInventariado == '12'){
-                $anoAInventariar = (string) ((int) $anoUltimoInventariado +1);
-                $mesAInventariar = '01';
-            }elseif($mesUltimoInventariado == '09' || $mesUltimoInventariado == '10' || $mesUltimoInventariado == '11'){
-                $anoAInventariar = $anoUltimoInventariado;
-                $mesAInventariar = (string) ((int) $mesUltimoInventariado +1);
-            }else{
-                $anoAInventariar = $anoUltimoInventariado;
-                $mesAInventariar = '0'.(string) ((int) $mesUltimoInventariado +1);
-            }
+        $ultimoInventario = self::select('ano','mes')
+            ->where('congregacao_id', $congregacao_id)
+            ->orderByDesc('ano')
+            ->orderByDesc('mes')
+            ->first();
+
+        $anoAnteriorAInventariar = null;
+        $mesAnteriorAInventariar = null;
+
+        if($ultimoInventario){
+            $aInventariar = Carbon::create((int) $ultimoInventario->ano, (int) $ultimoInventario->mes, 1)->addMonthNoOverflow();
         }else{
-            $anoAInventariar = date("Y");
-            $mesAInventariar = date("m");
-            if($mesAInventariar == '01'){
-                $anoAnteriorAInventariar = (string) ((int) $anoAInventariar -1);
-                $mesAnteriorAInventariar = '12';
-            }elseif($mesAInventariar == '11' || $mesAInventariar == '12'){
-                $anoAnteriorAInventariar = $anoAInventariar;
-                $mesAnteriorAInventariar = (string) ((int) $mesAInventariar -1);
-            }else{
-                $anoAnteriorAInventariar = $anoAInventariar;
-                $mesAnteriorAInventariar = '0'.(string) ((int) $mesAInventariar -1);
-            }
+            $aInventariar = Carbon::now()->startOfMonth();
+            $anterior = $aInventariar->copy()->subMonthNoOverflow();
+            $anoAnteriorAInventariar = $anterior->format('Y');
+            $mesAnteriorAInventariar = $anterior->format('m');
         }
-        return ['anoAInventariar' => isset($anoAInventariar)?$anoAInventariar:null, 'mesAInventariar' => isset($mesAInventariar)?$mesAInventariar:null, 'anoAnteriorAInventariar' => isset($anoAnteriorAInventariar)?$anoAnteriorAInventariar:null, 'mesAnteriorAInventariar' => isset($mesAnteriorAInventariar)?$mesAnteriorAInventariar:null];
+
+        return [
+            'anoAInventariar' => $aInventariar->format('Y'),
+            'mesAInventariar' => $aInventariar->format('m'),
+            'anoAnteriorAInventariar' => $anoAnteriorAInventariar,
+            'mesAnteriorAInventariar' => $mesAnteriorAInventariar,
+        ];
 
     }
     
